@@ -3,21 +3,18 @@ import java.awt.*;
 import javax.swing.*;
 
 public class GUI extends JFrame{
+    Component component;
     public GUI(){
         
-        JPanel panel = new JPanel();
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        this.setTitle("Java Chess");
+        this.setResizable(false);
+        component = new Board();
+        this.add(component, BorderLayout.CENTER);
         
-        panel.setBorder(BorderFactory.createEmptyBorder(50,50,50,50));
-        panel.setLayout(new GridLayout(0,1));
-        this.add(panel);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setTitle("Test");
+        this.setLocation(200, 50);
         this.pack();
         this.setVisible(true);
-        panel.setBackground(new Color(37,13,84));
-        panel.setPreferredSize(new Dimension(520, 520));
-        panel.setMinimumSize(new Dimension(100, 100));
-        panel.setMaximumSize(new Dimension(1000, 1000));
         
         
     }

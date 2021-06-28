@@ -41,15 +41,15 @@ public class King extends Piece {
             }
         }
 
-        if(destination_y==this.getY()&&destination_x-this.getX()==Math.abs(2)){
-               if(destination_x-this.getX()>0){
-                   for(i=this.getX()+1;i<destination_x;i++){
-                       
-                   }
-               }      
-        }
+       
         
         
+    }else if(destination_y==this.getY()&&destination_x-this.getX()==Math.abs(2)){
+        if(destination_x-this.getX()>0){
+            for(i=this.getX()+1;i<destination_x;i++){
+                
+            }
+        }      
     }else{
         return false;
     }

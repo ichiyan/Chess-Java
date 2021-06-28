@@ -24,7 +24,7 @@ public class King extends Piece {
     @Override
     public boolean canMove(int destination_x, int destination_y)
     {
-        Piece testPiece = board.getPiece(destination_x, destination_y);
+        Piece testPiece;
         int i;
     // Remember: a king can move one square up, right, left, or down, or
     // diagonally, but he can never put himself in danger of an oposing 
@@ -32,7 +32,7 @@ public class King extends Piece {
         
     //check if a same-color piece is on the destination
     if(destination_x==1 || destination_y==1){
-        Piece testPiece = board.getPiece(destination_x, destination_y);
+        testPiece = board.getPiece(destination_x, destination_y);
         if(testPiece!=null){
             if(testPiece.isWhite()&&this.isWhite()){
                 return false;

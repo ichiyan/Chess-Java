@@ -117,8 +117,9 @@ public class Board extends JComponent {
         Static_Shapes.add(new DrawingImage(board, new Rectangle2D.Double(0, 0, board.getWidth(null), board.getHeight(null))));
         if (Active_Piece != null)
         {
-            Image active_square = loadImage("images" + File.separator + "active_square.png");
+            Image active_square = loadImage(active_square_file_path);
             Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*Active_Piece.getX(),Square_Width*Active_Piece.getY(), active_square.getWidth(null), active_square.getHeight(null))));
+            Active_Piece.moves.forEach((move) -> Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*move.getX(),Square_Width*move.getY(), active_square.getWidth(null), active_square.getHeight(null)))));
         }
         for (int i = 0; i < White_Pieces.size(); i++)
         {
@@ -182,6 +183,7 @@ public class Board extends JComponent {
                     ((is_whites_turn && clicked_piece.isWhite()) || (!is_whites_turn && clicked_piece.isBlack())))
             {
                 Active_Piece = clicked_piece;
+                Active_Piece.availableMoves();
             }
             else if (Active_Piece != null && Active_Piece.getX() == Clicked_Column && Active_Piece.getY() == Clicked_Row)
             {

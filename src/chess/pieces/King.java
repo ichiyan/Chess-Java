@@ -25,7 +25,7 @@ public class King extends Piece {
     public boolean canMove(int destination_x, int destination_y)
     {
         Piece testPiece;
-        int i;
+        
     // Remember: a king can move one square up, right, left, or down, or
     // diagonally, but he can never put himself in danger of an oposing 
     // piece attacking him on the next turn. He cannot attack his own pieces.
@@ -46,9 +46,7 @@ public class King extends Piece {
         
     }else if(destination_y==this.getY()&&destination_x-this.getX()==Math.abs(2)){
         if(destination_x-this.getX()>0){
-            for(i=this.getX()+1;i<destination_x;i++){
-                
-            }
+           
         }      
     }else{
         return false;
@@ -114,4 +112,18 @@ public class King extends Piece {
            
         return true;
     }
+    public boolean canCastle(int destination_x, int destination_y){
+        int i;
+        
+        
+        if(destination_x-this.getX()>0){
+           for(i=this.getX();i<destination_x;i++){
+              if(this.isWhite()){
+                  
+              }
+           }
+        } 
+        return true;
+    }
+
 }

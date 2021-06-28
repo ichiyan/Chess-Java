@@ -1,5 +1,7 @@
 package chess.pieces;
 
+import java.util.ArrayList;
+
 import chess.Board;
 
 public class Piece {
@@ -8,7 +10,7 @@ public class Piece {
     final private boolean is_white;
     private String file_path;
     public Board board;
-    
+    public ArrayList<Spot> moves;
     public Piece(int x, int y, boolean is_white, String file_path, Board board)
     {
         this.is_white = is_white;
@@ -16,6 +18,8 @@ public class Piece {
         this.y = y;
         this.file_path = file_path;
         this.board = board;
+        moves = new ArrayList<Spot>();
+        moves.clear();
     }
     
     public String getFilePath()
@@ -62,4 +66,19 @@ public class Piece {
     {
         return false;
     }
+    public ArrayList<Spot> availableMoves(){
+        int x;
+        int y;
+        
+        for(y=0;y<8;y++){
+            for(x=0;x<8;x++){
+                if(canMove(x, y)){
+                    this.moves.add(new Spot(x,y));
+                }
+            }
+        }
+        return this.moves;
+    }
+    
 }
+

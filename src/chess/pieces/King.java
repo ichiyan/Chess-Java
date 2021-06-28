@@ -26,6 +26,13 @@ public class King extends Piece {
     {
         Piece testPiece = board.getPiece(destination_x, destination_y);
         int i;
+    // Remember: a king can move one square up, right, left, or down, or
+    // diagonally, but he can never put himself in danger of an oposing 
+    // piece attacking him on the next turn. He cannot attack his own pieces.
+        
+    //check if a same-color piece is on the destination
+    if(destination_x==1 || destination_y==1){
+        Piece testPiece = board.getPiece(destination_x, destination_y);
         if(testPiece!=null){
             if(testPiece.isWhite()&&this.isWhite()){
                 return false;
@@ -43,6 +50,68 @@ public class King extends Piece {
         }
         
         
+    }else{
+        return false;
+    }
+   
+
+    //moving north white perspective()
+    if(destination_y > this.getY()){
+        testPiece = board.getPiece(this.getX(), this.getY()+1);
+        if(testPiece!=null){
+            return false;
+        }
+    }
+    //moving east white perspective()
+    else if(destination_x>this.getX()){
+        testPiece = board.getPiece(this.getX()+1, this.getY());
+        if(testPiece!=null){
+            return false;
+        }
+    }
+     //moving south white perspective()
+    else if(destination_x<this.getY()){
+        testPiece = board.getPiece(this.getX(), this.getY()-1);
+        if(testPiece!=null){
+            return false;
+        }
+    }
+     //moving west white perspective()
+    else if(destination_x<this.getX()){
+        testPiece = board.getPiece(this.getX()-1, this.getY());
+        if(testPiece!=null){
+            return false;
+        }
+    }
+    //moving northeast white perspective()
+    else if(destination_y>this.getY() && destination_x>this.getX()){
+        testPiece = board.getPiece(this.getX()+1, this.getY()+1);
+        if(testPiece!=null){
+            return false;
+        }
+    }
+    //moving southeast white perspective()
+    else if(destination_y<this.getY() && destination_x>this.getX()){
+        testPiece = board.getPiece(this.getX()+1, this.getY()-1);
+        if(testPiece!=null){
+            return false;
+        }
+    }
+    //moving southwest white perspective()
+    else if(destination_y<this.getY() && destination_x<this.getX()){
+        testPiece = board.getPiece(this.getX()-1, this.getY()-1);
+        if(testPiece!=null){
+            return false;
+        }
+    }
+    //moving northwest white perspective()
+    else if(destination_y<this.getY() && destination_x<this.getX()){
+        testPiece = board.getPiece(this.getX()-1, this.getY()+1);
+        if(testPiece!=null){
+            return false;
+        }
+    }
+           
         return true;
     }
 }

@@ -39,19 +39,21 @@ public class King extends Piece {
                 return false;
             }
         }
+
+       
+        
+        
+    }else if(destination_y==this.getY()&&destination_x-this.getX()==Math.abs(2)){
+        if(destination_x-this.getX()>0){
+            for(i=this.getX()+1;i<destination_x;i++){
+                
+            }
+        }      
     }else{
         return false;
     }
-        if(destination_y==this.getY()&&destination_x-this.getX()==Math.abs(2)){
-               if(destination_x-this.getX()>0){
-                   for(i=this.getX()+1;i<destination_x;i++){
-                       
-                   }
-               }      
-        }
-        
-        
-    
+   
+
     //moving north white perspective()
     if(destination_y > this.getY()){
         testPiece = board.getPiece(this.getX(), this.getY()+1);

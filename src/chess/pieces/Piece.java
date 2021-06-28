@@ -67,16 +67,20 @@ public class Piece {
         return false;
     }
     public ArrayList<Spot> availableMoves(){
+        this.moves.clear();
         int x;
         int y;
-        
         for(y=0;y<8;y++){
             for(x=0;x<8;x++){
                 if(canMove(x, y)){
-                    this.moves.add(new Spot(x,y));
+                    if(!this.moves.contains(new Spot(x,y))){
+                        this.moves.add(new Spot(x,y));
+                    }
+                    
                 }
             }
         }
+       
         return this.moves;
     }
     

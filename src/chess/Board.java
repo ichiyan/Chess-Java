@@ -211,8 +211,11 @@ public class Board extends JComponent {
                 {
                     Pawn castedPawn = (Pawn)(Active_Piece);
                     castedPawn.setHasMoved(true);
+                }else if (Active_Piece.getClass().equals(King.class))
+                {
+                    King castedKing = (King)(Active_Piece);
+                    castedKing.setHasMoved(true);
                 }
-                
                 
                 Active_Piece = null;
                 turnCounter++;

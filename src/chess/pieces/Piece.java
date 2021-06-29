@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import chess.Board;
 
-public class Piece {
+public abstract class Piece {
     private int x;
     private int y;
     final private boolean is_white;
@@ -62,10 +62,8 @@ public class Piece {
         return y;
     }
     
-    public boolean canMove(int destination_x, int destination_y)
-    {
-        return false;
-    }
+    public abstract boolean canMove(int destination_x, int destination_y);
+
     public ArrayList<Spot> availableMoves(){
         this.moves.clear();
         int x;
@@ -76,11 +74,9 @@ public class Piece {
                     if(!this.moves.contains(new Spot(x,y))){
                         this.moves.add(new Spot(x,y));
                     }
-                    
                 }
             }
         }
-       
         return this.moves;
     }
     

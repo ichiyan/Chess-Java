@@ -26,29 +26,28 @@ public class King extends Piece {
     {
         Piece testPiece;
         int i;
-    
+
+        testPiece = board.getPiece(destination_x, destination_y);
+
 
     if(Math.abs(destination_x-this.getX()) > 1 || Math.abs(destination_y-this.getY())  > 1 ){
-        
-        if(destination_x-this.getX()==2 && destination_y==this.getY()){
-
-            if(this.has_moved){
-                return false;
-            }else{
-                return canCastleQueenSide();
-            }
-        }else if(destination_x-this.getX()==-2 && destination_y==this.getY()){
-
-            if(this.has_moved){
-                return false;
-            }else{
-                return canCastleKingSide();
+        if(destination_y == this.getY() && testPiece == null) {
+            if (destination_x - this.getX() == 2) {
+                if (this.has_moved) {
+                    return false;
+                } else {
+                    return canCastleQueenSide();
+                }
+            } else if (destination_x - this.getX() == -2) {
+                if (this.has_moved) {
+                    return false;
+                } else {
+                    return canCastleKingSide();
+                }
             }
         }
         return false;
-        
     }else{
-        testPiece = board.getPiece(destination_x, destination_y);
         if(testPiece!=null){
             if(testPiece.isWhite()&&this.isWhite()){
                 return false;
@@ -57,9 +56,11 @@ public class King extends Piece {
             }
         }
     }
-  
+
     return true;
+
     }
+
     public boolean canCastleQueenSide(){
         
         for(int i = this.getX();i<=this.getX()+2;i++){
@@ -76,27 +77,22 @@ public class King extends Piece {
             }
         }
         return true;
-        
-        
     }
+
     public boolean willHit(int x, int y){
 
         
         if(this.isWhite()){
             for(Piece piece: board.Black_Pieces){
-                for(Spot move: piece.availableMoves()){
-                    if(move.getX() == x && move.getY() == y){
-                        return true;
-                    }
+                if(piece.canMove(x,y)){
+                    return true;
                 }
             }
         }
         else if(this.isBlack()){
             for(Piece piece: board.White_Pieces){
-                for(Spot move: piece.availableMoves()){
-                    if(move.getX() == x && move.getY() == y){
-                        return true;
-                    }
+                if(piece.canMove(x,y)){
+                    return true;
                 }
             }
         }

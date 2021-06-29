@@ -44,7 +44,7 @@ public class Pawn extends Piece {
             }
         }
         
-        //checks if there is a piece infront.
+        //checks if there is a piece in front.
         if(this.getX()==destination_x){
             if(this.isWhite()){
                 Piece frontwhite = board.getPiece(this.getX(), this.getY()+1);

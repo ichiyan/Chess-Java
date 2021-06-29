@@ -24,22 +24,24 @@ public class King extends Piece {
     @Override
     public boolean canMove(int destination_x, int destination_y)
     {
-        Piece testPiece;
+        Piece testPiece, cornerPiece;
         int i;
 
         testPiece = board.getPiece(destination_x, destination_y);
 
 
     if(Math.abs(destination_x-this.getX()) > 1 || Math.abs(destination_y-this.getY())  > 1 ){
-        if(destination_y == this.getY() && testPiece == null) {
+        if(destination_y == this.getY()) {
             if (destination_x - this.getX() == 2) {
-                if (this.has_moved) {
+                cornerPiece = board.getPiece(7, this.getY());
+                if (this.has_moved || cornerPiece==null || ( cornerPiece.getClass().equals(Rook.class) && ((Rook)cornerPiece).getHasMoved() ) ) {
                     return false;
                 } else {
                     return canCastleQueenSide();
                 }
             } else if (destination_x - this.getX() == -2) {
-                if (this.has_moved) {
+                cornerPiece = board.getPiece(0, this.getY());
+                if (this.has_moved || cornerPiece==null || ( cornerPiece.getClass().equals(Rook.class) && ((Rook)cornerPiece).getHasMoved() )) {
                     return false;
                 } else {
                     return canCastleKingSide();
@@ -64,7 +66,7 @@ public class King extends Piece {
     public boolean canCastleQueenSide(){
         
         for(int i = this.getX();i<=this.getX()+2;i++){
-            if(willHit(i, this.getY())){
+            if(isUnderAttack(i, this.getY()) || board.getPiece(i+1, this.getY()) != null){
                 return false;
             }
         }
@@ -72,14 +74,14 @@ public class King extends Piece {
     }
     public boolean canCastleKingSide(){
         for(int i = this.getX();i>=this.getX()-2;i--){
-            if(willHit(i, this.getY())){
+            if(isUnderAttack(i, this.getY()) || ( i-1!=0 && board.getPiece(i-1, this.getY()) != null) ){
                 return false;
             }
         }
         return true;
     }
 
-    public boolean willHit(int x, int y){
+    public boolean isUnderAttack(int x, int y){
 
         
         if(this.isWhite()){
@@ -96,7 +98,6 @@ public class King extends Piece {
                 }
             }
         }
-
         return false;
     }
 }

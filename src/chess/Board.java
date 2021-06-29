@@ -121,19 +121,17 @@ public class Board extends JComponent {
             Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*Active_Piece.getX(),Square_Width*Active_Piece.getY(), active_square.getWidth(null), active_square.getHeight(null))));
             Active_Piece.moves.forEach((move) -> Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*move.getX(),Square_Width*move.getY(), active_square.getWidth(null), active_square.getHeight(null)))));
         }
-        for (int i = 0; i < White_Pieces.size(); i++)
-        {
-            int COL = White_Pieces.get(i).getX();
-            int ROW = White_Pieces.get(i).getY();
-            Image piece = loadImage("images" + File.separator + "white_pieces" + File.separator + White_Pieces.get(i).getFilePath());  
-            Piece_Graphics.add(new DrawingImage(piece, new Rectangle2D.Double(Square_Width*COL+10,Square_Width*ROW+10, piece.getWidth(null), piece.getHeight(null))));
+        for (Piece white_piece : White_Pieces) {
+            int COL = white_piece.getX();
+            int ROW = white_piece.getY();
+            Image piece = loadImage("images" + File.separator + "white_pieces" + File.separator + white_piece.getFilePath());
+            Piece_Graphics.add(new DrawingImage(piece, new Rectangle2D.Double(Square_Width * COL + 10, Square_Width * ROW + 10, piece.getWidth(null), piece.getHeight(null))));
         }
-        for (int i = 0; i < Black_Pieces.size(); i++)
-        {
-            int COL = Black_Pieces.get(i).getX();
-            int ROW = Black_Pieces.get(i).getY();
-            Image piece = loadImage("images" + File.separator + "black_pieces" + File.separator + Black_Pieces.get(i).getFilePath());  
-            Piece_Graphics.add(new DrawingImage(piece, new Rectangle2D.Double(Square_Width*COL+10,Square_Width*ROW+10, piece.getWidth(null), piece.getHeight(null))));
+        for (Piece black_piece : Black_Pieces) {
+            int COL = black_piece.getX();
+            int ROW = black_piece.getY();
+            Image piece = loadImage("images" + File.separator + "black_pieces" + File.separator + black_piece.getFilePath());
+            Piece_Graphics.add(new DrawingImage(piece, new Rectangle2D.Double(Square_Width * COL + 10, Square_Width * ROW + 10, piece.getWidth(null), piece.getHeight(null))));
         }
         this.repaint();
     }
@@ -171,12 +169,8 @@ public class Board extends JComponent {
             int d_Y = e.getY();  
             int Clicked_Row = d_Y / Square_Width;
             int Clicked_Column = d_X / Square_Width;
-            boolean is_whites_turn = true;
-            if (turnCounter%2 == 1)
-            {
-                is_whites_turn = false;
-            }
-            
+            boolean is_whites_turn = turnCounter % 2 != 1;
+
             Piece clicked_piece = getPiece(Clicked_Column, Clicked_Row);
             
             if (Active_Piece == null && clicked_piece != null && 
@@ -217,6 +211,9 @@ public class Board extends JComponent {
                 {
                     King castedKing = (King)(Active_Piece);
                     castedKing.setHasMoved(true);
+                }else if(Active_Piece.getClass().equals(Rook.class)){
+                    Rook castedRook = (Rook)(Active_Piece);
+                    castedRook.setHasMoved(true);
                 }
                 
                 Active_Piece = null;

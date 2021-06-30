@@ -1,10 +1,15 @@
 import chess.GUI;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
 public class App {
-    GUI board;
+    GUI startScreen;
     public static void main(String[] args) throws Exception {
         App app = new App();
-        app.board = new GUI();
-        app.board.setVisible(true);
+        app.startScreen = new GUI();
+        app.startScreen.setVisible(true);
     }
 }
+

@@ -56,7 +56,7 @@ public class King extends Piece {
             }else if(testPiece.isBlack()&&this.isBlack()){
                 return false;
             }
-        }
+        }else if(isUnderAttack(destination_x, destination_y)){return false;}
     }
 
     return true;

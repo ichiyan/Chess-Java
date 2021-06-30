@@ -35,11 +35,11 @@ public class Pawn extends Piece {
         
         //Check if the move is backwards where it won't let it move.
         if(this.isWhite()){
-            if(this.getY()>destination_y){
+            if(this.getY()<destination_y){
                 return false;
             }
         } else if (this.isBlack()){
-            if(this.getY()<destination_y){
+            if(this.getY()>destination_y){
                 return false;
             }
         }
@@ -47,12 +47,12 @@ public class Pawn extends Piece {
         //checks if there is a piece in front.
         if(this.getX()==destination_x){
             if(this.isWhite()){
-                Piece frontwhite = board.getPiece(this.getX(), this.getY()+1);
+                Piece frontwhite = board.getPiece(this.getX(), this.getY()-1);
                 if(frontwhite!=null){
                     return false;
                 }
             } else if(this.isBlack()){
-                Piece frontblack = board.getPiece(this.getX(), this.getY()-1);
+                Piece frontblack = board.getPiece(this.getX(), this.getY()+1);
                 if(frontblack!=null){
                     return false;
                 }
@@ -65,7 +65,7 @@ public class Pawn extends Piece {
                     return false;
                 }
                 if(this.isWhite()){
-                    Piece frontwhite1 = board.getPiece(this.getX(), this.getY()+2);
+                    Piece frontwhite1 = board.getPiece(this.getX(), this.getY()-2);
                     if(frontwhite1!=null){
                         return false;
                     }

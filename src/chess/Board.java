@@ -18,7 +18,7 @@ public class Board extends JComponent {
     private final int Square_Width = 65;
     public ArrayList<Piece> White_Pieces;
     public ArrayList<Piece> Black_Pieces;
-    
+    public Stack<Move> Moves;
 
     public ArrayList<DrawingShape> Static_Shapes;
     public ArrayList<DrawingShape> Piece_Graphics;
@@ -32,6 +32,7 @@ public class Board extends JComponent {
     private String active_square_file_path = "images" + File.separator + "active_square.png";
 
     JButton undoBtn;
+    UndoBtnHandler undoBtnHandler;
 
     public void initGrid()
     {
@@ -112,9 +113,68 @@ public class Board extends JComponent {
         undoBtn.setBackground(Color.BLACK);
         undoBtn.setForeground(Color.WHITE);
 
+        undoBtnHandler = new UndoBtnHandler();
+        undoBtn.addActionListener(undoBtnHandler);
+
         this.add(undoBtn);
+
+
     }
 
+    class UndoBtnHandler implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(!Moves.isEmpty()){
+                Move lastMove = Moves.get(Moves.size()-1);
+                Piece lastMovedPiece = lastMove.getMovedPiece();
+                Piece capturedPiece = lastMove.getCapturedPiece();
+                Class<? extends Piece> lastMovedPieceClass = lastMovedPiece.getClass();
+
+                if(lastMovedPieceClass.equals(Pawn.class)){
+                    Pawn castedPawn = (Pawn)lastMovedPiece;
+                    if (castedPawn.getIsFirstMove()){ castedPawn.setHasMoved(false);}
+                }else if(lastMovedPieceClass.equals(Rook.class)){
+                    Rook castedRook = (Rook)lastMovedPiece;
+                    if (castedRook.getIsFirstMove()){ castedRook.setHasMoved(false);}
+                }else if(lastMovedPieceClass.equals(King.class)){
+                    King castedKing = (King)lastMovedPiece;
+                    if (castedKing.getIsFirstMove()){ castedKing.setHasMoved(false);}
+                    if(castedKing.getIsCastleMove()){
+                        castedKing.setIsCastleMove(false);
+                        castedKing.setHasMoved(false);
+                        if(castedKing.getX() == 6){
+                            Rook kingRook = (Rook)getPiece(5, castedKing.getY());
+                            kingRook.setHasMoved(false);
+                            kingRook.setX(7);
+                            kingRook.setY(castedKing.getY());
+                        }else if(castedKing.getX() == 2){
+                            Rook queenRook = (Rook)getPiece(3, castedKing.getY());
+                            queenRook.setHasMoved(false);
+                            queenRook.setX(0);
+                            queenRook.setY(castedKing.getY());
+                        }
+                    }
+                }
+
+                if(capturedPiece != null){
+                    if(capturedPiece.isWhite()){
+                        White_Pieces.add(capturedPiece);
+                    }else{
+                        Black_Pieces.add(capturedPiece);
+                    }
+                    capturedPiece.setX(lastMove.getFinalSpot().getX());
+                    capturedPiece.setY(lastMove.getFinalSpot().getY());
+                }
+
+                lastMovedPiece.setX(lastMove.getInitialSpot().getX());
+                lastMovedPiece.setY(lastMove.getInitialSpot().getY());
+
+                Moves.pop();
+                turnCounter++;
+                drawBoard();
+            }
+        }
+    }
 
     private void drawBoard()
     {
@@ -181,6 +241,7 @@ public class Board extends JComponent {
             boolean is_whites_turn = turnCounter % 2 != 1;
 
             Piece clicked_piece = getPiece(Clicked_Column, Clicked_Row);
+            Moves = new Stack<>();
             
             if (Active_Piece == null && clicked_piece != null && 
                     ((is_whites_turn && clicked_piece.isWhite()) || (!is_whites_turn && clicked_piece.isBlack())))
@@ -198,6 +259,7 @@ public class Board extends JComponent {
                 // if piece is there, remove it so we can be there
                 if (clicked_piece != null)
                 {
+                    Moves.push(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row),new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
                     if (clicked_piece.isWhite())
                     {
                         White_Pieces.remove(clicked_piece);
@@ -206,21 +268,56 @@ public class Board extends JComponent {
                     {
                         Black_Pieces.remove(clicked_piece);
                     }
+                }else{
+                    Moves.push(new Move(Active_Piece, null,new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
                 }
+
                 //castling
                 if(Active_Piece.getClass().equals(King.class)){
                     King castedKing = (King)(Active_Piece);
                     if(Clicked_Column-Active_Piece.getX()==2){
                         Rook rook = (Rook)getPiece(7, Clicked_Row);
                         rook.setX(Clicked_Column-1);
+                        if (rook.getHasMoved() == false) {
+                            rook.setIsFirstMove(true);
+                        } else {
+                            rook.setIsFirstMove(false);
+                        }
+                        if (castedKing.getIsCastleMove() == false) {
+                            castedKing.setIsCastleMove(true);
+                            castedKing.setIsFirstMove(true);
+                        } else {
+                            castedKing.setIsCastleMove(false);
+                        }
+
                         rook.setHasMoved(true);
+
                     }else if(Clicked_Column-Active_Piece.getX()==-2){
                         Rook rook = (Rook)getPiece(0, Clicked_Row);
                         rook.setX(Clicked_Column+1);
+                        if (rook.getHasMoved() == false) {
+                            rook.setIsFirstMove(true);
+                        } else {
+                            rook.setIsFirstMove(false);
+                        }
+
+                        if (castedKing.getIsCastleMove() == false) {
+                            castedKing.setIsCastleMove(true);
+                            castedKing.setIsFirstMove(true);
+                        } else {
+                            castedKing.setIsCastleMove(false);
+                        }
                         rook.setHasMoved(true);
+                    }
+
+                    if (castedKing.getHasMoved() == false) {
+                        castedKing.setIsFirstMove(true);
+                    } else {
+                        castedKing.setIsFirstMove(false);
                     }
                     castedKing.setHasMoved(true);
                 }
+
                 // do move
                 Active_Piece.setX(Clicked_Column);
                 Active_Piece.setY(Clicked_Row);
@@ -229,9 +326,20 @@ public class Board extends JComponent {
                 if (Active_Piece.getClass().equals(Pawn.class))
                 {
                     Pawn castedPawn = (Pawn)(Active_Piece);
+                    // if pawn moved for the first time, set isFirstMove to true
+                    if (castedPawn.getHasMoved() == false) {
+                        castedPawn.setIsFirstMove(true);
+                    } else {
+                        castedPawn.setIsFirstMove(false);
+                    }
                     castedPawn.setHasMoved(true);
                 }else if(Active_Piece.getClass().equals(Rook.class)){
                     Rook castedRook = (Rook)(Active_Piece);
+                    if (castedRook.getHasMoved() == false) {
+                        castedRook.setIsFirstMove(true);
+                    } else {
+                        castedRook.setIsFirstMove(false);
+                    }
                     castedRook.setHasMoved(true);
                 }
 
@@ -240,8 +348,8 @@ public class Board extends JComponent {
                 {
 
                     System.out.println("getting promoted bitches");
-                    Pawn promotedPawn = (Pawn) (Active_Piece);
-                    promotedPawn.isPromotion();
+                    //Pawn promotedPawn = (Pawn) (Active_Piece);
+                   // promotedPawn.isPromotion();
                 }
                 
                 Active_Piece = null;

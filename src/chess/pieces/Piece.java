@@ -3,6 +3,7 @@ package chess.pieces;
 import java.util.ArrayList;
 
 import chess.Board;
+import chess.Spot;
 
 public abstract class Piece {
     Spot spot;
@@ -79,6 +80,6 @@ public abstract class Piece {
         }
         return this.moves;
     }
-    
+
 }
 

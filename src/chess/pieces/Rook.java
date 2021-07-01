@@ -6,11 +6,13 @@ import chess.Board;
 public class Rook extends Piece {
 
     private boolean has_moved;
+    private boolean isFirstMove;
 
     public Rook(int x, int y, boolean is_white, String file_path, Board board)
     {
         super(x,y,is_white,file_path, board);
         has_moved = false;
+        isFirstMove = false;
     }
     public void setHasMoved(boolean has_moved)
     {
@@ -18,6 +20,13 @@ public class Rook extends Piece {
     }
     public boolean getHasMoved(){return has_moved;}
 
+    public boolean getIsFirstMove() {
+        return isFirstMove;
+    }
+
+    public void setIsFirstMove(boolean firstMove) {
+        isFirstMove = firstMove;
+    }
 
     @Override
     public boolean canMove(int destination_x, int destination_y)

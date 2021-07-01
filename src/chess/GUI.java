@@ -15,10 +15,10 @@ public class GUI extends JFrame {
 
     public GUI() {
 
-        panel = new ImagePanel(new ImageIcon("images/background2.jpg").getImage().getScaledInstance(520, 520, Image.SCALE_SMOOTH));
+        panel = new ImagePanel(new ImageIcon("images/background2.jpg").getImage().getScaledInstance(560, 650, Image.SCALE_SMOOTH));
 
         titlePanel = new JPanel();
-        titlePanel.setBounds(115, 100, 300, 100);
+        titlePanel.setBounds(120, 100, 300, 100);
         titlePanel.setBackground(Color.BLACK);
 
         titleLabel = new JLabel("CHESS");
@@ -28,7 +28,7 @@ public class GUI extends JFrame {
         titlePanel.add(titleLabel);
 
         startBtn = new JButton("Start Game");
-        startBtn.setBounds(200, 300, 100, 50);
+        startBtn.setBounds(220, 300, 100, 50);
         startBtn.setFocusable(false);
         startBtn.setBackground(Color.BLACK);
         startBtn.setForeground(Color.WHITE);
@@ -64,13 +64,17 @@ public class GUI extends JFrame {
     }
 }
 
+class promotionPanel extends JPanel {
+    
+}
+
 class ImagePanel extends JPanel {
     private Image img;
 
     public ImagePanel(Image img){
         this.img = img;
         //Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
-        this.setPreferredSize(new Dimension(520, 520));
+        this.setPreferredSize(new Dimension(560, 650));
         this.setMinimumSize(new Dimension(100, 100));
         this.setMaximumSize(new Dimension(1000, 1000));
         setLayout(null);

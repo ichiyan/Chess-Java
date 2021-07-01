@@ -16,7 +16,7 @@ public class Rook extends Piece {
     {
         this.has_moved = has_moved;
     }
-    boolean getHasMoved(){return has_moved;}
+    public boolean getHasMoved(){return has_moved;}
 
 
     @Override

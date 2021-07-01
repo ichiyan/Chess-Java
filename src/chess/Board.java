@@ -15,7 +15,7 @@ public class Board extends JComponent {
     public int turnCounter = 0;
     private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 
-    private final int Square_Width = 59;
+    private final int Square_Width = 65;
     public ArrayList<Piece> White_Pieces;
     public ArrayList<Piece> Black_Pieces;
     
@@ -28,7 +28,7 @@ public class Board extends JComponent {
     private final int rows = 8;
     private final int cols = 8;
     private Integer[][] BoardGrid;
-    private String board_file_path = "images" + File.separator + "board2.png";
+    private String board_file_path = "images" + File.separator + "board3.png";
     private String active_square_file_path = "images" + File.separator + "active_square.png";
 
     public void initGrid()
@@ -90,8 +90,8 @@ public class Board extends JComponent {
 
         initGrid();
 
-        this.setBackground(new Color(37,13,84));
-        this.setPreferredSize(new Dimension(520, 520));
+        this.setBackground(new Color(0x6495ed));
+        this.setPreferredSize(new Dimension(560, 560));
         this.setMinimumSize(new Dimension(100, 100));
         this.setMaximumSize(new Dimension(1000, 1000));
 
@@ -100,7 +100,6 @@ public class Board extends JComponent {
         this.addKeyListener(keyAdapter);
 
 
-        
         this.setVisible(true);
         this.requestFocus();
         drawBoard();
@@ -211,12 +210,12 @@ public class Board extends JComponent {
                         rook.setHasMoved(true);
                     }
                     castedKing.setHasMoved(true);
-                    
                 }
                 // do move
                 Active_Piece.setX(Clicked_Column);
                 Active_Piece.setY(Clicked_Row);
                 
+                // if piece is a pawn/rook, set piece's has_moved to true
                 if (Active_Piece.getClass().equals(Pawn.class))
                 {
                     Pawn castedPawn = (Pawn)(Active_Piece);
@@ -225,11 +224,10 @@ public class Board extends JComponent {
                     Rook castedRook = (Rook)(Active_Piece);
                     castedRook.setHasMoved(true);
                 }
-                
+
                 Active_Piece = null;
                 turnCounter++;
             }
-            
             drawBoard();
         }
 
@@ -260,7 +258,7 @@ public class Board extends JComponent {
       
     private Image loadImage(String imageFile) {
         try {
-                return ImageIO.read(new File(imageFile));
+               return ImageIO.read(new File(imageFile));
         }
         catch (IOException e) {
                 return NULL_IMAGE;

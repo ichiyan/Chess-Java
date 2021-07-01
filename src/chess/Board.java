@@ -15,7 +15,7 @@ public class Board extends JComponent {
     public int turnCounter = 0;
     private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 
-    private final int Square_Width = 65;
+    private final int Square_Width = 59;
     public ArrayList<Piece> White_Pieces;
     public ArrayList<Piece> Black_Pieces;
     
@@ -28,7 +28,7 @@ public class Board extends JComponent {
     private final int rows = 8;
     private final int cols = 8;
     private Integer[][] BoardGrid;
-    private String board_file_path = "images" + File.separator + "board.png";
+    private String board_file_path = "images" + File.separator + "board2.png";
     private String active_square_file_path = "images" + File.separator + "active_square.png";
 
     public void initGrid()

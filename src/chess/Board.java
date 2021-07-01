@@ -235,6 +235,15 @@ public class Board extends JComponent {
                     castedRook.setHasMoved(true);
                 }
 
+                //if piece is pawn, check if promotable
+                if(Active_Piece.getClass().equals(Pawn.class) && Clicked_Row == 0 || Clicked_Row == 7)
+                {
+
+                    System.out.println("getting promoted bitches");
+                    Pawn promotedPawn = (Pawn) (Active_Piece);
+                    promotedPawn.isPromotion();
+                }
+                
                 Active_Piece = null;
                 turnCounter++;
             }

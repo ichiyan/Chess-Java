@@ -64,6 +64,10 @@ public class GUI extends JFrame {
     }
 }
 
+class promotionPanel extends JPanel {
+    
+}
+
 class ImagePanel extends JPanel {
     private Image img;
 

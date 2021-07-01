@@ -66,7 +66,7 @@ public class King extends Piece {
     public boolean canCastleKingSide(){
         
         for(int i = this.getX();i<=this.getX()+2;i++){
-            if(isUnderAttack(i, this.getY()) || board.getPiece(i+1, this.getY()) != null){
+            if(isUnderAttack(i, this.getY()) || (i+1<7 && board.getPiece(i+1, this.getY()) != null)){
                 return false;
             }
         }
@@ -74,7 +74,7 @@ public class King extends Piece {
     }
     public boolean canCastleQueenSide(){
         for(int i = this.getX();i>=this.getX()-2;i--){
-            if(isUnderAttack(i, this.getY()) || ( i-1!=0 && board.getPiece(i-1, this.getY()) != null) ){
+            if(isUnderAttack(i, this.getY()) || board.getPiece(i-1, this.getY()) != null ){
                 return false;
             }
         }

@@ -37,14 +37,14 @@ public class King extends Piece {
                 if (this.has_moved || cornerPiece==null || ( cornerPiece.getClass().equals(Rook.class) && ((Rook)cornerPiece).getHasMoved() ) ) {
                     return false;
                 } else {
-                    return canCastleQueenSide();
+                    return canCastleKingSide();
                 }
             } else if (destination_x - this.getX() == -2) {
                 cornerPiece = board.getPiece(0, this.getY());
                 if (this.has_moved || cornerPiece==null || ( cornerPiece.getClass().equals(Rook.class) && ((Rook)cornerPiece).getHasMoved() )) {
                     return false;
                 } else {
-                    return canCastleKingSide();
+                    return canCastleQueenSide();
                 }
             }
         }
@@ -63,7 +63,7 @@ public class King extends Piece {
 
     }
 
-    public boolean canCastleQueenSide(){
+    public boolean canCastleKingSide(){
         
         for(int i = this.getX();i<=this.getX()+2;i++){
             if(isUnderAttack(i, this.getY()) || board.getPiece(i+1, this.getY()) != null){
@@ -72,7 +72,7 @@ public class King extends Piece {
         }
         return true;
     }
-    public boolean canCastleKingSide(){
+    public boolean canCastleQueenSide(){
         for(int i = this.getX();i>=this.getX()-2;i--){
             if(isUnderAttack(i, this.getY()) || ( i-1!=0 && board.getPiece(i-1, this.getY()) != null) ){
                 return false;

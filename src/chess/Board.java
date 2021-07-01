@@ -44,8 +44,8 @@ public class Board extends JComponent {
         //Image white_piece = loadImage("images/white_pieces/" + piece_name + ".png");
         //Image black_piece = loadImage("images/black_pieces/" + piece_name + ".png");  
 
-        White_Pieces.add(new King(3,7,true,"King.png",this));
-        White_Pieces.add(new Queen(4,7,true,"Queen.png",this));
+        White_Pieces.add(new King(4,7,true,"King.png",this));
+        White_Pieces.add(new Queen(3,7,true,"Queen.png",this));
         White_Pieces.add(new Bishop(2,7,true,"Bishop.png",this));
         White_Pieces.add(new Bishop(5,7,true,"Bishop.png",this));
         White_Pieces.add(new Knight(1,7,true,"Knight.png",this));
@@ -61,8 +61,8 @@ public class Board extends JComponent {
         White_Pieces.add(new Pawn(6,6,true,"Pawn.png",this));
         White_Pieces.add(new Pawn(7,6,true,"Pawn.png",this));
 
-        Black_Pieces.add(new King(3,0,false,"King.png",this));
-        Black_Pieces.add(new Queen(4,0,false,"Queen.png",this));
+        Black_Pieces.add(new King(4,0,false,"King.png",this));
+        Black_Pieces.add(new Queen(3,0,false,"Queen.png",this));
         Black_Pieces.add(new Bishop(2,0,false,"Bishop.png",this));
         Black_Pieces.add(new Bishop(5,0,false,"Bishop.png",this));
         Black_Pieces.add(new Knight(1,0,false,"Knight.png",this));

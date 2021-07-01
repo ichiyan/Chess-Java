@@ -31,6 +31,8 @@ public class Board extends JComponent {
     private String board_file_path = "images" + File.separator + "board3.png";
     private String active_square_file_path = "images" + File.separator + "active_square.png";
 
+    JButton undoBtn;
+
     public void initGrid()
     {
         for (int i = 0; i < rows; i++)
@@ -103,6 +105,14 @@ public class Board extends JComponent {
         this.setVisible(true);
         this.requestFocus();
         drawBoard();
+
+        undoBtn = new JButton("Undo Move");
+        undoBtn.setBounds(220, 580, 100, 40);
+        undoBtn.setFocusable(false);
+        undoBtn.setBackground(Color.BLACK);
+        undoBtn.setForeground(Color.WHITE);
+
+        this.add(undoBtn);
     }
 
 

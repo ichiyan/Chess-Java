@@ -15,7 +15,7 @@ public class GUI extends JFrame {
 
     public GUI() {
 
-        panel = new ImagePanel(new ImageIcon("images/background2.jpg").getImage().getScaledInstance(560, 560, Image.SCALE_SMOOTH));
+        panel = new ImagePanel(new ImageIcon("images/background2.jpg").getImage().getScaledInstance(560, 650, Image.SCALE_SMOOTH));
 
         titlePanel = new JPanel();
         titlePanel.setBounds(120, 100, 300, 100);
@@ -70,7 +70,7 @@ class ImagePanel extends JPanel {
     public ImagePanel(Image img){
         this.img = img;
         //Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
-        this.setPreferredSize(new Dimension(560, 560));
+        this.setPreferredSize(new Dimension(560, 650));
         this.setMinimumSize(new Dimension(100, 100));
         this.setMaximumSize(new Dimension(1000, 1000));
         setLayout(null);

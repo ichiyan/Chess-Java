@@ -198,19 +198,29 @@ public class Board extends JComponent {
                         Black_Pieces.remove(clicked_piece);
                     }
                 }
+                //castling
+                if(Active_Piece.getClass().equals(King.class)){
+                    King castedKing = (King)(Active_Piece);
+                    if(Clicked_Column-Active_Piece.getX()==2){
+                        Rook rook = (Rook)getPiece(7, Clicked_Row);
+                        rook.setX(Clicked_Column-1);
+                        rook.setHasMoved(true);
+                    }else if(Clicked_Column-Active_Piece.getX()==-2){
+                        Rook rook = (Rook)getPiece(0, Clicked_Row);
+                        rook.setX(Clicked_Column+1);
+                        rook.setHasMoved(true);
+                    }
+                    castedKing.setHasMoved(true);
+                    
+                }
                 // do move
                 Active_Piece.setX(Clicked_Column);
                 Active_Piece.setY(Clicked_Row);
                 
-                // if piece is a pawn set has_moved to true
                 if (Active_Piece.getClass().equals(Pawn.class))
                 {
                     Pawn castedPawn = (Pawn)(Active_Piece);
                     castedPawn.setHasMoved(true);
-                }else if (Active_Piece.getClass().equals(King.class))
-                {
-                    King castedKing = (King)(Active_Piece);
-                    castedKing.setHasMoved(true);
                 }else if(Active_Piece.getClass().equals(Rook.class)){
                     Rook castedRook = (Rook)(Active_Piece);
                     castedRook.setHasMoved(true);

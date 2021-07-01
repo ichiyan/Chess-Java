@@ -5,17 +5,16 @@ import java.util.ArrayList;
 import chess.Board;
 
 public abstract class Piece {
-    private int x;
-    private int y;
+    Spot spot;
     final private boolean is_white;
     private String file_path;
     public Board board;
     public ArrayList<Spot> moves;
     public Piece(int x, int y, boolean is_white, String file_path, Board board)
     {
+        
         this.is_white = is_white;
-        this.x = x;
-        this.y = y;
+        spot = new Spot(x,y);
         this.file_path = file_path;
         this.board = board;
         moves = new ArrayList<Spot>();
@@ -44,22 +43,23 @@ public abstract class Piece {
     
     public void setX(int x)
     {
-        this.x = x;
+        this.spot.setX(x);
+        
     }
     
     public void setY(int y)
     {
-        this.y = y;
+        this.spot.setY(y);
     }
     
     public int getX()
     {
-        return x;
+        return this.spot.getX();
     }
     
     public int getY()
     {
-        return y;
+        return this.spot.getY();
     }
     
     public abstract boolean canMove(int destination_x, int destination_y);

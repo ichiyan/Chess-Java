@@ -18,7 +18,10 @@ public class Board extends JComponent {
     private final int Square_Width = 59;
     public ArrayList<Piece> White_Pieces;
     public ArrayList<Piece> Black_Pieces;
-    
+    public ArrayList<Piece> Attackers = new ArrayList<Piece>();
+
+    King whiteKing;
+    King blackKing;
 
     public ArrayList<DrawingShape> Static_Shapes;
     public ArrayList<DrawingShape> Piece_Graphics;
@@ -61,6 +64,7 @@ public class Board extends JComponent {
         White_Pieces.add(new Pawn(6,6,true,"Pawn.png",this));
         White_Pieces.add(new Pawn(7,6,true,"Pawn.png",this));
 
+
         Black_Pieces.add(new King(4,0,false,"King.png",this));
         Black_Pieces.add(new Queen(3,0,false,"Queen.png",this));
         Black_Pieces.add(new Bishop(2,0,false,"Bishop.png",this));
@@ -77,6 +81,9 @@ public class Board extends JComponent {
         Black_Pieces.add(new Pawn(5,1,false,"Pawn.png",this));
         Black_Pieces.add(new Pawn(6,1,false,"Pawn.png",this));
         Black_Pieces.add(new Pawn(7,1,false,"Pawn.png",this));
+
+        whiteKing = (King)getPiece(4, 7);
+        blackKing = (King)getPiece(4,0);
 
     }
 
@@ -111,16 +118,23 @@ public class Board extends JComponent {
     {
         Piece_Graphics.clear();
         Static_Shapes.clear();
+        Image active_square = loadImage(active_square_file_path);
         //initGrid();
         
         Image board = loadImage(board_file_path);
         Static_Shapes.add(new DrawingImage(board, new Rectangle2D.Double(0, 0, board.getWidth(null), board.getHeight(null))));
+        if(whiteKing.isUnderAttack(whiteKing.getX(), whiteKing.getY())){
+            Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*whiteKing.getX(),Square_Width*whiteKing.getY(), active_square.getWidth(null), active_square.getHeight(null))));
+        }else if(blackKing.isUnderAttack(blackKing.getX(), blackKing.getY())){
+            Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*blackKing.getX(),Square_Width*blackKing.getY(), active_square.getWidth(null), active_square.getHeight(null))));
+        }
         if (Active_Piece != null)
         {
-            Image active_square = loadImage(active_square_file_path);
+            
             Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*Active_Piece.getX(),Square_Width*Active_Piece.getY(), active_square.getWidth(null), active_square.getHeight(null))));
             Active_Piece.moves.forEach((move) -> Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*move.getX(),Square_Width*move.getY(), active_square.getWidth(null), active_square.getHeight(null)))));
         }
+        
         for (Piece white_piece : White_Pieces) {
             int COL = white_piece.getX();
             int ROW = white_piece.getY();
@@ -186,7 +200,7 @@ public class Board extends JComponent {
             else if (Active_Piece != null && Active_Piece.canMove(Clicked_Column, Clicked_Row) 
                     && ((is_whites_turn && Active_Piece.isWhite()) || (!is_whites_turn && Active_Piece.isBlack())))
             {
-                // if piece is there, remove it so we can be there
+                
                 if (clicked_piece != null)
                 {
                     if (clicked_piece.isWhite())
@@ -198,7 +212,7 @@ public class Board extends JComponent {
                         Black_Pieces.remove(clicked_piece);
                     }
                 }
-                //castling
+                //king
                 if(Active_Piece.getClass().equals(King.class)){
                     King castedKing = (King)(Active_Piece);
                     if(Clicked_Column-Active_Piece.getX()==2){
@@ -209,6 +223,12 @@ public class Board extends JComponent {
                         Rook rook = (Rook)getPiece(0, Clicked_Row);
                         rook.setX(Clicked_Column+1);
                         rook.setHasMoved(true);
+                    }
+                    
+                    if(castedKing.isWhite()){
+                        whiteKing = castedKing;
+                    }else{
+                        blackKing = castedKing;
                     }
                     castedKing.setHasMoved(true);
                     

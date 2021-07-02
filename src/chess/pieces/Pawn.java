@@ -8,15 +8,18 @@ import chess.Board;
 public class Pawn extends Piece {
 
     private boolean has_moved;
+    private boolean isFirstMove;
+
     public char promotion;
 
     public Pawn(int x, int y, boolean is_white, String file_path, Board board)
     {
         super(x,y,is_white,file_path, board);
         has_moved = false;
+        isFirstMove = false;
 
     }
-    
+
     public void setPromotion(char c) {
         this.promotion = c;
     }
@@ -24,19 +27,28 @@ public class Pawn extends Piece {
     public char getPromotion() {
         return this.promotion;
     }
-
+    
     public void setHasMoved(boolean has_moved)
     {
         this.has_moved = has_moved;
     }
-
+    
     public boolean getHasMoved()
     {
         return has_moved;
     }
 
+    public boolean getIsFirstMove() {
+        return isFirstMove;
+    }
+
+    public void setIsFirstMove(boolean firstMove) {
+        isFirstMove = firstMove;
+    }
+
+
     /* WIP */
-    // public char isPromotion(){
+    //public char isPromotion(){
 
     //     char promotion;
 
@@ -60,7 +72,7 @@ public class Pawn extends Piece {
     //                 promotion = 'k';
     //             }
     //             else if(o == rookPromos){
-                    
+
     //             }
     //             else{
 
@@ -79,7 +91,7 @@ public class Pawn extends Piece {
     //     frame.setVisible(true);
 
     //     frame.add(promotionPanel);
-        
+
     //     promotionPanel.setBounds(115, 100, 300, 100);
     //     promotionPanel.add(promotionLabel);
     //     promotionPanel.add(bishopPromos);
@@ -93,7 +105,7 @@ public class Pawn extends Piece {
     //     knightPromos.addActionListener(promotionListener);
     //     rookPromos.addActionListener(promotionListener);
     //     queenPromos.addActionListener(promotionListener);
-        
+
     //     promotionPanel.setBounds(115, 100, 300, 100);
     //     promotionPanel.add(promotionLabel);
     //     promotionPanel.add(bishopPromos);
@@ -113,7 +125,7 @@ public class Pawn extends Piece {
     //     }
     //     return 'c';
     // }
-    
+
     @Override
     public boolean canMove(int destination_x, int destination_y)
     {
@@ -184,5 +196,4 @@ public class Pawn extends Piece {
         }
         return true;
     }
-
 }

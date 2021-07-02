@@ -5,12 +5,15 @@ import chess.Board;
 public class King extends Piece {
 
     private boolean has_moved;
+    private boolean isFirstMove;
+    private boolean isCastleMove;
 
     public King(int x, int y, boolean is_white, String file_path, Board board)
     {
         super(x,y,is_white,file_path, board);
         has_moved = false;
-
+        isFirstMove = false;
+        isCastleMove = false;
     }
     public void setHasMoved(boolean has_moved)
     {
@@ -21,6 +24,22 @@ public class King extends Piece {
     {
         return has_moved;
     }
+    public boolean getIsFirstMove() {
+        return isFirstMove;
+    }
+
+    public void setIsFirstMove(boolean firstMove) {
+        isFirstMove = firstMove;
+    }
+
+    public boolean getIsCastleMove() {
+        return isCastleMove;
+    }
+
+    public void setIsCastleMove(boolean castleMove) {
+        isCastleMove = castleMove;
+    }
+
     @Override
     public boolean canMove(int destination_x, int destination_y)
     {

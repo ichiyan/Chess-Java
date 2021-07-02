@@ -13,6 +13,9 @@ import javax.swing.*;
 public class Board extends JComponent {
         
     public int turnCounter = 0;
+    public int fullMoveCounter = 0;
+    public int halfMoveCounter = 0;
+    public int prevHalfMoveCounter = 0;  //stores halfMoveCounter before reset in case of undo
     private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 
     private final int Square_Width = 65;
@@ -51,7 +54,7 @@ public class Board extends JComponent {
         //Image white_piece = loadImage("images/white_pieces/" + piece_name + ".png");
         //Image black_piece = loadImage("images/black_pieces/" + piece_name + ".png");  
 
-        White_Pieces.add(new King(4,7,true,"King.png",this));
+        White_Pieces.add(new King(4,7,true,"King.png", this));
         White_Pieces.add(new Queen(3,7,true,"Queen.png",this));
         White_Pieces.add(new Bishop(2,7,true,"Bishop.png",this));
         White_Pieces.add(new Bishop(5,7,true,"Bishop.png",this));
@@ -89,6 +92,10 @@ public class Board extends JComponent {
         whiteKing = (King)getPiece(4, 7);
         blackKing = (King)getPiece(4,0);
 
+        Moves = new Stack<>();
+        fullMoveCounter = 0;
+        halfMoveCounter = 0;
+        prevHalfMoveCounter = 0;
     }
 
     public Board() {
@@ -133,10 +140,20 @@ public class Board extends JComponent {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(!Moves.isEmpty()){
-                Move lastMove = Moves.get(Moves.size()-1);
+                Move lastMove = Moves.peek();
                 Piece lastMovedPiece = lastMove.getMovedPiece();
                 Piece capturedPiece = lastMove.getCapturedPiece();
                 Class<? extends Piece> lastMovedPieceClass = lastMovedPiece.getClass();
+
+                if(lastMovedPiece.isBlack()){
+                    fullMoveCounter--;
+                }
+
+                if(lastMovedPieceClass.equals(Pawn.class) || lastMove.getCapturedPiece() != null){
+                    halfMoveCounter = prevHalfMoveCounter;
+                }else{
+                    halfMoveCounter--;
+                }
 
                 if(lastMovedPieceClass.equals(Pawn.class)){
                     Pawn castedPawn = (Pawn)lastMovedPiece;
@@ -176,6 +193,7 @@ public class Board extends JComponent {
 
                 lastMovedPiece.setX(lastMove.getInitialSpot().getX());
                 lastMovedPiece.setY(lastMove.getInitialSpot().getY());
+
 
                 Moves.pop();
                 turnCounter++;
@@ -239,6 +257,99 @@ public class Board extends JComponent {
         return null;
     }
 
+    public String getFen(){
+        StringBuffer fen = new StringBuffer();
+
+        int nullCtr = 0;
+        boolean invalidWhiteCastle = true;
+        boolean invalidBlackCastle = true;
+
+        //FEN piece placement
+        //rank
+        for(int r = 0; r <= 7; r++){
+            //file
+            for(int f = 0; f <= 7; f++){
+                Piece piece = getPiece(f, r);
+                if(piece != null){
+                    if(nullCtr != 0){fen.append(nullCtr);}
+                    if(piece.isWhite()){
+                        fen.append(Character.toUpperCase(piece.getAbbrev()));
+                    }else{
+                        fen.append(piece.getAbbrev());
+                    }
+                    nullCtr = 0;
+                }else{
+                    nullCtr++;
+                }
+            }
+            if(nullCtr != 0){ fen.append(nullCtr);}
+            if(r < 7){
+                fen.append('/');
+            }
+            nullCtr = 0;
+        }
+
+        //FEN who moves next
+        if(turnCounter % 2 != 1){
+            //white's turn
+            fen.append(" w ");
+        }else{
+            //black's turn
+            fen.append(" b ");
+        }
+
+        //FEN castling rights
+        Piece checkWhiteKing = getPiece(4, 7);
+        if(checkWhiteKing.getClass().equals(King.class)){
+            King whiteKing = (King) checkWhiteKing;
+            if(whiteKing.canCastleKingSide()){
+                fen.append("K");
+                invalidWhiteCastle = false;
+            }
+            if(whiteKing.canCastleQueenSide()){
+                fen.append("Q");
+                invalidWhiteCastle = false;
+            }
+        }
+
+        Piece checkBlackKing = getPiece(4, 0);
+        if(checkBlackKing.getClass().equals(King.class)){
+            King blackKing = (King) checkBlackKing;
+            if(blackKing.canCastleKingSide()){
+                fen.append("k");
+                invalidBlackCastle = false;
+            }
+            if(blackKing.canCastleQueenSide()){
+                fen.append("q");
+                invalidBlackCastle = false;
+            }
+        }
+
+       if(invalidWhiteCastle && invalidBlackCastle){
+           fen.append("-");
+       }
+
+       //FEN possible En Passant targets
+        Move lastMove = Moves.peek();
+       if(lastMove.getMovedPiece().getClass().equals(Pawn.class) &&
+               Math.abs(lastMove.getFinalSpot().getY() - lastMove.getInitialSpot().getY()) == 2){
+           if(lastMove.getMovedPiece().isWhite()){
+               fen.append(" " + lastMove.getFinalSpot().getXLabel() + (lastMove.getFinalSpot().getYLabel()-1));
+           }else{
+               fen.append(" " + lastMove.getFinalSpot().getXLabel() + (lastMove.getFinalSpot().getYLabel()+1));
+           }
+       }
+
+       //FEN half move clock
+        fen.append(" " + halfMoveCounter);
+
+       //FEN full move counter
+        fen.append(" " + fullMoveCounter);
+
+       System.out.println(fen);
+       return fen.toString();
+    }
+
     private MouseAdapter mouseAdapter = new MouseAdapter() {
 
         @Override
@@ -256,8 +367,8 @@ public class Board extends JComponent {
             boolean is_whites_turn = turnCounter % 2 != 1;
 
             Piece clicked_piece = getPiece(Clicked_Column, Clicked_Row);
-            Moves = new Stack<>();
-            
+
+
             if (Active_Piece == null && clicked_piece != null && 
                     ((is_whites_turn && clicked_piece.isWhite()) || (!is_whites_turn && clicked_piece.isBlack())))
             {
@@ -285,6 +396,19 @@ public class Board extends JComponent {
                     }
                 }else{
                     Moves.push(new Move(Active_Piece, null,new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
+                }
+
+                //fullmove counter increments everytime black moves
+                if(Moves.peek().getMovedPiece().isBlack()){
+                    fullMoveCounter++;
+                }
+
+                //halfmove counter is reset after captures or pawn moves
+                if(Moves.peek().getMovedPiece().getClass().equals(Pawn.class) || Moves.peek().getCapturedPiece() != null ){
+                    prevHalfMoveCounter = halfMoveCounter;
+                    halfMoveCounter = 0;
+                }else{
+                    halfMoveCounter++;
                 }
 
                 //castling
@@ -368,8 +492,10 @@ public class Board extends JComponent {
                 }
                 
                 Active_Piece = null;
+                getFen();
                 turnCounter++;
             }
+
             drawBoard();
         }
 

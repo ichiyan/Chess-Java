@@ -10,11 +10,12 @@ public class King extends Piece {
 
     public King(int x, int y, boolean is_white, String file_path, Board board)
     {
-        super(x,y,is_white,file_path, board);
+        super(x,y,is_white,file_path, board, 'k');
         has_moved = false;
         isFirstMove = false;
         isCastleMove = false;
     }
+
     public void setHasMoved(boolean has_moved)
     {
         this.has_moved = has_moved;

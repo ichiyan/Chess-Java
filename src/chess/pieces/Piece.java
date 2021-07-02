@@ -10,14 +10,16 @@ public abstract class Piece {
     final private boolean is_white;
     private String file_path;
     public Board board;
+    private char abbrev;
     public ArrayList<Spot> moves;
-    public Piece(int x, int y, boolean is_white, String file_path, Board board)
+    public Piece(int x, int y, boolean is_white, String file_path, Board board, char abbrev)
     {
         
         this.is_white = is_white;
         spot = new Spot(x,y);
         this.file_path = file_path;
         this.board = board;
+        this.abbrev = abbrev;
         moves = new ArrayList<Spot>();
         moves.clear();
     }
@@ -62,7 +64,15 @@ public abstract class Piece {
     {
         return this.spot.getY();
     }
-    
+
+    public char getAbbrev() {
+        return abbrev;
+    }
+
+    public void setAbbrev(char abbrev) {
+        this.abbrev = abbrev;
+    }
+
     public abstract boolean canMove(int destination_x, int destination_y);
 
     public ArrayList<Spot> availableMoves(){

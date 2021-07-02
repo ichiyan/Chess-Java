@@ -261,8 +261,10 @@ public class Board extends JComponent {
         StringBuffer fen = new StringBuffer();
 
         int nullCtr = 0;
-        boolean invalidWhiteCastle = true;
-        boolean invalidBlackCastle = true;
+        boolean invalidWhiteKCastle = true;
+        boolean invalidWhiteQCastle = true;
+        boolean invalidBlackKCastle = true;
+        boolean invalidBlackQCastle = true;
 
         //FEN piece placement
         //rank
@@ -300,32 +302,36 @@ public class Board extends JComponent {
 
         //FEN castling rights
         Piece checkWhiteKing = getPiece(4, 7);
-        if(checkWhiteKing.getClass().equals(King.class)){
+        if(checkWhiteKing != null && checkWhiteKing.getClass().equals(King.class)){
             King whiteKing = (King) checkWhiteKing;
-            if(whiteKing.canCastleKingSide()){
+            if(whiteKing.hasKingSideCastlingRights()){
                 fen.append("K");
-                invalidWhiteCastle = false;
+                invalidWhiteKCastle = false;
             }
-            if(whiteKing.canCastleQueenSide()){
+            if(whiteKing.hasQueenSideCastlingRights()){
                 fen.append("Q");
-                invalidWhiteCastle = false;
+                invalidWhiteQCastle = false;
             }
+        }
+
+        if(invalidWhiteQCastle && invalidWhiteKCastle){
+            fen.append("-");
         }
 
         Piece checkBlackKing = getPiece(4, 0);
-        if(checkBlackKing.getClass().equals(King.class)){
+        if(checkBlackKing != null && checkBlackKing.getClass().equals(King.class)){
             King blackKing = (King) checkBlackKing;
-            if(blackKing.canCastleKingSide()){
+            if(blackKing.hasKingSideCastlingRights()){
                 fen.append("k");
-                invalidBlackCastle = false;
+                invalidBlackKCastle = false;
             }
-            if(blackKing.canCastleQueenSide()){
+            if(blackKing.hasQueenSideCastlingRights()){
                 fen.append("q");
-                invalidBlackCastle = false;
+                invalidBlackQCastle = false;
             }
         }
 
-       if(invalidWhiteCastle && invalidBlackCastle){
+       if(invalidBlackQCastle && invalidBlackKCastle){
            fen.append("-");
        }
 

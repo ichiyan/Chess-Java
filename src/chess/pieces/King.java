@@ -87,6 +87,7 @@ public class King extends Piece {
         return true;
     }
 
+
     public boolean canCastleQueenSide(){
         Piece queenRook = board.getPiece(0, this.getY());
         if (this.has_moved || queenRook==null || ( queenRook.getClass().equals(Rook.class) && ((Rook)queenRook).getHasMoved() )) {
@@ -100,6 +101,23 @@ public class King extends Piece {
         }
         return true;
     }
+
+    public boolean hasQueenSideCastlingRights(){
+        Piece queenRook = board.getPiece(0, this.getY());
+        if (this.has_moved || queenRook==null || ( queenRook.getClass().equals(Rook.class) && ((Rook)queenRook).getHasMoved() )) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean hasKingSideCastlingRights(){
+        Piece kingRook = board.getPiece(7, this.getY());
+        if (this.has_moved || kingRook==null || ( kingRook.getClass().equals(Rook.class) && ((Rook)kingRook).getHasMoved() ) ) {
+            return false;
+        }
+        return true;
+    }
+
 
     public boolean isUnderAttack(int x, int y){
 

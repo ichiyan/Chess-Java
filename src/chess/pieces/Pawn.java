@@ -7,7 +7,6 @@ public class Pawn extends Piece {
     private boolean has_moved;
     private boolean isFirstMove;
 
-    public char promotion;
 
     public Pawn(int x, int y, boolean is_white, String file_path, Board board)
     {
@@ -17,14 +16,6 @@ public class Pawn extends Piece {
 
     }
 
-    public void setPromotion(char c) {
-        this.promotion = c;
-    }
-
-    public char getPromotion() {
-        return this.promotion;
-    }
-    
     public void setHasMoved(boolean has_moved)
     {
         this.has_moved = has_moved;

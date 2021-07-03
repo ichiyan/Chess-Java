@@ -80,6 +80,7 @@ public abstract class Piece {
         int x;
         int y;
         Spot availSpot;
+        Piece pieceAtAvailSpot;
 
         for(y=0;y<8;y++){
             for(x=0;x<8;x++){
@@ -87,14 +88,17 @@ public abstract class Piece {
                     availSpot = new Spot(x,y);
                     if(!this.moves.contains(availSpot)){
                         if(board.whiteKing.isCheck() || board.blackKing.isCheck()){
+                            pieceAtAvailSpot = board.getPiece(availSpot.getX(), availSpot.getY());
                             this.setX(availSpot.getX());
                             this.setY(availSpot.getY());
                             if(board.turnCounter % 2 != 1 ){
-                                if(!board.whiteKing.isCheck()){
+                                if( !board.whiteKing.isCheck() || ( pieceAtAvailSpot != null
+                                        && pieceAtAvailSpot.canMove(board.whiteKing.getX(), board.whiteKing.getY()) ) ){
                                     this.moves.add(availSpot);
                                 }
                             }else {
-                                if (!board.blackKing.isCheck()) {
+                                if (!board.blackKing.isCheck() || ( pieceAtAvailSpot != null
+                                        && pieceAtAvailSpot.canMove(board.blackKing.getX(), board.blackKing.getY()) ) ) {
                                     this.moves.add(availSpot);
                                 }
                             }

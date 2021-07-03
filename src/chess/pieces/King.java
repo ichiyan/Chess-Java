@@ -45,7 +45,7 @@ public class King extends Piece {
     public boolean canMove(int destination_x, int destination_y)
     {
         Piece testPiece;
-        int i;
+        
 
         testPiece = board.getPiece(destination_x, destination_y);
 
@@ -121,11 +121,10 @@ public class King extends Piece {
 
     public boolean isUnderAttack(int x, int y){
 
-        board.Attackers.clear();
+       
         if(this.isWhite()){
             for(Piece piece: board.Black_Pieces){
                 if(piece.canMove(x,y)){
-                    board.Attackers.add(piece);
                     return true;
                 }
             }
@@ -133,7 +132,6 @@ public class King extends Piece {
         else if(this.isBlack()){
             for(Piece piece: board.White_Pieces){
                 if(piece.canMove(x,y)){
-                    board.Attackers.add(piece);
                     return true;
                 }
             }

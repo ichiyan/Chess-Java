@@ -80,7 +80,7 @@ public class Rook extends Piece {
             }
         }
         
-        return true;
+        return isBlockMove(destination_x, destination_y);
     }
     
 }

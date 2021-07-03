@@ -92,23 +92,18 @@ public abstract class Piece {
     }
     public boolean isBlockMove(int x, int y){
         int kingX, kingY;
-        Piece testPiece;
+        
         
         if(this.isWhite()){
             kingX = board.whiteKing.getX();
             kingY = board.whiteKing.getY();
             if(board.whiteKing.isCheck()){
                 for (Piece piece : board.Black_Pieces) {
-                    //testPiece = board.drawTestPiece(x, y);
-                   
+                    
+                    
                     if(piece.canMove(kingX, kingY) && !piece.canMove(x, y)){
-                        //if(!board.whiteKing.isCheck()){
-                            //board.removeTestPiece(testPiece);
                             return false;
-                        //}
-                        //board.removeTestPiece(testPiece);
-                    }
-                   // board.removeTestPiece(testPiece);
+                    } 
                 }
             }   
         }
@@ -121,10 +116,8 @@ public abstract class Piece {
                         return false;
                     }
                 }
-            }   
-            
+            } 
         }
-        
         return true;
     }
 }

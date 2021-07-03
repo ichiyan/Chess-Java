@@ -54,43 +54,20 @@ public class PromotionPanel extends JFrame {
                 frame.dispose();
                 Object o = ae.getSource();
                 if(o == bishopPromos){
-                    if(promotedPawn.isWhite()){
-                        board.White_Pieces.set(ndx, new Bishop(x, y, true, "Bishop.png", board));
-                        board.drawBoard();
-                    }else{
-                        board.Black_Pieces.set(ndx, new Bishop(x, y, true, "Bishop.png", board));
-                        board.drawBoard();
-                    }
-
+                    board.White_Pieces.set(ndx, new Bishop(x, y, true, "Bishop.png", board));
+                    board.drawBoard();
                 }
                 else if(o == knightPromos){
-                    if(promotedPawn.isWhite()){
-                        board.White_Pieces.set(ndx, new Knight(x, y, true, "Knight.png", board));
-                        board.drawBoard();
-                    }else{
-                        board.Black_Pieces.set(ndx, new Knight(x, y, true, "Knight.png", board));
-                        board.drawBoard();
-                    }
-
+                    board.White_Pieces.set(ndx, new Knight(x, y, true, "Knight.png", board));
+                    board.drawBoard();
                 }
                 else if(o == rookPromos){
-                    if(promotedPawn.isWhite()){
-                        board.White_Pieces.set(ndx, new Rook(x, y, true, "Rook.png", board));
-                        board.drawBoard();
-                    }else{
-                        board.Black_Pieces.set(ndx, new Rook(x, y, true, "Rook.png", board));
-                        board.drawBoard();
-                    }
-                    
+                    board.White_Pieces.set(ndx, new Rook(x, y, true, "Rook.png", board));
+                    board.drawBoard();
                 }
                 else{
-                    if(promotedPawn.isWhite()){
-                        board.White_Pieces.set(ndx, new Queen(x, y, true, "Queen.png", board));
-                        board.drawBoard();
-                    }else{
-                        board.Black_Pieces.set(ndx, new Queen(x, y, true, "Queen.png", board));
-                        board.drawBoard();
-                    }
+                    board.White_Pieces.set(ndx, new Queen(x, y, true, "Queen.png", board));
+                    board.drawBoard();
                 }
             }
         };

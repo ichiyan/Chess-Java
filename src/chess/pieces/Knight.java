@@ -35,6 +35,7 @@ public class Knight extends Piece {
             return false;
         }
         //no need to check for pieces cuz knight can jump over pieces
-        return isBlockMove(destination_x, destination_y);
+        //return isBlockMove(destination_x, destination_y);
+        return true;
     }
 }

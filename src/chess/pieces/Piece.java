@@ -75,50 +75,70 @@ public abstract class Piece {
 
     public abstract boolean canMove(int destination_x, int destination_y);
 
-    public ArrayList<Spot> availableMoves(){
+    public ArrayList<Spot> availableMoves(int currX, int currY){
         this.moves.clear();
         int x;
         int y;
+        Spot availSpot;
+
         for(y=0;y<8;y++){
             for(x=0;x<8;x++){
                 if(canMove(x, y)){
-                    if(!this.moves.contains(new Spot(x,y))){
-                        this.moves.add(new Spot(x,y));
+                    availSpot = new Spot(x,y);
+                    if(!this.moves.contains(availSpot)){
+                        if(board.whiteKing.isCheck() || board.blackKing.isCheck()){
+                            this.setX(availSpot.getX());
+                            this.setY(availSpot.getY());
+                            if(board.turnCounter % 2 != 1 ){
+                                if(!board.whiteKing.isCheck()){
+                                    this.moves.add(availSpot);
+                                }
+                            }else {
+                                if (!board.blackKing.isCheck()) {
+                                    this.moves.add(availSpot);
+                                }
+                            }
+                        }else{
+                            this.moves.add(availSpot);
+                        }
+                        this.setX(currX);
+                        this.setY(currY);
                     }
                 }
             }
         }
         return this.moves;
     }
-    public boolean isBlockMove(int x, int y){
-        int kingX, kingY;
-        
-        
-        if(this.isWhite()){
-            kingX = board.whiteKing.getX();
-            kingY = board.whiteKing.getY();
-            if(board.whiteKing.isCheck()){
-                for (Piece piece : board.Black_Pieces) {
-                    
-                    
-                    if(piece.canMove(kingX, kingY) && !piece.canMove(x, y)){
-                            return false;
-                    } 
-                }
-            }   
-        }
-        if(this.isBlack()){
-            kingX = board.blackKing.getX();
-            kingY = board.blackKing.getY();
-            if(board.blackKing.isCheck()){
-                for (Piece piece : board.White_Pieces) {
-                    if(piece.canMove(kingX, kingY) && !piece.canMove(x, y)){
-                        return false;
-                    }
-                }
-            } 
-        }
-        return true;
-    }
+
+//    public boolean isBlockMove(int x, int y){
+//        int kingX, kingY;
+//
+//
+//        if(this.isWhite()){
+//            kingX = board.whiteKing.getX();
+//            kingY = board.whiteKing.getY();
+//            if(board.whiteKing.isCheck()){
+//                for (Piece piece : board.Black_Pieces) {
+//
+//
+//                    if(piece.canMove(kingX, kingY) && !piece.canMove(x, y)){
+//                            return false;
+//                    }
+//                }
+//            }
+//        }
+//        if(this.isBlack()){
+//            kingX = board.blackKing.getX();
+//            kingY = board.blackKing.getY();
+//            if(board.blackKing.isCheck()){
+//                for (Piece piece : board.White_Pieces) {
+//                    if(piece.canMove(kingX, kingY) && !piece.canMove(x, y)){
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
+//        return true;
+//    }
 }
 

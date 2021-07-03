@@ -431,139 +431,136 @@ public class Board extends JComponent {
             int Clicked_Row = d_Y / Square_Width;
             int Clicked_Column = d_X / Square_Width;
             boolean is_whites_turn = turnCounter % 2 != 1;
+            ArrayList<Spot> availMoves;
 
             Piece clicked_piece = getPiece(Clicked_Column, Clicked_Row);
 
             if (Active_Piece == null && clicked_piece != null && 
-                    ((is_whites_turn && clicked_piece.isWhite()) || (!is_whites_turn && clicked_piece.isBlack())))
-            {
+                    ((is_whites_turn && clicked_piece.isWhite()) || (!is_whites_turn && clicked_piece.isBlack()))) {
+
                 Active_Piece = clicked_piece;
-                Active_Piece.availableMoves();
-            }
-            else if (Active_Piece != null && Active_Piece.getX() == Clicked_Column && Active_Piece.getY() == Clicked_Row)
-            {
+                Active_Piece.availableMoves(clicked_piece.getX(), clicked_piece.getY());
+
+            } else if (Active_Piece != null && Active_Piece.getX() == Clicked_Column && Active_Piece.getY() == Clicked_Row) {
                 Active_Piece = null;
-            }
-            else if (Active_Piece != null && Active_Piece.canMove(Clicked_Column, Clicked_Row) 
-                    && ((is_whites_turn && Active_Piece.isWhite()) || (!is_whites_turn && Active_Piece.isBlack())))
-            {
-                
-                if (clicked_piece != null)
-                {
-                    Moves.push(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row),new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
-                    if (clicked_piece.isWhite())
-                    {
-                        White_Pieces.remove(clicked_piece);
-                    }
-                    else
-                    {
-                        Black_Pieces.remove(clicked_piece);
-                    }
-                }else{
-                    Moves.push(new Move(Active_Piece, null,new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
-                }
 
-                //fullmove counter increments everytime black moves
-                if(Moves.peek().getMovedPiece().isBlack()){
-                    fullMoveCounter++;
-                }
+            } else if (Active_Piece != null &&
+                     ((is_whites_turn && Active_Piece.isWhite()) || (!is_whites_turn && Active_Piece.isBlack()))) {
 
-                //halfmove counter is reset after captures or pawn moves
-                if(Moves.peek().getMovedPiece().getClass().equals(Pawn.class) || Moves.peek().getCapturedPiece() != null ){
-                    prevHalfMoveCounter = halfMoveCounter;
-                    halfMoveCounter = 0;
-                }else{
-                    halfMoveCounter++;
-                }
+                availMoves = Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
 
-                //castling
-                if(Active_Piece.getClass().equals(King.class)){
-                    King castedKing = (King)(Active_Piece);
-                    if(Clicked_Column-Active_Piece.getX()==2){
-                        Rook rook = (Rook)getPiece(7, Clicked_Row);
-                        rook.setX(Clicked_Column-1);
-                        if (rook.getHasMoved() == false) {
-                            rook.setIsFirstMove(true);
+                if(availMoves.stream().anyMatch(s -> s.getX() == Clicked_Column && s.getY() == Clicked_Row)) {
+                    if (clicked_piece != null) {
+                        Moves.push(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row), new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
+                        if (clicked_piece.isWhite()) {
+                            White_Pieces.remove(clicked_piece);
                         } else {
-                            rook.setIsFirstMove(false);
+                            Black_Pieces.remove(clicked_piece);
                         }
-                        if (castedKing.getIsCastleMove() == false) {
-                            castedKing.setIsCastleMove(true);
+                    } else {
+                        Moves.push(new Move(Active_Piece, null, new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
+                    }
+
+                    //fullmove counter increments everytime black moves
+                    if (Moves.peek().getMovedPiece().isBlack()) {
+                        fullMoveCounter++;
+                    }
+
+                    //halfmove counter is reset after captures or pawn moves
+                    if (Moves.peek().getMovedPiece().getClass().equals(Pawn.class) || Moves.peek().getCapturedPiece() != null) {
+                        prevHalfMoveCounter = halfMoveCounter;
+                        halfMoveCounter = 0;
+                    } else {
+                        halfMoveCounter++;
+                    }
+
+                    //castling
+                    if (Active_Piece.getClass().equals(King.class)) {
+                        King castedKing = (King) (Active_Piece);
+                        if (Clicked_Column - Active_Piece.getX() == 2) {
+                            Rook rook = (Rook) getPiece(7, Clicked_Row);
+                            rook.setX(Clicked_Column - 1);
+                            if (rook.getHasMoved() == false) {
+                                rook.setIsFirstMove(true);
+                            } else {
+                                rook.setIsFirstMove(false);
+                            }
+                            if (castedKing.getIsCastleMove() == false) {
+                                castedKing.setIsCastleMove(true);
+                                castedKing.setIsFirstMove(true);
+                            } else {
+                                castedKing.setIsCastleMove(false);
+                            }
+
+                            rook.setHasMoved(true);
+
+                        } else if (Clicked_Column - Active_Piece.getX() == -2) {
+                            Rook rook = (Rook) getPiece(0, Clicked_Row);
+                            rook.setX(Clicked_Column + 1);
+                            if (rook.getHasMoved() == false) {
+                                rook.setIsFirstMove(true);
+                            } else {
+                                rook.setIsFirstMove(false);
+                            }
+
+                            if (castedKing.getIsCastleMove() == false) {
+                                castedKing.setIsCastleMove(true);
+                                castedKing.setIsFirstMove(true);
+                            } else {
+                                castedKing.setIsCastleMove(false);
+                            }
+                            rook.setHasMoved(true);
+                        }
+
+                        if (castedKing.getHasMoved() == false) {
                             castedKing.setIsFirstMove(true);
                         } else {
-                            castedKing.setIsCastleMove(false);
+                            castedKing.setIsFirstMove(false);
                         }
-
-                        rook.setHasMoved(true);
-
-                    }else if(Clicked_Column-Active_Piece.getX()==-2){
-                        Rook rook = (Rook)getPiece(0, Clicked_Row);
-                        rook.setX(Clicked_Column+1);
-                        if (rook.getHasMoved() == false) {
-                            rook.setIsFirstMove(true);
+                        if (castedKing.isWhite()) {
+                            whiteKing = castedKing;
                         } else {
-                            rook.setIsFirstMove(false);
+                            blackKing = castedKing;
                         }
+                        castedKing.setHasMoved(true);
+                    }
 
-                        if (castedKing.getIsCastleMove() == false) {
-                            castedKing.setIsCastleMove(true);
-                            castedKing.setIsFirstMove(true);
+                    // do move
+                    Active_Piece.setX(Clicked_Column);
+                    Active_Piece.setY(Clicked_Row);
+
+                    // if piece is a pawn/rook, set piece's has_moved to true
+                    if (Active_Piece.getClass().equals(Pawn.class)) {
+                        Pawn castedPawn = (Pawn) (Active_Piece);
+                        // if pawn moved for the first time, set isFirstMove to true
+                        if (castedPawn.getHasMoved() == false) {
+                            castedPawn.setIsFirstMove(true);
                         } else {
-                            castedKing.setIsCastleMove(false);
+                            castedPawn.setIsFirstMove(false);
                         }
-                        rook.setHasMoved(true);
+                        castedPawn.setHasMoved(true);
+                    } else if (Active_Piece.getClass().equals(Rook.class)) {
+                        Rook castedRook = (Rook) (Active_Piece);
+                        if (castedRook.getHasMoved() == false) {
+                            castedRook.setIsFirstMove(true);
+                        } else {
+                            castedRook.setIsFirstMove(false);
+                        }
+                        castedRook.setHasMoved(true);
                     }
 
-                    if (castedKing.getHasMoved() == false) {
-                        castedKing.setIsFirstMove(true);
-                    } else {
-                        castedKing.setIsFirstMove(false);
+                    //if piece is pawn, check if promotable
+                    if (Active_Piece.getClass().equals(Pawn.class) && Clicked_Row == 0 || Clicked_Row == 7) {
+                        Pawn promotedPawn = (Pawn) (Active_Piece);
+                        promotedPawn.isPromotion(promotedPawn);
                     }
-                    if(castedKing.isWhite()){
-                        whiteKing = castedKing;
-                    }else{
-                        blackKing = castedKing;
-                    }
-                    castedKing.setHasMoved(true);
-                }
 
-                // do move
-                Active_Piece.setX(Clicked_Column);
-                Active_Piece.setY(Clicked_Row);
-                
-                // if piece is a pawn/rook, set piece's has_moved to true
-                if (Active_Piece.getClass().equals(Pawn.class))
-                {
-                    Pawn castedPawn = (Pawn)(Active_Piece);
-                    // if pawn moved for the first time, set isFirstMove to true
-                    if (castedPawn.getHasMoved() == false) {
-                        castedPawn.setIsFirstMove(true);
-                    } else {
-                        castedPawn.setIsFirstMove(false);
+                    Active_Piece = null;
+                    getFen();
+                    turnCounter++;
+                    if (isAgainstEngine) {
+                        doEngineMove();
                     }
-                    castedPawn.setHasMoved(true);
-                }else if(Active_Piece.getClass().equals(Rook.class)){
-                    Rook castedRook = (Rook)(Active_Piece);
-                    if (castedRook.getHasMoved() == false) {
-                        castedRook.setIsFirstMove(true);
-                    } else {
-                        castedRook.setIsFirstMove(false);
-                    }
-                    castedRook.setHasMoved(true);
-                }
-
-                //if piece is pawn, check if promotable
-                if(Active_Piece.getClass().equals(Pawn.class) && Clicked_Row == 0 || Clicked_Row == 7)
-                {
-                    Pawn promotedPawn = (Pawn) (Active_Piece);
-                    promotedPawn.isPromotion(promotedPawn);
-                }
-                
-                Active_Piece = null;
-                getFen();
-                turnCounter++;
-                if(isAgainstEngine){
-                    doEngineMove();
                 }
             }
 

@@ -61,6 +61,6 @@ public class Bishop extends Piece {
                 }
             }
         }
-        return isBlockMove(destination_x, destination_y);
+        return true;
     }
 }

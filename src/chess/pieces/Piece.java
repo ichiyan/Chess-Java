@@ -99,6 +99,24 @@ public abstract class Piece {
             kingY = board.whiteKing.getY();
             if(board.whiteKing.isCheck()){
                 for (Piece piece : board.Black_Pieces) {
+                    //testPiece = board.drawTestPiece(x, y);
+                   
+                    if(piece.canMove(kingX, kingY) && !piece.canMove(x, y)){
+                        //if(!board.whiteKing.isCheck()){
+                            //board.removeTestPiece(testPiece);
+                            return false;
+                        //}
+                        //board.removeTestPiece(testPiece);
+                    }
+                   // board.removeTestPiece(testPiece);
+                }
+            }   
+        }
+        if(this.isBlack()){
+            kingX = board.blackKing.getX();
+            kingY = board.blackKing.getY();
+            if(board.blackKing.isCheck()){
+                for (Piece piece : board.White_Pieces) {
                     if(piece.canMove(kingX, kingY) && !piece.canMove(x, y)){
                         return false;
                     }
@@ -106,6 +124,7 @@ public abstract class Piece {
             }   
             
         }
+        
         return true;
     }
 }

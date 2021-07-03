@@ -1,8 +1,6 @@
 package chess;
 
 import chess.pieces.*;
-import jdk.tools.jlink.internal.SymLinkResourcePoolEntry;
-import chess.Board;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

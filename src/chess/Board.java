@@ -245,12 +245,18 @@ public class Board extends JComponent {
             Image piece = loadImage("images" + File.separator + "black_pieces" + File.separator + black_piece.getFilePath());
             Piece_Graphics.add(new DrawingImage(piece, new Rectangle2D.Double(Square_Width * COL + 10, Square_Width * ROW + 10, piece.getWidth(null), piece.getHeight(null))));
         }
-       
+        
         this.repaint();
     }
     
-    
-    
+    public Piece drawTestPiece(int x, int y){
+        Pawn testPiece = new Pawn(x,y, true, null, this);
+        White_Pieces.add(testPiece);
+        return testPiece;
+    }
+    public void removeTestPiece(Piece piece){
+        White_Pieces.remove(piece);
+    }
     public Piece getPiece(int x, int y) {
         for (Piece p : White_Pieces)
         {

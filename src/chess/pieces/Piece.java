@@ -90,6 +90,23 @@ public abstract class Piece {
         }
         return this.moves;
     }
-
+    public boolean isBlockMove(int x, int y){
+        int kingX, kingY;
+        Piece testPiece;
+        
+        if(this.isWhite()){
+            kingX = board.whiteKing.getX();
+            kingY = board.whiteKing.getY();
+            if(board.whiteKing.isCheck()){
+                for (Piece piece : board.Black_Pieces) {
+                    if(piece.canMove(kingX, kingY) && !piece.canMove(x, y)){
+                        return false;
+                    }
+                }
+            }   
+            
+        }
+        return true;
+    }
 }
 

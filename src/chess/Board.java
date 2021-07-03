@@ -23,7 +23,7 @@ public class Board extends JComponent {
     private final int Square_Width = 65;
     public ArrayList<Piece> White_Pieces;
     public ArrayList<Piece> Black_Pieces;
-    public ArrayList<Piece> Attackers = new ArrayList<Piece>();
+    
 
     public King whiteKing;
     public King blackKing;
@@ -221,9 +221,9 @@ public class Board extends JComponent {
         
         Image board = loadImage(board_file_path);
         Static_Shapes.add(new DrawingImage(board, new Rectangle2D.Double(0, 0, board.getWidth(null), board.getHeight(null))));
-        if(whiteKing.isUnderAttack(whiteKing.getX(), whiteKing.getY())){
+        if(whiteKing.isCheck()){
             Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*whiteKing.getX(),Square_Width*whiteKing.getY(), active_square.getWidth(null), active_square.getHeight(null))));
-        }else if(blackKing.isUnderAttack(blackKing.getX(), blackKing.getY())){
+        }else if(blackKing.isCheck()){
             Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*blackKing.getX(),Square_Width*blackKing.getY(), active_square.getWidth(null), active_square.getHeight(null))));
         }
         if (Active_Piece != null)
@@ -245,9 +245,11 @@ public class Board extends JComponent {
             Image piece = loadImage("images" + File.separator + "black_pieces" + File.separator + black_piece.getFilePath());
             Piece_Graphics.add(new DrawingImage(piece, new Rectangle2D.Double(Square_Width * COL + 10, Square_Width * ROW + 10, piece.getWidth(null), piece.getHeight(null))));
         }
+       
         this.repaint();
     }
-
+    
+    
     
     public Piece getPiece(int x, int y) {
         for (Piece p : White_Pieces)

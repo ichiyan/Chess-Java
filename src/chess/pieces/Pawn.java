@@ -1,5 +1,6 @@
 package chess.pieces;
 import chess.Board;
+import chess.PromotionPanel;
 
 public class Pawn extends Piece {
 
@@ -44,83 +45,9 @@ public class Pawn extends Piece {
 
 
     /* WIP */
-    //public char isPromotion(){
-
-    //     char promotion;
-
-    //     JPanel promotionPanel = new JPanel();
-    //     JLabel promotionLabel = new JLabel("Pawn Promotions");
-    //     JButton rookPromos = new JButton("Rook");
-    //     JButton bishopPromos = new JButton("Bishop");
-    //     JButton knightPromos = new JButton("Knight");
-    //     JButton queenPromos = new JButton("Queen");
-
-    //     ActionListener promotionListener = new ActionListener(){
-    //         @Override
-    //         public void actionPerformed(ActionEvent ae){
-
-    //             Object o = ae.getSource();
-
-    //             if(o == bishopPromos){
-    //                 this.setPromotion('c');
-    //             }
-    //             else if(o == knightPromos){
-    //                 promotion = 'k';
-    //             }
-    //             else if(o == rookPromos){
-
-    //             }
-    //             else{
-
-    //             }
-    //         }
-    //     };
-    //     JFrame frame = new JFrame("Pawn Promotion");
-    //     frame.setUndecorated(true);
-    //     frame.setBackground(new Color(0, 0, 0, 0));
-    //     frame.setAlwaysOnTop(true);
-    //     // Without this, the window is draggable from any non transparent
-    //     // point, including points  inside textboxes.
-    //     frame.getRootPane().putClientProperty("apple.awt.draggableWindowBackground", false);
-
-    //     frame.getContentPane().setLayout(new java.awt.BorderLayout());
-    //     frame.setVisible(true);
-
-    //     frame.add(promotionPanel);
-
-    //     promotionPanel.setBounds(115, 100, 300, 100);
-    //     promotionPanel.add(promotionLabel);
-    //     promotionPanel.add(bishopPromos);
-    //     promotionPanel.add(knightPromos);
-    //     promotionPanel.add(rookPromos);
-    //     promotionPanel.add(queenPromos);
-    //     frame.add(promotionPanel, BorderLayout.CENTER);
-    //     frame.pack();
-
-    //     bishopPromos.addActionListener(promotionListener);
-    //     knightPromos.addActionListener(promotionListener);
-    //     rookPromos.addActionListener(promotionListener);
-    //     queenPromos.addActionListener(promotionListener);
-
-    //     promotionPanel.setBounds(115, 100, 300, 100);
-    //     promotionPanel.add(promotionLabel);
-    //     promotionPanel.add(bishopPromos);
-    //     promotionPanel.add(knightPromos);
-    //     promotionPanel.add(rookPromos);
-    //     promotionPanel.add(queenPromos);
-
-    //     bishopPromos.addActionListener(promotionListener);
-    //     knightPromos.addActionListener(promotionListener);
-    //     rookPromos.addActionListener(promotionListener);
-    //     queenPromos.addActionListener(promotionListener);
-
-    //     if(this.isWhite()){
-    //     }
-    //     else{
-
-    //     }
-    //     return 'c';
-    // }
+    public void isPromotion(Pawn promotedPawn){
+        PromotionPanel promotionGUI = new PromotionPanel(promotedPawn, board);
+    }
 
     @Override
     public boolean canMove(int destination_x, int destination_y)

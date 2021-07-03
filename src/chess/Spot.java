@@ -47,4 +47,6 @@ public class Spot {
     public void setYLabel(int yLabel) {
         this.yLabel = yLabel;
     }
+
+
 }

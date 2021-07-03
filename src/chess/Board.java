@@ -11,7 +11,9 @@ import javax.imageio.*;
 import javax.swing.*;
 
 public class Board extends JComponent {
-        
+
+    public boolean isAgainstEngine;
+    public Stockfish stockfish;
     public int turnCounter = 0;
     public int fullMoveCounter = 0;
     public int halfMoveCounter = 0;
@@ -98,13 +100,14 @@ public class Board extends JComponent {
         prevHalfMoveCounter = 0;
     }
 
-    public Board() {
+    public Board(boolean isAgainstEngine) {
 
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
         Piece_Graphics = new ArrayList();
         White_Pieces = new ArrayList();
         Black_Pieces = new ArrayList();
+        this.isAgainstEngine = isAgainstEngine;
 
         initGrid();
 
@@ -132,6 +135,13 @@ public class Board extends JComponent {
         undoBtn.addActionListener(undoBtnHandler);
 
         this.add(undoBtn);
+
+        if(isAgainstEngine){
+            stockfish = new Stockfish();
+            stockfish.startEngine();
+            stockfish.sendCommand("uci");
+            stockfish.sendCommand("ucinewgame");
+        }
 
 
     }
@@ -356,6 +366,48 @@ public class Board extends JComponent {
        return fen.toString();
     }
 
+    public void doEngineMove(){
+        String bestMove = stockfish.getBestMove(getFen(), 20);
+
+        //if(bestMove != null){
+            Spot initialSpot = convertUci(bestMove.substring(0,2));
+            Spot finalSpot = convertUci(bestMove.substring(2,4));
+            Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
+            Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
+
+            Moves.push(new Move(movedPiece, capturedPiece, initialSpot, finalSpot));
+
+            if(capturedPiece != null){
+                if(capturedPiece.isWhite()){
+                    White_Pieces.remove(capturedPiece);
+                }else{
+                    Black_Pieces.remove(capturedPiece);
+                }
+            }
+
+            movedPiece.setX(finalSpot.getX());
+            movedPiece.setY(finalSpot.getY());
+
+            if(movedPiece.getClass().equals(Pawn.class) || capturedPiece != null ){
+                prevHalfMoveCounter = halfMoveCounter;
+                halfMoveCounter = 0;
+            }else{
+                halfMoveCounter++;
+            }
+
+            fullMoveCounter++;
+            turnCounter++;
+        //}
+
+    }
+
+    public Spot convertUci(String uciSpot){
+        int convertedX = Math.abs(uciSpot.charAt(0) - 'a');
+        int convertedY = Math.abs(uciSpot.charAt(1) - 56);     //56 is decimal equivalent of char 8
+        Spot convertedSpot = new Spot(convertedX, convertedY);
+        return convertedSpot;
+    }
+
     private MouseAdapter mouseAdapter = new MouseAdapter() {
 
         @Override
@@ -373,7 +425,6 @@ public class Board extends JComponent {
             boolean is_whites_turn = turnCounter % 2 != 1;
 
             Piece clicked_piece = getPiece(Clicked_Column, Clicked_Row);
-
 
             if (Active_Piece == null && clicked_piece != null && 
                     ((is_whites_turn && clicked_piece.isWhite()) || (!is_whites_turn && clicked_piece.isBlack())))
@@ -500,6 +551,9 @@ public class Board extends JComponent {
                 Active_Piece = null;
                 getFen();
                 turnCounter++;
+                if(isAgainstEngine){
+                    doEngineMove();
+                }
             }
 
             drawBoard();

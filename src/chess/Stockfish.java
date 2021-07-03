@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Stockfish {
     private Process engineProcess;
     private BufferedReader processReader;
@@ -76,6 +78,15 @@ public class Stockfish {
             e.printStackTrace();
         }
         return  stringBuffer.toString();
+    }
+
+    public String getBestMove(String fen, int depth){
+        sendCommand("position fen " + fen);
+        sendCommand("go depth " + depth);
+        String bestMove = getOutput();
+
+        bestMove = StringUtils.substringBetween(bestMove, "bestmove ", " ponder");
+        return bestMove;
     }
 
     //test

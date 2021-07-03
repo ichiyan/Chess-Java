@@ -36,7 +36,7 @@ public class Board extends JComponent {
 
     private final int rows = 8;
     private final int cols = 8;
-    private Integer[][] BoardGrid;
+    public Integer[][] BoardGrid;
     private String board_file_path = "images" + File.separator + "board3.png";
     private String active_square_file_path = "images" + File.separator + "active_square.png";
 
@@ -136,12 +136,12 @@ public class Board extends JComponent {
 
         this.add(undoBtn);
 
-        if(isAgainstEngine){
-            stockfish = new Stockfish();
-            stockfish.startEngine();
-            stockfish.sendCommand("uci");
-            stockfish.sendCommand("ucinewgame");
-        }
+        // if(isAgainstEngine){
+        //     stockfish = new Stockfish();
+        //     stockfish.startEngine();
+        //     stockfish.sendCommand("uci");
+        //     stockfish.sendCommand("ucinewgame");
+        // }
 
 
     }
@@ -212,7 +212,7 @@ public class Board extends JComponent {
         }
     }
 
-    private void drawBoard()
+    public void drawBoard()
     {
         Piece_Graphics.clear();
         Static_Shapes.clear();
@@ -549,10 +549,8 @@ public class Board extends JComponent {
                 //if piece is pawn, check if promotable
                 if(Active_Piece.getClass().equals(Pawn.class) && Clicked_Row == 0 || Clicked_Row == 7)
                 {
-
-                    System.out.println("getting promoted bitches");
-                    //Pawn promotedPawn = (Pawn) (Active_Piece);
-                   // promotedPawn.isPromotion();
+                    Pawn promotedPawn = (Pawn) (Active_Piece);
+                    promotedPawn.isPromotion(promotedPawn);
                 }
                 
                 Active_Piece = null;

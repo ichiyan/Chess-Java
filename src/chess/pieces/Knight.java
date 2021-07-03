@@ -6,7 +6,7 @@ public class Knight extends Piece {
 
     public Knight(int x, int y, boolean is_white, String file_path, Board board)
     {
-        super(x,y,is_white,file_path, board);
+        super(x,y,is_white,file_path, board, 'n');
     }
     
     @Override

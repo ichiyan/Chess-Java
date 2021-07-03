@@ -1,4 +1,5 @@
 package chess;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,14 +12,16 @@ public class GUI extends JFrame {
     JPanel titlePanel;
     JLabel titleLabel;
     JButton startBtn;
+    JButton playAgainstEngineBtn;
     StartBtnHandler startBtnHandler;
+    PlayAgainstEngineHandler playAgainstEngineHandler;
 
     public GUI() {
 
         panel = new ImagePanel(new ImageIcon("images/background2.jpg").getImage().getScaledInstance(560, 650, Image.SCALE_SMOOTH));
 
         titlePanel = new JPanel();
-        titlePanel.setBounds(120, 100, 300, 100);
+        titlePanel.setBounds(130, 100, 300, 100);
         titlePanel.setBackground(Color.BLACK);
 
         titleLabel = new JLabel("CHESS");
@@ -28,7 +31,7 @@ public class GUI extends JFrame {
         titlePanel.add(titleLabel);
 
         startBtn = new JButton("Start Game");
-        startBtn.setBounds(220, 300, 100, 50);
+        startBtn.setBounds(190, 300, 200, 50);
         startBtn.setFocusable(false);
         startBtn.setBackground(Color.BLACK);
         startBtn.setForeground(Color.WHITE);
@@ -36,8 +39,18 @@ public class GUI extends JFrame {
         startBtnHandler = new StartBtnHandler();
         startBtn.addActionListener(startBtnHandler);
 
+        playAgainstEngineBtn = new JButton("Play Against Engine");
+        playAgainstEngineBtn.setBounds(190, 400, 200, 50);
+        playAgainstEngineBtn.setFocusable(false);
+        playAgainstEngineBtn.setBackground(Color.BLACK);
+        playAgainstEngineBtn.setForeground(Color.WHITE);
+
+        playAgainstEngineHandler = new PlayAgainstEngineHandler();
+        playAgainstEngineBtn.addActionListener(playAgainstEngineHandler);
+
         panel.add(titlePanel);
         panel.add(startBtn);
+        panel.add(playAgainstEngineBtn);
 
         imageIcon = new ImageIcon("images/app_icon.png");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -49,9 +62,9 @@ public class GUI extends JFrame {
         this.setVisible(true);
     }
 
-    public void createGameScreen() {
+    public void createGameScreen(boolean isAgainstEngine) {
         panel.setVisible(false);
-        component = new Board();
+        component = new Board(isAgainstEngine);
         this.add(component, BorderLayout.CENTER);
     }
 
@@ -59,7 +72,15 @@ public class GUI extends JFrame {
     class StartBtnHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            createGameScreen();
+            createGameScreen(false);
+        }
+    }
+
+    class PlayAgainstEngineHandler implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            createGameScreen(true);
         }
     }
 }

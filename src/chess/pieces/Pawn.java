@@ -1,8 +1,4 @@
 package chess.pieces;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.*;
 import chess.Board;
 
 public class Pawn extends Piece {
@@ -14,7 +10,7 @@ public class Pawn extends Piece {
 
     public Pawn(int x, int y, boolean is_white, String file_path, Board board)
     {
-        super(x,y,is_white,file_path, board);
+        super(x,y,is_white,file_path, board, 'p');
         has_moved = false;
         isFirstMove = false;
 
@@ -130,7 +126,7 @@ public class Pawn extends Piece {
     public boolean canMove(int destination_x, int destination_y)
     {
         // Remember: A pawn may only move towards the oponent's side of the board.
-        // If the pawn has not moved yet in the game, for its first move it can 
+        // If the pawn has not moved yet in the chess.game, for its first move it can
         // move two spaces forward. Otherwise, it may only move one space. 
         // When not attacking it may only move straight ahead.
         // When attacking it may only move space diagonally forward

@@ -20,8 +20,8 @@ public class Board extends JComponent {
     public ArrayList<Piece> Black_Pieces;
     public ArrayList<Piece> Attackers = new ArrayList<Piece>();
 
-    King whiteKing;
-    King blackKing;
+    public King whiteKing;
+    public King blackKing;
     public Stack<Move> Moves;
 
     public ArrayList<DrawingShape> Static_Shapes;
@@ -329,6 +329,11 @@ public class Board extends JComponent {
                         castedKing.setIsFirstMove(true);
                     } else {
                         castedKing.setIsFirstMove(false);
+                    }
+                    if(castedKing.isWhite()){
+                        whiteKing = castedKing;
+                    }else{
+                        blackKing = castedKing;
                     }
                     castedKing.setHasMoved(true);
                 }

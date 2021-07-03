@@ -121,4 +121,7 @@ public class King extends Piece {
         }
         return false;
     }
+    public boolean isCheck(){
+        return isUnderAttack(this.getX(), this.getY());
+    }
 }

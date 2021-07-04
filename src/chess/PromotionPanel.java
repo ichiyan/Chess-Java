@@ -45,7 +45,12 @@ public class PromotionPanel extends JFrame {
             public void actionPerformed(ActionEvent ae){
                 int ndx, x, y;
 
-                ndx = board.White_Pieces.indexOf(promotedPawn);
+                if(promotedPawn.isWhite()){
+                    ndx = board.White_Pieces.indexOf(promotedPawn);
+                }else{
+                    ndx = board.Black_Pieces.indexOf(promotedPawn);
+                }
+                
                 x = promotedPawn.getX();
                 y = promotedPawn.getY();
 
@@ -56,7 +61,7 @@ public class PromotionPanel extends JFrame {
                         board.White_Pieces.set(ndx, new Bishop(x, y, true, "Bishop.png", board));
                         board.drawBoard();
                     }else{
-                        board.Black_Pieces.set(ndx, new Bishop(x, y, true, "Bishop.png", board));
+                        board.Black_Pieces.set(ndx, new Bishop(x, y, false, "Bishop.png", board));
                         board.drawBoard();
                     }
 
@@ -66,7 +71,7 @@ public class PromotionPanel extends JFrame {
                         board.White_Pieces.set(ndx, new Knight(x, y, true, "Knight.png", board));
                         board.drawBoard();
                     }else{
-                        board.Black_Pieces.set(ndx, new Knight(x, y, true, "Knight.png", board));
+                        board.Black_Pieces.set(ndx, new Knight(x, y, false, "Knight.png", board));
                         board.drawBoard();
                     }
 
@@ -76,7 +81,7 @@ public class PromotionPanel extends JFrame {
                         board.White_Pieces.set(ndx, new Rook(x, y, true, "Rook.png", board));
                         board.drawBoard();
                     }else{
-                        board.Black_Pieces.set(ndx, new Rook(x, y, true, "Rook.png", board));
+                        board.Black_Pieces.set(ndx, new Rook(x, y, false, "Rook.png", board));
                         board.drawBoard();
                     }
                     
@@ -86,7 +91,7 @@ public class PromotionPanel extends JFrame {
                         board.White_Pieces.set(ndx, new Queen(x, y, true, "Queen.png", board));
                         board.drawBoard();
                     }else{
-                        board.Black_Pieces.set(ndx, new Queen(x, y, true, "Queen.png", board));
+                        board.Black_Pieces.set(ndx, new Queen(x, y, false, "Queen.png", board));
                         board.drawBoard();
                     }
                 }

@@ -561,25 +561,6 @@ public class Board extends JComponent {
                     if (isAgainstEngine) {
                         doEngineMove();
                     }
-                    castedRook.setHasMoved(true);
-                }
-
-                //if piece is pawn, check if promotable
-                if(Clicked_Row == 0 || Clicked_Row == 7){
-                    if(Active_Piece.getClass().equals(Pawn.class)){
-                        Pawn promotedPawn = (Pawn) (Active_Piece);
-                        promotedPawn.isPromotion(promotedPawn);
-                    }
-                }
-                
-                    
-                
-                
-                Active_Piece = null;
-                getFen();
-                turnCounter++;
-                if(isAgainstEngine){
-                    doEngineMove();
                 }
             }
 

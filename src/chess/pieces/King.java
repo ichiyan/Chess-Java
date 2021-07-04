@@ -42,36 +42,33 @@ public class King extends Piece {
     }
 
     @Override
-    public boolean canMove(int destination_x, int destination_y)
-    {
+    public boolean canMove(int destination_x, int destination_y) {
         Piece testPiece;
-        
-
         testPiece = board.getPiece(destination_x, destination_y);
 
-
-    if(Math.abs(destination_x-this.getX()) > 1 || Math.abs(destination_y-this.getY())  > 1 ){
-        if(destination_y == this.getY()) {
-            if (destination_x - this.getX() == 2) {
-               return canCastleKingSide();
-            } else if (destination_x - this.getX() == -2) {
-                return canCastleQueenSide();
+        if(Math.abs(destination_x-this.getX()) > 1 || Math.abs(destination_y-this.getY())  > 1 ){
+            if(destination_y == this.getY()) {
+                if (destination_x - this.getX() == 2) {
+                   return canCastleKingSide();
+                } else if (destination_x - this.getX() == -2) {
+                    return canCastleQueenSide();
+                }
             }
+            return false;
+        }else{
+            if(testPiece!=null){
+                if(testPiece.isWhite()&&this.isWhite()){
+                    return false;
+                }else if(testPiece.isBlack()&&this.isBlack()){
+                    return false;
+                }
+            }else if(isUnderAttack(destination_x, destination_y)){return false;}
         }
-        return false;
-    }else{
-        if(testPiece!=null){
-            if(testPiece.isWhite()&&this.isWhite()){
-                return false;
-            }else if(testPiece.isBlack()&&this.isBlack()){
-                return false;
-            }
-        }else if(isUnderAttack(destination_x, destination_y)){return false;}
+
+        return canMoveChecked(destination_x, destination_y);
+        //return true;
     }
 
-    return true;
-
-    }
 
     public boolean canCastleKingSide(){
         Piece kingRook = board.getPiece(7, this.getY());

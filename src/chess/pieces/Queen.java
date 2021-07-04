@@ -13,6 +13,11 @@ public class Queen extends Piece {
     public boolean canMove(int destination_x, int destination_y)
     {
         Piece testPiece = board.getPiece(destination_x, destination_y);
+
+        if(destination_x == this.getX() && destination_y == this.getY()){
+            return false;
+        }
+
         int i;
         int spaces = Math.abs(destination_x-this.getX());
         int Yspaces = Math.abs(destination_y-this.getY()); //gets number of Y spaces for trav
@@ -90,8 +95,7 @@ public class Queen extends Piece {
                 }
             }
         }
-        
-       // return isBlockMove(destination_x, destination_y);
-        return true;
+
+        return canMoveChecked(destination_x, destination_y);
     }
 }

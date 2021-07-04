@@ -1,5 +1,6 @@
 package chess.pieces;
 
+import java.awt.desktop.SystemEventListener;
 import java.util.ArrayList;
 
 import chess.Board;
@@ -12,6 +13,9 @@ public abstract class Piece {
     public Board board;
     private char abbrev;
     public ArrayList<Spot> moves;
+    private int currX;
+    private int currY;
+
     public Piece(int x, int y, boolean is_white, String file_path, Board board, char abbrev)
     {
         
@@ -80,33 +84,16 @@ public abstract class Piece {
         int x;
         int y;
         Spot availSpot;
-        Piece pieceAtAvailSpot;
+
+        this.currX = currX;
+        this.currY = currY;
 
         for(y=0;y<8;y++){
             for(x=0;x<8;x++){
                 if(canMove(x, y)){
                     availSpot = new Spot(x,y);
                     if(!this.moves.contains(availSpot)){
-                        if(board.whiteKing.isCheck() || board.blackKing.isCheck()){
-                            pieceAtAvailSpot = board.getPiece(availSpot.getX(), availSpot.getY());
-                            this.setX(availSpot.getX());
-                            this.setY(availSpot.getY());
-                            if(board.turnCounter % 2 != 1 ){
-                                if( !board.whiteKing.isCheck() || ( pieceAtAvailSpot != null
-                                        && pieceAtAvailSpot.canMove(board.whiteKing.getX(), board.whiteKing.getY()) ) ){
-                                    this.moves.add(availSpot);
-                                }
-                            }else {
-                                if (!board.blackKing.isCheck() || ( pieceAtAvailSpot != null
-                                        && pieceAtAvailSpot.canMove(board.blackKing.getX(), board.blackKing.getY()) ) ) {
-                                    this.moves.add(availSpot);
-                                }
-                            }
-                        }else{
-                            this.moves.add(availSpot);
-                        }
-                        this.setX(currX);
-                        this.setY(currY);
+                        this.moves.add(availSpot);
                     }
                 }
             }
@@ -114,35 +101,51 @@ public abstract class Piece {
         return this.moves;
     }
 
-//    public boolean isBlockMove(int x, int y){
-//        int kingX, kingY;
-//
-//
-//        if(this.isWhite()){
-//            kingX = board.whiteKing.getX();
-//            kingY = board.whiteKing.getY();
-//            if(board.whiteKing.isCheck()){
-//                for (Piece piece : board.Black_Pieces) {
-//
-//
-//                    if(piece.canMove(kingX, kingY) && !piece.canMove(x, y)){
-//                            return false;
-//                    }
-//                }
-//            }
-//        }
-//        if(this.isBlack()){
-//            kingX = board.blackKing.getX();
-//            kingY = board.blackKing.getY();
-//            if(board.blackKing.isCheck()){
-//                for (Piece piece : board.White_Pieces) {
-//                    if(piece.canMove(kingX, kingY) && !piece.canMove(x, y)){
-//                        return false;
-//                    }
-//                }
-//            }
-//        }
-//        return true;
-//    }
+
+    public boolean canMoveChecked (int x, int y) {
+        Piece pieceAtAvailSpot;
+        boolean canMove = true;
+
+        if( this.isWhite() == (board.turnCounter % 2 != 1)  ) {
+            if (board.whiteKing.isCheck() || board.blackKing.isCheck()) {
+                // if King is in check, set piece
+                pieceAtAvailSpot = board.getPiece(x, y);
+                this.setX(x);
+                this.setY(y);
+                if (board.turnCounter % 2 != 1) {
+                    // if set piece results to King no longer in check (block path of attacking piece or capture attacking piece)
+                    // and if King captures attacking piece and is no longer under attack
+                    // then move is valid
+
+                    canMove = !board.whiteKing.isCheck() || (pieceAtAvailSpot != null
+                            && pieceAtAvailSpot.canMove(board.whiteKing.getX(), board.whiteKing.getY())
+                            && !(this.getClass().equals(King.class) && board.whiteKing.isUnderAttack(x, y))
+                            );
+
+                } else {
+                    canMove = !board.blackKing.isCheck() || (pieceAtAvailSpot != null
+                            && pieceAtAvailSpot.canMove(board.blackKing.getX(), board.blackKing.getY())
+                            // sumn wrong w/ last condition for black, attacking piece spot is still available even if
+                            // capturing attacking piece results to king still in check, will fix later huhu
+                            && !(this.getClass().equals(King.class) && board.blackKing.isUnderAttack(x, y))
+                            );
+                }
+            } else {
+                // King is not in check but if moving a piece results to ally King being in check
+                // then move is not allowed
+                this.setX(x);
+                this.setY(y);
+                if (board.turnCounter % 2 != 1) {
+                    canMove = !board.whiteKing.isCheck();
+                } else {
+                    canMove = !board.blackKing.isCheck();
+                }
+            }
+            this.setX(currX);
+            this.setY(currY);
+        }
+        return canMove;
+    }
+
 }
 

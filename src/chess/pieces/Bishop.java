@@ -61,6 +61,6 @@ public class Bishop extends Piece {
                 }
             }
         }
-        return true;
+        return canMoveChecked(destination_x, destination_y);
     }
 }

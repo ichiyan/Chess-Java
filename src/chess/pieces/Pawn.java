@@ -108,7 +108,6 @@ public class Pawn extends Piece {
                 }
             }
         }
-        //return isBlockMove(destination_x, destination_y);
-        return true;
+        return canMoveChecked(destination_x, destination_y);
     }
 }

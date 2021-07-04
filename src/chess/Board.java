@@ -435,21 +435,20 @@ public class Board extends JComponent {
 
             Piece clicked_piece = getPiece(Clicked_Column, Clicked_Row);
 
-            if (Active_Piece == null && clicked_piece != null && 
+            if (Active_Piece == null && clicked_piece != null &&
                     ((is_whites_turn && clicked_piece.isWhite()) || (!is_whites_turn && clicked_piece.isBlack()))) {
 
                 Active_Piece = clicked_piece;
-                Active_Piece.availableMoves(clicked_piece.getX(), clicked_piece.getY());
+                Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
 
             } else if (Active_Piece != null && Active_Piece.getX() == Clicked_Column && Active_Piece.getY() == Clicked_Row) {
                 Active_Piece = null;
 
-            } else if (Active_Piece != null &&
+            } else if (Active_Piece != null && Active_Piece.canMove(Clicked_Column, Clicked_Row) &&
                      ((is_whites_turn && Active_Piece.isWhite()) || (!is_whites_turn && Active_Piece.isBlack()))) {
 
-                availMoves = Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
-
-                if(availMoves.stream().anyMatch(s -> s.getX() == Clicked_Column && s.getY() == Clicked_Row)) {
+               // availMoves = Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
+                //if(availMoves.stream().anyMatch(s -> s.getX() == Clicked_Column && s.getY() == Clicked_Row)) {
                     if (clicked_piece != null) {
                         Moves.push(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row), new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
                         if (clicked_piece.isWhite()) {
@@ -562,7 +561,7 @@ public class Board extends JComponent {
                     if (isAgainstEngine) {
                         doEngineMove();
                     }
-                }
+                //}
             }
 
             drawBoard();

@@ -1,7 +1,6 @@
 package chess;
 
 import chess.pieces.*;
-import jdk.tools.jlink.internal.SymLinkResourcePoolEntry;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -48,7 +47,7 @@ public class Board extends JComponent {
     SaveBtnHandler saveBtnHandler;
 
     public void loadGrid(){
-        loadGame();
+
         System.out.println(White_Pieces.size());
 
         for (int i = 0; i < rows; i++)
@@ -59,7 +58,7 @@ public class Board extends JComponent {
             }
         }
 
-
+        loadGame();
         Moves = new Stack<>();
         fullMoveCounter = 0;
         halfMoveCounter = 0;
@@ -373,6 +372,9 @@ public class Board extends JComponent {
     }
     public void loadGame(){
         String data = null;
+        int lastNdx = 0;
+        char charAtLastNdx;
+
         try{
             File saveFile = new File("save.dat");
             Scanner saveReader = new Scanner(saveFile);
@@ -385,40 +387,14 @@ public class Board extends JComponent {
             e.printStackTrace();
         }
 
-        int lastNdx = 0;
 
-        // for(int r = 0; r <= 7; r++){
-        //     for(int f = 0; r <= 7; r++){
-        //         switch(data.charAt(lastNdx++)){
-        //             case 'p' : Black_Pieces.add(new Pawn(f,r,false,"Pawn.png",this)); break;
-        //             case 'r' : Black_Pieces.add(new Rook(f,r,false,"Rook.png", this)); break;
-        //             case 'n' : Black_Pieces.add(new Knight(f,r,false,"Knight.png", this)); break;
-        //             case 'b' : Black_Pieces.add(new Bishop(f,r,false,"Bishop.png", this)); break;
-        //             case 'q' : Black_Pieces.add(new Queen(f,r,false,"Queen.png", this)); break;
-        //             case 'k' : Black_Pieces.add(new King(f,r,false,"King.png", this)); this.blackKing = (King) Black_Pieces.get(Black_Pieces.size()-1);; break;
-        //             case 'P' : White_Pieces.add(new Pawn(f,r,true,"Pawn.png",this)); break;
-        //             case 'R' : White_Pieces.add(new Rook(f,r,true,"Rook.png", this)); break;
-        //             case 'N' : White_Pieces.add(new Knight(f,r,true,"Knight.png", this)); break;
-        //             case 'B' : White_Pieces.add(new Bishop(f,r,true,"Bishop.png", this)); break;
-        //             case 'Q' : White_Pieces.add(new Queen(f,r,true,"Queen.png", this)); break;
-        //             case 'K' : White_Pieces.add(new King(f,r,true,"King.png", this)); this.whiteKing = (King) White_Pieces.get(White_Pieces.size()-1); break;
-        //             case '/' : r++; break;
-        //             case '1' : break;
-        //             case '2' : f++; break;
-        //             case '3' : f+=2; break;
-        //             case '4' : f+=3; break;
-        //             case '5' : f+=4; break;
-        //             case '6' : f+=5; break;
-        //             case '7' : f+=6; break;
-        //             case '8' : f+=7; break;
-        //         }
-        //     }
-        // }
+        outerloop:
         for(int r = 0; r <= 7; r++){
             System.out.println("R is " + r);
             for(int f = 0; f <= 7; f++){
-                if(Character.isUpperCase(data.charAt(lastNdx))){
-                    switch(data.charAt(lastNdx)){
+               charAtLastNdx = data.charAt(lastNdx);
+                if(Character.isUpperCase(charAtLastNdx)){
+                    switch(charAtLastNdx){
                         case 'R':
                             White_Pieces.add(new Rook(f,r,true,"Rook.png", this));
                             System.out.println("Created R at " + f + " and " + r);
@@ -476,16 +452,15 @@ public class Board extends JComponent {
                     }
                     lastNdx++;
                 }else if(data.charAt(lastNdx)== ' '){
-                    lastNdx++;
+                    break outerloop;
                 }
                 else{
-                    //insert code if the part of the FEN is a number
-                    // char emptySpaces = data.charAt(lastNdx);
-                    System.out.println("The character is: " + data.charAt(lastNdx));
-                    int emptySpaces = Character.getNumericValue(data.charAt(lastNdx));
-                    // System.out.println("Empty space is : " + emptySpaces);
-                    f = f  + emptySpaces;
-                    // System.out.println("F is : " + f);
+                    if(charAtLastNdx == '/'){
+                        f = -1;
+                    }else{
+                        int emptySpaces = Character.getNumericValue(charAtLastNdx);
+                        f += (emptySpaces - 1);
+                    }
                     lastNdx++;
                 }
             }
@@ -577,17 +552,17 @@ public class Board extends JComponent {
        if(lastMove.getMovedPiece().getClass().equals(Pawn.class) &&
                Math.abs(lastMove.getFinalSpot().getY() - lastMove.getInitialSpot().getY()) == 2){
            if(lastMove.getMovedPiece().isWhite()){
-               fen.append(" " + lastMove.getFinalSpot().getXLabel() + (lastMove.getFinalSpot().getYLabel()-1));
+               fen.append(" ").append(lastMove.getFinalSpot().getXLabel()).append(lastMove.getFinalSpot().getYLabel() - 1);
            }else{
-               fen.append(" " + lastMove.getFinalSpot().getXLabel() + (lastMove.getFinalSpot().getYLabel()+1));
+               fen.append(" ").append(lastMove.getFinalSpot().getXLabel()).append(lastMove.getFinalSpot().getYLabel() + 1);
            }
        }
 
        //FEN half move clock
-        fen.append(" " + halfMoveCounter);
+        fen.append(" ").append(halfMoveCounter);
 
        //FEN full move counter
-        fen.append(" " + fullMoveCounter);
+        fen.append(" ").append(fullMoveCounter);
 
        System.out.println(fen);
        return fen.toString();
@@ -631,8 +606,7 @@ public class Board extends JComponent {
     public Spot convertUci(String uciSpot){
         int convertedX = Math.abs(uciSpot.charAt(0) - 'a');
         int convertedY = Math.abs(uciSpot.charAt(1) - 56);     //56 is decimal equivalent of char 8
-        Spot convertedSpot = new Spot(convertedX, convertedY);
-        return convertedSpot;
+        return new Spot(convertedX, convertedY);
     }
 
     private MouseAdapter mouseAdapter = new MouseAdapter() {
@@ -650,7 +624,7 @@ public class Board extends JComponent {
             int Clicked_Row = d_Y / Square_Width;
             int Clicked_Column = d_X / Square_Width;
             boolean is_whites_turn = turnCounter % 2 != 1;
-            ArrayList<Spot> availMoves;
+            //ArrayList<Spot> availMoves;
 
             Piece clicked_piece = getPiece(Clicked_Column, Clicked_Row);
 
@@ -698,12 +672,8 @@ public class Board extends JComponent {
                         if (Clicked_Column - Active_Piece.getX() == 2) {
                             Rook rook = (Rook) getPiece(7, Clicked_Row);
                             rook.setX(Clicked_Column - 1);
-                            if (rook.getHasMoved() == false) {
-                                rook.setIsFirstMove(true);
-                            } else {
-                                rook.setIsFirstMove(false);
-                            }
-                            if (castedKing.getIsCastleMove() == false) {
+                            rook.setIsFirstMove(!rook.getHasMoved());
+                            if (!castedKing.getIsCastleMove()) {
                                 castedKing.setIsCastleMove(true);
                                 castedKing.setIsFirstMove(true);
                             } else {
@@ -715,13 +685,9 @@ public class Board extends JComponent {
                         } else if (Clicked_Column - Active_Piece.getX() == -2) {
                             Rook rook = (Rook) getPiece(0, Clicked_Row);
                             rook.setX(Clicked_Column + 1);
-                            if (rook.getHasMoved() == false) {
-                                rook.setIsFirstMove(true);
-                            } else {
-                                rook.setIsFirstMove(false);
-                            }
+                            rook.setIsFirstMove(!rook.getHasMoved());
 
-                            if (castedKing.getIsCastleMove() == false) {
+                            if (!castedKing.getIsCastleMove()) {
                                 castedKing.setIsCastleMove(true);
                                 castedKing.setIsFirstMove(true);
                             } else {
@@ -730,11 +696,7 @@ public class Board extends JComponent {
                             rook.setHasMoved(true);
                         }
 
-                        if (castedKing.getHasMoved() == false) {
-                            castedKing.setIsFirstMove(true);
-                        } else {
-                            castedKing.setIsFirstMove(false);
-                        }
+                        castedKing.setIsFirstMove(!castedKing.getHasMoved());
                         if (castedKing.isWhite()) {
                             whiteKing = castedKing;
                         } else {
@@ -751,19 +713,11 @@ public class Board extends JComponent {
                     if (Active_Piece.getClass().equals(Pawn.class)) {
                         Pawn castedPawn = (Pawn) (Active_Piece);
                         // if pawn moved for the first time, set isFirstMove to true
-                        if (castedPawn.getHasMoved() == false) {
-                            castedPawn.setIsFirstMove(true);
-                        } else {
-                            castedPawn.setIsFirstMove(false);
-                        }
+                        castedPawn.setIsFirstMove(!castedPawn.getHasMoved());
                         castedPawn.setHasMoved(true);
                     } else if (Active_Piece.getClass().equals(Rook.class)) {
                         Rook castedRook = (Rook) (Active_Piece);
-                        if (castedRook.getHasMoved() == false) {
-                            castedRook.setIsFirstMove(true);
-                        } else {
-                            castedRook.setIsFirstMove(false);
-                        }
+                        castedRook.setIsFirstMove(!castedRook.getHasMoved());
                         castedRook.setHasMoved(true);
                     }
 

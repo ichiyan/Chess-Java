@@ -394,61 +394,61 @@ public class Board extends JComponent {
             for(int f = 0; f <= 7; f++){
                charAtLastNdx = data.charAt(lastNdx);
                 if(Character.isUpperCase(charAtLastNdx)){
-                    switch(charAtLastNdx){
-                        case 'R':
-                            White_Pieces.add(new Rook(f,r,true,"Rook.png", this));
+                    switch (charAtLastNdx) {
+                        case 'R' -> {
+                            White_Pieces.add(new Rook(f, r, true, "Rook.png", this));
                             System.out.println("Created R at " + f + " and " + r);
-                            break;
-                        case 'N':
-                            White_Pieces.add(new Knight(f,r,true,"Knight.png", this));
+                        }
+                        case 'N' -> {
+                            White_Pieces.add(new Knight(f, r, true, "Knight.png", this));
                             System.out.println("Created N at " + f + " and " + r);
-                            break;
-                        case 'B':
-                            White_Pieces.add(new Bishop(f,r,true,"Bishop.png", this));
+                        }
+                        case 'B' -> {
+                            White_Pieces.add(new Bishop(f, r, true, "Bishop.png", this));
                             System.out.println("Created B at " + f + " and " + r);
-                            break;
-                        case 'Q':
-                            White_Pieces.add(new Queen(f,r,true,"Queen.png", this));
+                        }
+                        case 'Q' -> {
+                            White_Pieces.add(new Queen(f, r, true, "Queen.png", this));
                             System.out.println("Created Q at " + f + " and " + r);
-                            break;
-                        case 'K':
-                            White_Pieces.add(new King(f,r,true,"King.png", this));
+                        }
+                        case 'K' -> {
+                            White_Pieces.add(new King(f, r, true, "King.png", this));
                             System.out.println("Created K at " + f + " and " + r);
-                            this.whiteKing = (King) White_Pieces.get(White_Pieces.size()-1);
-                            break;
-                        case 'P':
-                            White_Pieces.add(new Pawn(f,r,true,"Pawn.png",this));
+                            this.whiteKing = (King) White_Pieces.get(White_Pieces.size() - 1);
+                        }
+                        case 'P' -> {
+                            White_Pieces.add(new Pawn(f, r, true, "Pawn.png", this));
                             System.out.println("Created P at " + f + " and " + r);
-                            break;          
+                        }
                     }
                     lastNdx++;
                 }else if(Character.isLowerCase(data.charAt(lastNdx))){
-                    switch(data.charAt(lastNdx)){
-                        case 'r':
-                            Black_Pieces.add(new Rook(f,r,false,"Rook.png", this));
+                    switch (data.charAt(lastNdx)) {
+                        case 'r' -> {
+                            Black_Pieces.add(new Rook(f, r, false, "Rook.png", this));
                             System.out.println("Created r at" + f + " and " + r);
-                            break;
-                        case 'n':
-                            Black_Pieces.add(new Knight(f,r,false,"Knight.png", this));
+                        }
+                        case 'n' -> {
+                            Black_Pieces.add(new Knight(f, r, false, "Knight.png", this));
                             System.out.println("Created n at" + f + " and " + r);
-                            break;
-                        case 'b':
-                            Black_Pieces.add(new Bishop(f,r,false,"Bishop.png", this));
+                        }
+                        case 'b' -> {
+                            Black_Pieces.add(new Bishop(f, r, false, "Bishop.png", this));
                             System.out.println("Created b at" + f + " and " + r);
-                            break;
-                        case 'q':
-                            Black_Pieces.add(new Queen(f,r,false,"Queen.png", this));
+                        }
+                        case 'q' -> {
+                            Black_Pieces.add(new Queen(f, r, false, "Queen.png", this));
                             System.out.println("Created q at" + f + " and " + r);
-                            break;
-                        case 'k':
-                            Black_Pieces.add(new King(f,r,false,"King.png", this));
+                        }
+                        case 'k' -> {
+                            Black_Pieces.add(new King(f, r, false, "King.png", this));
                             System.out.println("Created k at" + f + " and " + r);
-                            this.blackKing = (King) Black_Pieces.get(Black_Pieces.size()-1);
-                            break;
-                        case 'p':
-                            Black_Pieces.add(new Pawn(f,r,false,"Pawn.png",this));
+                            this.blackKing = (King) Black_Pieces.get(Black_Pieces.size() - 1);
+                        }
+                        case 'p' -> {
+                            Black_Pieces.add(new Pawn(f, r, false, "Pawn.png", this));
                             System.out.println("Created p at" + f + " and " + r);
-                            break;          
+                        }
                     }
                     lastNdx++;
                 }else if(data.charAt(lastNdx)== ' '){

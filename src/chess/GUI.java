@@ -13,8 +13,10 @@ public class GUI extends JFrame {
     JLabel titleLabel;
     JButton startBtn;
     JButton playAgainstEngineBtn;
+    JButton loadBtn;
     StartBtnHandler startBtnHandler;
     PlayAgainstEngineHandler playAgainstEngineHandler;
+    LoadBtnHandler loadBtnHandler;
 
     public GUI() {
 
@@ -30,7 +32,7 @@ public class GUI extends JFrame {
 
         titlePanel.add(titleLabel);
 
-        startBtn = new JButton("Start Game");
+        startBtn = new JButton("Start New Game");
         startBtn.setBounds(190, 300, 200, 50);
         startBtn.setFocusable(false);
         startBtn.setBackground(Color.BLACK);
@@ -39,8 +41,17 @@ public class GUI extends JFrame {
         startBtnHandler = new StartBtnHandler();
         startBtn.addActionListener(startBtnHandler);
 
+        loadBtn = new JButton("Load Previous Game");
+        loadBtn.setBounds(190, 400, 200, 50);
+        loadBtn.setFocusable(false);
+        loadBtn.setBackground(Color.black);
+        loadBtn.setForeground(Color.white);
+
+        loadBtnHandler = new LoadBtnHandler();
+        loadBtn.addActionListener(loadBtnHandler);
+
         playAgainstEngineBtn = new JButton("Play Against Engine");
-        playAgainstEngineBtn.setBounds(190, 400, 200, 50);
+        playAgainstEngineBtn.setBounds(190, 500, 200, 50);
         playAgainstEngineBtn.setFocusable(false);
         playAgainstEngineBtn.setBackground(Color.BLACK);
         playAgainstEngineBtn.setForeground(Color.WHITE);
@@ -50,6 +61,7 @@ public class GUI extends JFrame {
 
         panel.add(titlePanel);
         panel.add(startBtn);
+        panel.add(loadBtn);
         panel.add(playAgainstEngineBtn);
 
         imageIcon = new ImageIcon("images/app_icon.png");
@@ -68,11 +80,24 @@ public class GUI extends JFrame {
         this.add(component, BorderLayout.CENTER);
     }
 
+    public void loadGameScreen(boolean isAgainstEngine){
+        panel.setVisible(false);
+        Board board = new Board(isAgainstEngine, true);
+        component = board;
+        this.add(component, BorderLayout.CENTER);
+    }
 
+    class LoadBtnHandler implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e){
+            loadGameScreen(false);
+        }
+    }
     class StartBtnHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             createGameScreen(false);
+            
         }
     }
 

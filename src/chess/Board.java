@@ -1,6 +1,8 @@
 package chess;
 
 import chess.pieces.*;
+import jdk.tools.jlink.internal.SymLinkResourcePoolEntry;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
@@ -42,6 +44,27 @@ public class Board extends JComponent {
 
     JButton undoBtn;
     UndoBtnHandler undoBtnHandler;
+    JButton saveBtn;
+    SaveBtnHandler saveBtnHandler;
+
+    public void loadGrid(){
+        loadGame();
+        System.out.println(White_Pieces.size());
+
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                BoardGrid[i][j] = 0;
+            }
+        }
+
+
+        Moves = new Stack<>();
+        fullMoveCounter = 0;
+        halfMoveCounter = 0;
+        prevHalfMoveCounter = 0;
+    }
 
     public void initGrid()
     {
@@ -99,6 +122,52 @@ public class Board extends JComponent {
         halfMoveCounter = 0;
         prevHalfMoveCounter = 0;
     }
+    public Board(boolean isAgainstEngine, boolean loadedGame){
+        BoardGrid = new Integer[rows][cols];
+        Static_Shapes = new ArrayList();
+        Piece_Graphics = new ArrayList();
+        White_Pieces = new ArrayList();
+        Black_Pieces = new ArrayList();
+        this.isAgainstEngine = isAgainstEngine;
+
+        loadGrid();
+
+        this.setBackground(new Color(0x6495ed));
+        this.setPreferredSize(new Dimension(560, 560));
+        this.setMinimumSize(new Dimension(100, 100));
+        this.setMaximumSize(new Dimension(1000, 1000));
+
+        this.addMouseListener(mouseAdapter);
+        this.addComponentListener(componentAdapter);
+        this.addKeyListener(keyAdapter);
+
+
+        this.setVisible(true);
+        this.requestFocus();
+        drawBoard();
+
+        undoBtn = new JButton("Undo Move");
+        undoBtn.setBounds(220, 580, 100, 40);
+        undoBtn.setFocusable(false);
+        undoBtn.setBackground(Color.BLACK);
+        undoBtn.setForeground(Color.WHITE);
+
+        undoBtnHandler = new UndoBtnHandler();
+        undoBtn.addActionListener(undoBtnHandler);
+
+        this.add(undoBtn);
+
+        saveBtn = new JButton("Save Game");
+        saveBtn.setBounds(320, 580, 100, 40);
+        saveBtn.setFocusable(false);
+        saveBtn.setBackground(Color.BLACK);
+        saveBtn.setForeground(Color.WHITE);
+
+        saveBtnHandler = new SaveBtnHandler();
+        saveBtn.addActionListener(saveBtnHandler);
+
+        this.add(saveBtn);
+    }
 
     public Board(boolean isAgainstEngine) {
 
@@ -136,6 +205,17 @@ public class Board extends JComponent {
 
         this.add(undoBtn);
 
+        saveBtn = new JButton("Save Game");
+        saveBtn.setBounds(320, 580, 100, 40);
+        saveBtn.setFocusable(false);
+        saveBtn.setBackground(Color.BLACK);
+        saveBtn.setForeground(Color.WHITE);
+
+        saveBtnHandler = new SaveBtnHandler();
+        saveBtn.addActionListener(saveBtnHandler);
+
+        this.add(saveBtn);
+
         // if(isAgainstEngine){
         //     stockfish = new Stockfish();
         //     stockfish.startEngine();
@@ -144,6 +224,12 @@ public class Board extends JComponent {
         // }
 
 
+    }
+    class SaveBtnHandler implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e){
+            saveGame();
+        }
     }
 
     class UndoBtnHandler implements ActionListener{
@@ -273,6 +359,139 @@ public class Board extends JComponent {
             }
         }
         return null;
+    }
+    public void saveGame(){
+        try{
+            FileWriter saveWrite = new FileWriter("save.dat");
+            saveWrite.write(getFen());
+            saveWrite.close();
+            System.out.println("successfully wrote to the file");
+        }catch(IOException e){
+            System.out.println("An error occurred");
+            e.printStackTrace();
+        }
+    }
+    public void loadGame(){
+        String data = null;
+        try{
+            File saveFile = new File("save.dat");
+            Scanner saveReader = new Scanner(saveFile);
+            while(saveReader.hasNextLine()){
+                data = saveReader.nextLine();
+            }
+            saveReader.close();
+        } catch(FileNotFoundException e){
+            System.out.println("An error has occurred");
+            e.printStackTrace();
+        }
+
+        int lastNdx = 0;
+
+        // for(int r = 0; r <= 7; r++){
+        //     for(int f = 0; r <= 7; r++){
+        //         switch(data.charAt(lastNdx++)){
+        //             case 'p' : Black_Pieces.add(new Pawn(f,r,false,"Pawn.png",this)); break;
+        //             case 'r' : Black_Pieces.add(new Rook(f,r,false,"Rook.png", this)); break;
+        //             case 'n' : Black_Pieces.add(new Knight(f,r,false,"Knight.png", this)); break;
+        //             case 'b' : Black_Pieces.add(new Bishop(f,r,false,"Bishop.png", this)); break;
+        //             case 'q' : Black_Pieces.add(new Queen(f,r,false,"Queen.png", this)); break;
+        //             case 'k' : Black_Pieces.add(new King(f,r,false,"King.png", this)); this.blackKing = (King) Black_Pieces.get(Black_Pieces.size()-1);; break;
+        //             case 'P' : White_Pieces.add(new Pawn(f,r,true,"Pawn.png",this)); break;
+        //             case 'R' : White_Pieces.add(new Rook(f,r,true,"Rook.png", this)); break;
+        //             case 'N' : White_Pieces.add(new Knight(f,r,true,"Knight.png", this)); break;
+        //             case 'B' : White_Pieces.add(new Bishop(f,r,true,"Bishop.png", this)); break;
+        //             case 'Q' : White_Pieces.add(new Queen(f,r,true,"Queen.png", this)); break;
+        //             case 'K' : White_Pieces.add(new King(f,r,true,"King.png", this)); this.whiteKing = (King) White_Pieces.get(White_Pieces.size()-1); break;
+        //             case '/' : r++; break;
+        //             case '1' : break;
+        //             case '2' : f++; break;
+        //             case '3' : f+=2; break;
+        //             case '4' : f+=3; break;
+        //             case '5' : f+=4; break;
+        //             case '6' : f+=5; break;
+        //             case '7' : f+=6; break;
+        //             case '8' : f+=7; break;
+        //         }
+        //     }
+        // }
+        for(int r = 0; r <= 7; r++){
+            System.out.println("R is " + r);
+            for(int f = 0; f <= 7; f++){
+                if(Character.isUpperCase(data.charAt(lastNdx))){
+                    switch(data.charAt(lastNdx)){
+                        case 'R':
+                            White_Pieces.add(new Rook(f,r,true,"Rook.png", this));
+                            System.out.println("Created R at " + f + " and " + r);
+                            break;
+                        case 'N':
+                            White_Pieces.add(new Knight(f,r,true,"Knight.png", this));
+                            System.out.println("Created N at " + f + " and " + r);
+                            break;
+                        case 'B':
+                            White_Pieces.add(new Bishop(f,r,true,"Bishop.png", this));
+                            System.out.println("Created B at " + f + " and " + r);
+                            break;
+                        case 'Q':
+                            White_Pieces.add(new Queen(f,r,true,"Queen.png", this));
+                            System.out.println("Created Q at " + f + " and " + r);
+                            break;
+                        case 'K':
+                            White_Pieces.add(new King(f,r,true,"King.png", this));
+                            System.out.println("Created K at " + f + " and " + r);
+                            this.whiteKing = (King) White_Pieces.get(White_Pieces.size()-1);
+                            break;
+                        case 'P':
+                            White_Pieces.add(new Pawn(f,r,true,"Pawn.png",this));
+                            System.out.println("Created P at " + f + " and " + r);
+                            break;          
+                    }
+                    lastNdx++;
+                }else if(Character.isLowerCase(data.charAt(lastNdx))){
+                    switch(data.charAt(lastNdx)){
+                        case 'r':
+                            Black_Pieces.add(new Rook(f,r,false,"Rook.png", this));
+                            System.out.println("Created r at" + f + " and " + r);
+                            break;
+                        case 'n':
+                            Black_Pieces.add(new Knight(f,r,false,"Knight.png", this));
+                            System.out.println("Created n at" + f + " and " + r);
+                            break;
+                        case 'b':
+                            Black_Pieces.add(new Bishop(f,r,false,"Bishop.png", this));
+                            System.out.println("Created b at" + f + " and " + r);
+                            break;
+                        case 'q':
+                            Black_Pieces.add(new Queen(f,r,false,"Queen.png", this));
+                            System.out.println("Created q at" + f + " and " + r);
+                            break;
+                        case 'k':
+                            Black_Pieces.add(new King(f,r,false,"King.png", this));
+                            System.out.println("Created k at" + f + " and " + r);
+                            this.blackKing = (King) Black_Pieces.get(Black_Pieces.size()-1);
+                            break;
+                        case 'p':
+                            Black_Pieces.add(new Pawn(f,r,false,"Pawn.png",this));
+                            System.out.println("Created p at" + f + " and " + r);
+                            break;          
+                    }
+                    lastNdx++;
+                }else if(data.charAt(lastNdx)== ' '){
+                    lastNdx++;
+                }
+                else{
+                    //insert code if the part of the FEN is a number
+                    // char emptySpaces = data.charAt(lastNdx);
+                    System.out.println("The character is: " + data.charAt(lastNdx));
+                    int emptySpaces = Character.getNumericValue(data.charAt(lastNdx));
+                    // System.out.println("Empty space is : " + emptySpaces);
+                    f = f  + emptySpaces;
+                    // System.out.println("F is : " + f);
+                    lastNdx++;
+                }
+            }
+        }
+        System.out.println("White piece size is: " + White_Pieces.size());    
+        this.drawBoard();
     }
 
     public String getFen(){
@@ -703,5 +922,6 @@ class DrawingImage implements DrawingShape {
             Rectangle2D bounds = rect.getBounds2D();
             g2.drawImage(image, (int)bounds.getMinX(), (int)bounds.getMinY(), (int)bounds.getMaxX(), (int)bounds.getMaxY(),
                                             0, 0, image.getWidth(null), image.getHeight(null), null);
-    }	
+    }
+
 }

@@ -118,7 +118,8 @@ public class King extends Piece {
 
     public boolean isUnderAttack(int x, int y){
 
-       
+       // System.out.println("FIRST x " + x + " y " + y);
+
         if(this.isWhite()){
             for(Piece piece: board.Black_Pieces){
                 if(piece.canMove(x,y)){
@@ -127,8 +128,17 @@ public class King extends Piece {
             }
         }
         else if(this.isBlack()){
+            //System.out.println("TEST TEST TEST");
             for(Piece piece: board.White_Pieces){
+//                System.out.println("SECOND x " + x + " y " + y);
+//                if(x == 3 && y == 1) {
+//                    System.out.println("BISHOP CAN MOVE " + board.getPiece(1, 3).canMove(3, 1));
+//                }
                 if(piece.canMove(x,y)){
+//                    if (board.getPiece(x, y).getClass().equals(King.class)){
+//                        System.out.println("PASS PASS PASS");
+//                    }
+//                    System.out.println("SECOND x " + x + " y " + y);
                     return true;
                 }
             }
@@ -136,6 +146,7 @@ public class King extends Piece {
         return false;
     }
     public boolean isCheck(){
+       // System.out.println("IS CHECK " + this + " " + this.getX() + " " + this.getY());
         return isUnderAttack(this.getX(), this.getY());
     }
 }

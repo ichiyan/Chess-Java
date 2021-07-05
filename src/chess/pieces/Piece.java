@@ -105,8 +105,9 @@ public abstract class Piece {
     public boolean canMoveChecked (int x, int y) {
         Piece pieceAtAvailSpot;
         boolean canMove = true;
+        boolean isWhitesTurn = board.turnCounter % 2 != 1;
 
-        if( this.isWhite() == (board.turnCounter % 2 != 1)  ) {
+        if( this.isWhite() == (isWhitesTurn)  ) {
             if (board.whiteKing.isCheck() || board.blackKing.isCheck()) {
                 // if King is in check, set piece
                 pieceAtAvailSpot = board.getPiece(x, y);
@@ -114,23 +115,31 @@ public abstract class Piece {
                 this.setY(y);
                 // if set piece results to King no longer in check (block path of attacking piece or capture attacking piece)
                 // and if King captures attacking piece and is no longer under attack, then move is valid
-                if (board.turnCounter % 2 != 1) {
+                if (isWhitesTurn) {
+//
                     canMove = !board.whiteKing.isCheck() || (pieceAtAvailSpot != null
                             && pieceAtAvailSpot.canMove(board.whiteKing.getX(), board.whiteKing.getY())
                             && !(this.getClass().equals(King.class) && board.whiteKing.isUnderAttack(x, y))
                             );
-
                 } else {
-                    canMove = !board.blackKing.isCheck() || (pieceAtAvailSpot != null
-                            && pieceAtAvailSpot.canMove(board.blackKing.getX(), board.blackKing.getY())
-                            && !(this.getClass().equals(King.class) && board.blackKing.isUnderAttack(x, y))
-                            );
+
+                    if (pieceAtAvailSpot != null) {
+                        board.White_Pieces.remove(pieceAtAvailSpot);
+                        canMove = !board.blackKing.isCheck() || (pieceAtAvailSpot.canMove(board.blackKing.getX(), board.blackKing.getY())
+                                && !(this.getClass().equals(King.class) && board.blackKing.isUnderAttack(x, y))
+                        );
+                        board.White_Pieces.add(pieceAtAvailSpot);
+                    }else{
+                        canMove = !board.blackKing.isCheck();
+                    }
+
                 }
             } else {
                 // King is not in check but if moving a piece results to ally King being in check, then move is not allowed
                 this.setX(x);
                 this.setY(y);
-                canMove = board.turnCounter % 2 != 1 ? !board.whiteKing.isCheck() : !board.blackKing.isCheck();
+                canMove = isWhitesTurn ? !board.whiteKing.isCheck() : !board.blackKing.isCheck();
+
             }
             this.setX(currX);
             this.setY(currY);

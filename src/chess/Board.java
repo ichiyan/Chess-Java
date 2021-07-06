@@ -728,13 +728,13 @@ public class Board extends JComponent {
                         castedPawn.setHasMoved(true);
                         //if en passant capture
                         if(Moves.get(movesLastNdx).isEnPassantCapture(board)) {
-                            Piece prevMovedPiece = board.Moves.get(board.Moves.size() - 2).getMovedPiece();
+                            Piece prevMovedPiece = board.Moves.get(movesLastNdx - 1).getMovedPiece();
                             if (prevMovedPiece.isWhite()) {
                                 White_Pieces.remove(prevMovedPiece);
                             } else {
                                 Black_Pieces.remove(prevMovedPiece);
-                                board.Moves.get(movesLastNdx).setCapturedPiece(prevMovedPiece);
                             }
+                            board.Moves.get(movesLastNdx).setCapturedPiece(prevMovedPiece);
                         }
 
                     } else if (Active_Piece.getClass().equals(Rook.class)) {

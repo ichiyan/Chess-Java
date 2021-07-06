@@ -1,5 +1,4 @@
 package chess.pieces;
-
 import chess.Board;
 
 public class King extends Piece {

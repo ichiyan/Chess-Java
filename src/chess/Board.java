@@ -62,9 +62,6 @@ public class Board extends JComponent {
 
         loadGame();
         Moves = new ArrayList<>();
-        fullMoveCounter = 0;
-        halfMoveCounter = 0;
-        prevHalfMoveCounter = 0;
     }
 
     public void initGrid()
@@ -488,8 +485,31 @@ public class Board extends JComponent {
                 }
             }
         }
-        System.out.println("White piece size is: " + White_Pieces.size());    
+
+        lastNdx++;
+        if(data.charAt(lastNdx) == 'w'){
+            System.out.println("White turn");
+            lastNdx += 2;
+        }else{
+            System.out.println("Black turn");
+            lastNdx += 2;
+        }
+          
         this.drawBoard();
+
+        while(data.charAt(lastNdx) != ' '){
+            switch(data.charAt(lastNdx)){
+                case 'K': this.whiteKing.canCastleKingSide(); break;
+                case 'Q': this.whiteKing.canCastleQueenSide(); break;
+                case 'k': this.blackKing.canCastleKingSide(); break;
+                case 'q': this.blackKing.canCastleKingSide(); break;
+                case '-': break;
+            }
+            lastNdx++;
+        }
+
+        lastNdx++;
+        System.out.println(data.charAt(lastNdx));  
     }
 
     public String getFen(){

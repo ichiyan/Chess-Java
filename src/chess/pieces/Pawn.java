@@ -96,7 +96,7 @@ public class Pawn extends Piece {
             }
 
             //en passant capture
-            if(this.getY() == 3 || this.getY() == 4){
+            if( (this.getY() == 3 || this.getY() == 4) && destination_y !=3 && destination_y != 4 ){
                 Move lastMoved = board.Moves.get(board.Moves.size()-1);
                 Piece movedPiece = lastMoved.getMovedPiece();
                 if(lastMoved.isEnPassant(board, lastMoved) && movedPiece.isWhite() != this.isWhite()){
@@ -106,7 +106,6 @@ public class Pawn extends Piece {
                         return (destination_y == lastMoved.getFinalSpot().getY()+1 && destination_x == movedPiece.getX());
                     }
                 }
-
             }
 
 
@@ -122,6 +121,10 @@ public class Pawn extends Piece {
             }
 
         }
+
+
         return canMoveChecked(destination_x, destination_y);
     }
+
 }
+

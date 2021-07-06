@@ -741,6 +741,7 @@ public class Board extends JComponent {
                         castedPawn.setIsFirstMove(!castedPawn.getHasMoved());
                         castedPawn.setHasMoved(true);
                         //if en passant capture
+                        Piece lastMovedPiece = Moves.get(movesLastNdx).getMovedPiece();
                         if(Moves.get(movesLastNdx).isEnPassantCapture(board)) {
                             Piece prevMovedPiece = board.Moves.get(movesLastNdx - 1).getMovedPiece();
                             if (prevMovedPiece.isWhite()) {

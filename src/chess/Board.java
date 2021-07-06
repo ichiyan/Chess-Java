@@ -22,13 +22,14 @@ public class Board extends JComponent {
     private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
 
     private final int Square_Width = 65;
+    public Board board = this;
     public ArrayList<Piece> White_Pieces;
     public ArrayList<Piece> Black_Pieces;
     
 
     public King whiteKing;
     public King blackKing;
-    public Stack<Move> Moves;
+    public ArrayList<Move> Moves;
 
     public ArrayList<DrawingShape> Static_Shapes;
     public ArrayList<DrawingShape> Piece_Graphics;
@@ -59,7 +60,7 @@ public class Board extends JComponent {
         }
 
         loadGame();
-        Moves = new Stack<>();
+        Moves = new ArrayList<>();
         fullMoveCounter = 0;
         halfMoveCounter = 0;
         prevHalfMoveCounter = 0;
@@ -116,7 +117,7 @@ public class Board extends JComponent {
         whiteKing = (King)getPiece(4, 7);
         blackKing = (King)getPiece(4,0);
 
-        Moves = new Stack<>();
+        Moves = new ArrayList<>();
         fullMoveCounter = 0;
         halfMoveCounter = 0;
         prevHalfMoveCounter = 0;
@@ -235,7 +236,7 @@ public class Board extends JComponent {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(!Moves.isEmpty()){
-                Move lastMove = Moves.peek();
+                Move lastMove = Moves.get(Moves.size()-1);
                 Piece lastMovedPiece = lastMove.getMovedPiece();
                 Piece capturedPiece = lastMove.getCapturedPiece();
                 Class<? extends Piece> lastMovedPieceClass = lastMovedPiece.getClass();
@@ -253,6 +254,7 @@ public class Board extends JComponent {
                 if(lastMovedPieceClass.equals(Pawn.class)){
                     Pawn castedPawn = (Pawn)lastMovedPiece;
                     if (castedPawn.getIsFirstMove()){ castedPawn.setHasMoved(false);}
+                    if (lastMove.isEnPassant(board, lastMove)) {castedPawn.setIsFirstMove(false);}
                 }else if(lastMovedPieceClass.equals(Rook.class)){
                     Rook castedRook = (Rook)lastMovedPiece;
                     if (castedRook.getIsFirstMove()){ castedRook.setHasMoved(false);}
@@ -282,15 +284,22 @@ public class Board extends JComponent {
                     }else{
                         Black_Pieces.add(capturedPiece);
                     }
-                    capturedPiece.setX(lastMove.getFinalSpot().getX());
-                    capturedPiece.setY(lastMove.getFinalSpot().getY());
+
+                   // if(!lastMove.isEnPassantCapture(board)){
+                        capturedPiece.setX(lastMove.getFinalSpot().getX());
+                        capturedPiece.setY(lastMove.getFinalSpot().getY());
+//                    }else{
+//                        Move prevMove = Moves.get(Moves.size()-2);
+//                        capturedPiece.setX(prevMove.getFinalSpot().getX());
+//                        capturedPiece.setY(prevMove.getFinalSpot().getY());
+//                    }
                 }
 
                 lastMovedPiece.setX(lastMove.getInitialSpot().getX());
                 lastMovedPiece.setY(lastMove.getInitialSpot().getY());
 
 
-                Moves.pop();
+                Moves.remove(lastMove);
                 turnCounter++;
                 drawBoard();
             }
@@ -548,7 +557,7 @@ public class Board extends JComponent {
        }
 
        //FEN possible En Passant targets
-        Move lastMove = Moves.peek();
+        Move lastMove = Moves.get(Moves.size()-1);
        if(lastMove.getMovedPiece().getClass().equals(Pawn.class) &&
                Math.abs(lastMove.getFinalSpot().getY() - lastMove.getInitialSpot().getY()) == 2){
            if(lastMove.getMovedPiece().isWhite()){
@@ -577,7 +586,7 @@ public class Board extends JComponent {
             Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
             Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
 
-            Moves.push(new Move(movedPiece, capturedPiece, initialSpot, finalSpot));
+            Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot));
 
             if(capturedPiece != null){
                 if(capturedPiece.isWhite()){
@@ -624,6 +633,7 @@ public class Board extends JComponent {
             int Clicked_Row = d_Y / Square_Width;
             int Clicked_Column = d_X / Square_Width;
             boolean is_whites_turn = turnCounter % 2 != 1;
+            int movesLastNdx;
             //ArrayList<Spot> availMoves;
 
             Piece clicked_piece = getPiece(Clicked_Column, Clicked_Row);
@@ -642,24 +652,25 @@ public class Board extends JComponent {
 
                // availMoves = Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
                 //if(availMoves.stream().anyMatch(s -> s.getX() == Clicked_Column && s.getY() == Clicked_Row)) {
-                    if (clicked_piece != null) {
-                        Moves.push(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row), new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
-                        if (clicked_piece.isWhite()) {
-                            White_Pieces.remove(clicked_piece);
-                        } else {
-                            Black_Pieces.remove(clicked_piece);
-                        }
+                if (clicked_piece != null) {
+                    if (clicked_piece.isWhite()) {
+                        White_Pieces.remove(clicked_piece);
                     } else {
-                        Moves.push(new Move(Active_Piece, null, new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
+                        Black_Pieces.remove(clicked_piece);
                     }
+                }
 
-                    //fullmove counter increments everytime black moves
-                    if (Moves.peek().getMovedPiece().isBlack()) {
+                Moves.add(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row), new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
+
+                movesLastNdx = Moves.size()-1;
+
+                //fullmove counter increments everytime black moves
+                    if (Moves.get(movesLastNdx).getMovedPiece().isBlack()) {
                         fullMoveCounter++;
                     }
 
                     //halfmove counter is reset after captures or pawn moves
-                    if (Moves.peek().getMovedPiece().getClass().equals(Pawn.class) || Moves.peek().getCapturedPiece() != null) {
+                    if (Moves.get(movesLastNdx).getMovedPiece().getClass().equals(Pawn.class) || Moves.get(movesLastNdx).getCapturedPiece() != null) {
                         prevHalfMoveCounter = halfMoveCounter;
                         halfMoveCounter = 0;
                     } else {
@@ -715,6 +726,17 @@ public class Board extends JComponent {
                         // if pawn moved for the first time, set isFirstMove to true
                         castedPawn.setIsFirstMove(!castedPawn.getHasMoved());
                         castedPawn.setHasMoved(true);
+                        //if en passant capture
+                        if(Moves.get(movesLastNdx).isEnPassantCapture(board)) {
+                            Piece prevMovedPiece = board.Moves.get(board.Moves.size() - 2).getMovedPiece();
+                            if (prevMovedPiece.isWhite()) {
+                                White_Pieces.remove(prevMovedPiece);
+                            } else {
+                                Black_Pieces.remove(prevMovedPiece);
+                                board.Moves.get(movesLastNdx).setCapturedPiece(prevMovedPiece);
+                            }
+                        }
+
                     } else if (Active_Piece.getClass().equals(Rook.class)) {
                         Rook castedRook = (Rook) (Active_Piece);
                         castedRook.setIsFirstMove(!castedRook.getHasMoved());

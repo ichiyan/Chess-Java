@@ -1,5 +1,6 @@
 package chess;
 
+import chess.pieces.Pawn;
 import chess.pieces.Piece;
 
 public class Move {
@@ -45,5 +46,24 @@ public class Move {
 
     public void setFinalSpot(Spot finalSpot) {
         this.finalSpot = finalSpot;
+    }
+
+    public boolean isEnPassant(Board board, Move move){
+        Piece movedPiece = move.getMovedPiece();
+        return (movedPiece.getClass().equals(Pawn.class) && Math.abs(move.getFinalSpot().getY() - move.getInitialSpot().getY()) == 2 );
+    }
+
+    public boolean isEnPassantCapture(Board board){
+        if(board.Moves.size() > 1) {
+            Move lastMove = board.Moves.get(board.Moves.size() - 1);
+            Piece movedPiece = lastMove.getMovedPiece();
+            Move prevMoved = board.Moves.get(board.Moves.size() - 2);
+            Piece prevMovedPiece = prevMoved.getMovedPiece();
+            if (prevMoved.isEnPassant(board, prevMoved) && prevMovedPiece.isWhite() != movedPiece.isWhite()
+                    && movedPiece.getX() == prevMovedPiece.getX() && movedPiece.getY() != 3 && movedPiece.getY() != 4){
+                return true;
+            }
+        }
+        return false;
     }
 }

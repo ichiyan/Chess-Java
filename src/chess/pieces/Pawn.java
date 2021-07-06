@@ -1,5 +1,6 @@
 package chess.pieces;
 import chess.Board;
+import chess.Move;
 import chess.PromotionPanel;
 
 public class Pawn extends Piece {
@@ -43,11 +44,7 @@ public class Pawn extends Piece {
     @Override
     public boolean canMove(int destination_x, int destination_y)
     {
-        // Remember: A pawn may only move towards the oponent's side of the board.
-        // If the pawn has not moved yet in the chess.game, for its first move it can
-        // move two spaces forward. Otherwise, it may only move one space. 
-        // When not attacking it may only move straight ahead.
-        // When attacking it may only move space diagonally forward
+
         Piece possiblepiece = board.getPiece(destination_x,destination_y);
         //Check if the move is backwards where it won't let it move.
         if(this.isWhite()){
@@ -97,8 +94,24 @@ public class Pawn extends Piece {
             if(Math.abs(destination_x - this.getX())!= 1 || Math.abs(destination_y-this.getY())!=1){
                return false;
             }
+
+            //en passant capture
+            if(this.getY() == 3 || this.getY() == 4){
+                Move lastMoved = board.Moves.get(board.Moves.size()-1);
+                Piece movedPiece = lastMoved.getMovedPiece();
+                if(lastMoved.isEnPassant(board, lastMoved) && movedPiece.isWhite() != this.isWhite()){
+                    if (lastMoved.getFinalSpot().getY() - lastMoved.getInitialSpot().getY() > 0) {
+                        return (destination_y == lastMoved.getFinalSpot().getY()-1 && destination_x == movedPiece.getX());
+                    }else{
+                        return (destination_y == lastMoved.getFinalSpot().getY()+1 && destination_x == movedPiece.getX());
+                    }
+                }
+
+            }
+
+
             if(this.isWhite()){
-                if(possiblepiece == null || possiblepiece.isWhite()){
+                if((possiblepiece == null) || possiblepiece.isWhite()){
                  return false;
                 }
             }
@@ -107,6 +120,7 @@ public class Pawn extends Piece {
                  return false;
                 }
             }
+
         }
         return canMoveChecked(destination_x, destination_y);
     }

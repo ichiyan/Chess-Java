@@ -74,9 +74,9 @@ public class GUI extends JFrame {
         this.setVisible(true);
     }
 
-    public void createGameScreen(boolean isAgainstEngine) {
+    public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective) {
         panel.setVisible(false);
-        component = new Board(isAgainstEngine);
+        component = new Board(isAgainstEngine, isWhitePerspective);
         this.add(component, BorderLayout.CENTER);
     }
 
@@ -96,16 +96,28 @@ public class GUI extends JFrame {
     class StartBtnHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            createGameScreen(false);
+            createGameScreen(false, true);
             
         }
     }
 
     class PlayAgainstEngineHandler implements ActionListener{
-
         @Override
         public void actionPerformed(ActionEvent e) {
-            createGameScreen(true);
+            Object[] options = {"White", "Black",};
+            int n = JOptionPane.showOptionDialog(null,
+                    "Play as: ",
+                    "Choose Side",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    null);
+            if (n == 0){
+                createGameScreen(true, true);
+            }else if (n == 1){
+                createGameScreen(true, false);
+            }
         }
     }
 }

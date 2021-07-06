@@ -137,4 +137,26 @@ public class King extends Piece {
     public boolean isCheck(){
         return isUnderAttack(this.getX(), this.getY());
     }
+    public boolean isCheckmate(){
+        
+        boolean isWhitesTurn = board.turnCounter % 2 != 1;
+        if(this.isCheck() && !isWhitesTurn){
+            for (Piece piece : board.Black_Pieces) {
+                if(!piece.moves.isEmpty()){
+                    return true;
+                }
+            }
+        }else if(this.isCheck() && isWhitesTurn){
+            for (Piece piece : board.White_Pieces) {
+                if(!piece.moves.isEmpty()){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public boolean isDraw(){
+        
+        return false;
+    }
 }

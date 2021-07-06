@@ -20,6 +20,7 @@ public class Board extends JComponent {
     public int halfMoveCounter = 0;
     public int prevHalfMoveCounter = 0;  //stores halfMoveCounter before reset in case of undo
     private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
+    public boolean displayedMessage = false;
 
     private final int Square_Width = 65;
     public Board board = this;
@@ -341,16 +342,29 @@ public class Board extends JComponent {
         }
         
         this.repaint();
+        if(whiteKing.isCheckmate() || blackKing.isCheckmate()){
+            String message = (whiteKing.isCheckmate())?"Black Wins!":"White Wins!";
+            Object[] options = {"Play Again",
+            "Close",};
+            if(!displayedMessage){
+                int n = JOptionPane.showOptionDialog(null, message, "Checkmate", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE,null, options, null);
+                if(n==0){
+                    resetBoard();
+                    drawBoard();
+                }
+            }
+            displayedMessage = true;   
+        }
+            
+        
+    }
+    public void resetBoard(){
+        White_Pieces.clear();
+        Black_Pieces.clear();
+        initGrid();
+        
     }
     
-    public Piece drawTestPiece(int x, int y){
-        Pawn testPiece = new Pawn(x,y, true, null, this);
-        White_Pieces.add(testPiece);
-        return testPiece;
-    }
-    public void removeTestPiece(Piece piece){
-        White_Pieces.remove(piece);
-    }
     public Piece getPiece(int x, int y) {
         for (Piece p : White_Pieces)
         {

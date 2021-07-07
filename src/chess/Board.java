@@ -699,46 +699,103 @@ public class Board extends JComponent {
         String bestMove = stockfish.getBestMove(getFen(), 20);
         System.out.println("BEST MOVE: " + bestMove);
 
-        Spot initialSpot = convertUci(bestMove.substring(0,2));
-        Spot finalSpot = convertUci(bestMove.substring(2,4));
-        Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
-        Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
+            Spot initialSpot = convertUci(bestMove.substring(0, 2));
+            Spot finalSpot = convertUci(bestMove.substring(2, 4));
+            Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
+            Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
 
-        Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot));
+            Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot));
 
-        //castling
-//        if (movedPiece.getClass().equals(King.class) && Math.abs(initialSpot.getX() - finalSpot.getY()) == 2 ) {
-//            if(isWhitePerspective){
-//
-//            }
-//        }
-
-        //en passant capture
-
-        //promotion
-
-
-        if(capturedPiece != null){
-            if(capturedPiece.isWhite()){
-                White_Pieces.remove(capturedPiece);
-            }else{
-                Black_Pieces.remove(capturedPiece);
+            //castling
+            if (movedPiece.getClass().equals(King.class) && ( Math.abs(initialSpot.getX() - finalSpot.getX()) == 2 )) {
+                Rook castleRook;
+                if (initialSpot.getX() > finalSpot.getX()) {
+                    castleRook = (Rook) getPiece(0, finalSpot.getY());
+                    castleRook.setX(finalSpot.getX() + 1);
+                } else {
+                    castleRook = (Rook) getPiece(7, finalSpot.getY());
+                    castleRook.setX(finalSpot.getX() - 1);
+                }
+                ((King) movedPiece).setHasMoved(true);
             }
-        }
 
-        movedPiece.setX(finalSpot.getX());
-        movedPiece.setY(finalSpot.getY());
+            //promotion
+            if (bestMove.length() > 4) {
+                char promotion = bestMove.charAt(4);
+                switch (promotion) {
+                    case 'b' -> {
+                        if (movedPiece.isWhite()) {
+                            White_Pieces.remove(movedPiece);
+                            White_Pieces.add(new Bishop(finalSpot.getX(), finalSpot.getY(), true, "Bishop.png", this));
+                        } else {
+                            Black_Pieces.remove(movedPiece);
+                            Black_Pieces.add(new Bishop(finalSpot.getX(), finalSpot.getY(), false, "Bishop.png", this));
+                        }
+                    }
+                    case 'n' -> {
+                        if (movedPiece.isWhite()) {
+                            White_Pieces.remove(movedPiece);
+                            White_Pieces.add(new Knight(finalSpot.getX(), finalSpot.getY(), true, "Knight.png", this));
+                        } else {
+                            Black_Pieces.remove(movedPiece);
+                            Black_Pieces.add(new Knight(finalSpot.getX(), finalSpot.getY(), false, "Knight.png", this));
+                        }
+                    }
+                    case 'r' -> {
+                        if (movedPiece.isWhite()) {
+                            White_Pieces.remove(movedPiece);
+                            White_Pieces.add(new Rook(finalSpot.getX(), finalSpot.getY(), true, "Rook.png", this));
+                        } else {
+                            Black_Pieces.remove(movedPiece);
+                            Black_Pieces.add(new Rook(finalSpot.getX(), finalSpot.getY(), false, "Rook.png", this));
+                        }
+                    }
+                    case 'q' -> {
+                        if (movedPiece.isWhite()) {
+                            White_Pieces.remove(movedPiece);
+                            White_Pieces.add(new Queen(finalSpot.getX(), finalSpot.getY(), true, "Queen.png", this));
+                        } else {
+                            Black_Pieces.remove(movedPiece);
+                            Black_Pieces.add(new Queen(finalSpot.getX(), finalSpot.getY(), false, "Queen.png", this));
+                        }
+                    }
+                }
+            }
 
-        if(movedPiece.getClass().equals(Pawn.class) || capturedPiece != null ){
-            prevHalfMoveCounter = halfMoveCounter;
-            halfMoveCounter = 0;
-        }else{
-            halfMoveCounter++;
-        }
+            //normal capture
+            if (capturedPiece != null) {
+                if (capturedPiece.isWhite()) {
+                    White_Pieces.remove(capturedPiece);
+                } else {
+                    Black_Pieces.remove(capturedPiece);
+                }
+            }
 
-        fullMoveCounter++;
-        turnCounter++;
-        drawBoard();
+            // en passant capture
+            int lastNdx = Moves.size() - 1;
+            if (Moves.get(lastNdx).isEnPassantCapture(board)) {
+                Piece prevMovedPiece = Moves.get(lastNdx - 1).getMovedPiece();
+                if (prevMovedPiece.isWhite()) {
+                    White_Pieces.remove(prevMovedPiece);
+                } else {
+                    Black_Pieces.remove(prevMovedPiece);
+                }
+                Moves.get(lastNdx).setCapturedPiece(prevMovedPiece);
+            }
+
+            movedPiece.setX(finalSpot.getX());
+            movedPiece.setY(finalSpot.getY());
+
+            if (movedPiece.getClass().equals(Pawn.class) || capturedPiece != null) {
+                prevHalfMoveCounter = halfMoveCounter;
+                halfMoveCounter = 0;
+            } else {
+                halfMoveCounter++;
+            }
+
+            fullMoveCounter++;
+            turnCounter++;
+            drawBoard();
     }
 
     public Spot convertUci(String uciSpot){
@@ -882,7 +939,7 @@ public class Board extends JComponent {
                             } else {
                                 Black_Pieces.remove(prevMovedPiece);
                             }
-                            board.Moves.get(movesLastNdx).setCapturedPiece(prevMovedPiece);
+                            Moves.get(movesLastNdx).setCapturedPiece(prevMovedPiece);
                         }
 
                     } else if (Active_Piece.getClass().equals(Rook.class)) {

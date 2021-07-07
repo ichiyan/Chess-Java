@@ -105,7 +105,7 @@ public class GUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             Object[] options = {"White", "Black",};
-            int n = JOptionPane.showOptionDialog(null,
+            int n = JOptionPane.showOptionDialog(panel,
                     "Play as: ",
                     "Choose Side",
                     JOptionPane.YES_NO_OPTION,

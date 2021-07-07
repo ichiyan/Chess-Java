@@ -60,7 +60,8 @@ public class Move {
             Move prevMoved = board.Moves.get(board.Moves.size() - 2);
             Piece prevMovedPiece = prevMoved.getMovedPiece();
             if (prevMoved.isEnPassant(board, prevMoved) && prevMovedPiece.isWhite() != movedPiece.isWhite()
-                    && movedPiece.getX() == prevMovedPiece.getX() && movedPiece.getY() != 3 && movedPiece.getY() != 4){
+                    && movedPiece.getX() == prevMovedPiece.getX() && movedPiece.getY() != 3 && movedPiece.getY() != 4
+                    && lastMove.getInitialSpot().getX() != lastMove.getFinalSpot().getX()){
                 return true;
             }
         }

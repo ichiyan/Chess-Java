@@ -55,18 +55,17 @@ public class King extends Piece {
             }
             return false;
         }else{
-            if(testPiece!=null){
-                if(testPiece.isWhite()&&this.isWhite()){
-                    return false;
-                }else if(testPiece.isBlack()&&this.isBlack()){
-                    return false;
-                }
-            }else if(isUnderAttack(destination_x, destination_y)){return false;}
+            if(testPiece!=null && testPiece.isWhite() == this.isWhite()){
+                return false;
+            }else if(isUnderAttack(destination_x, destination_y)) {
+                return false;
+            }
         }
 
         return canMoveChecked(destination_x, destination_y);
-        //return true;
+
     }
+
 
 
     public boolean canCastleKingSide(){
@@ -119,20 +118,39 @@ public class King extends Piece {
 
         if(this.isWhite()){
             for(Piece piece: board.Black_Pieces){
-                if(piece.canMove(x,y)){
+                if(piece.canMove(x,y) || (piece.getClass().equals(Pawn.class) && canPawnAttack(x,y, piece))  ){
                     return true;
                 }
             }
         }
         else if(this.isBlack()){
             for(Piece piece: board.White_Pieces){
-                if(piece.canMove(x,y)){
+                if(piece.canMove(x,y) || (piece.getClass().equals(Pawn.class) && canPawnAttack(x,y, piece)) ){
                     return true;
                 }
             }
         }
         return false;
     }
+
+    public boolean canPawnAttack (int x, int y, Piece pawn){
+
+        if (pawn.getX()+1 == x || pawn.getX()-1 == x) {
+            if (board.getIsWhitePerspective() ) {
+                if ( (pawn.isWhite() && pawn.getY()-1 == y) || (pawn.isBlack() && pawn.getY()+1 == y) ) {
+                    return true;
+                }
+            }else{
+                if ( (pawn.isWhite() && pawn.getY()+1 == y) || (pawn.isBlack() && pawn.getY()-1 == y) ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+
     public boolean isCheck(){
         return isUnderAttack(this.getX(), this.getY());
     }

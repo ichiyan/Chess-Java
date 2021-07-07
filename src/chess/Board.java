@@ -348,10 +348,6 @@ public class Board extends JComponent {
                 lastMovedPiece.setX(lastMove.getInitialSpot().getX());
                 lastMovedPiece.setY(lastMove.getInitialSpot().getY());
 
-                if(lastMovedPieceClass.equals(Pawn.class)){
-                    System.out.println(((Pawn) lastMovedPiece).getIsFirstMove());
-
-                }
                 Moves.remove(lastMove);
                 turnCounter++;
                 drawBoard();
@@ -702,12 +698,25 @@ public class Board extends JComponent {
     public void doEngineMove(){
         String bestMove = stockfish.getBestMove(getFen(), 20);
         System.out.println("BEST MOVE: " + bestMove);
+
         Spot initialSpot = convertUci(bestMove.substring(0,2));
         Spot finalSpot = convertUci(bestMove.substring(2,4));
         Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
         Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
 
         Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot));
+
+        //castling
+//        if (movedPiece.getClass().equals(King.class) && Math.abs(initialSpot.getX() - finalSpot.getY()) == 2 ) {
+//            if(isWhitePerspective){
+//
+//            }
+//        }
+
+        //en passant capture
+
+        //promotion
+
 
         if(capturedPiece != null){
             if(capturedPiece.isWhite()){
@@ -730,7 +739,6 @@ public class Board extends JComponent {
         fullMoveCounter++;
         turnCounter++;
         drawBoard();
-        getFen();
     }
 
     public Spot convertUci(String uciSpot){
@@ -773,11 +781,10 @@ public class Board extends JComponent {
                     ( (!isAgainstEngine && is_whites_turn == clicked_piece.isWhite() )
                        || (isAgainstEngine && is_whites_turn == isWhitePerspective && clicked_piece.isWhite() == isWhitePerspective)
             )) {
-                System.out.println("WARD WARD");
                 Active_Piece = clicked_piece;
-                System.out.println(Active_Piece.getX() + " " + Active_Piece.getY());
+               // System.out.println(Active_Piece.getX() + " " + Active_Piece.getY());
                 Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
-                System.out.println(Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY()));
+               // System.out.println(Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY()));
 
             } else if (Active_Piece != null && Active_Piece.getX() == Clicked_Column && Active_Piece.getY() == Clicked_Row) {
                 Active_Piece = null;
@@ -894,7 +901,7 @@ public class Board extends JComponent {
                     Active_Piece = null;
                     getFen();
                     turnCounter++;
-                    if (isAgainstEngine) {
+                    if (isAgainstEngine && is_whites_turn == isWhitePerspective) {
                         doEngineMove();
                     }
                 //}

@@ -141,16 +141,18 @@ public class King extends Piece {
         boolean isWhitesTurn = board.turnCounter % 2 != 1;
         if(this.isCheck() && !isWhitesTurn){
             for (Piece piece : board.Black_Pieces) {
-                if(!piece.moves.isEmpty()){
-                    return true;
+                if(!piece.availableMoves(piece.getX(), piece.getY()).isEmpty()){
+                    return false;
                 }
             }
+            return true;
         }else if(this.isCheck() && isWhitesTurn){
             for (Piece piece : board.White_Pieces) {
-                if(!piece.moves.isEmpty()){
-                    return true;
+                if(!piece.availableMoves(piece.getX(), piece.getY()).isEmpty()){
+                    return false;
                 }
             }
+            return true;
         }
         return false;
     }

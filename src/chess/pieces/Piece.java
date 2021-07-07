@@ -1,6 +1,5 @@
 package chess.pieces;
 
-import java.awt.desktop.SystemEventListener;
 import java.util.ArrayList;
 
 import chess.Board;
@@ -20,7 +19,7 @@ public abstract class Piece {
     {
         
         this.is_white = is_white;
-        spot = new Spot(x,y);
+        spot = new Spot(x,y, board.getIsWhitePerspective());
         this.file_path = file_path;
         this.board = board;
         this.abbrev = abbrev;
@@ -91,7 +90,7 @@ public abstract class Piece {
         for(y=0;y<8;y++){
             for(x=0;x<8;x++){
                 if(canMove(x, y)){
-                    availSpot = new Spot(x,y);
+                    availSpot = new Spot(x,y, board.getIsWhitePerspective());
                     if(!this.moves.contains(availSpot)){
                         this.moves.add(availSpot);
                     }

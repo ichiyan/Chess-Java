@@ -13,20 +13,20 @@ import javax.swing.*;
 
 public class Board extends JComponent {
 
-    public boolean isAgainstEngine;
-    public Stockfish stockfish;
+    private boolean isAgainstEngine;
+    private boolean isWhitePerspective;
+    private Stockfish stockfish;
     public int turnCounter = 0;
-    public int fullMoveCounter = 0;
+    public int fullMoveCounter = 1;
     public int halfMoveCounter = 0;
     public int prevHalfMoveCounter = 0;  //stores halfMoveCounter before reset in case of undo
     private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
-    public boolean displayedMessage = false;
+    private boolean displayedMessage = false;
 
     private final int Square_Width = 65;
     public Board board = this;
     public ArrayList<Piece> White_Pieces;
     public ArrayList<Piece> Black_Pieces;
-    
 
     public King whiteKing;
     public King blackKing;
@@ -35,12 +35,13 @@ public class Board extends JComponent {
     public ArrayList<DrawingShape> Static_Shapes;
     public ArrayList<DrawingShape> Piece_Graphics;
 
-    public Piece Active_Piece;
+    private Piece Active_Piece;
 
     private final int rows = 8;
     private final int cols = 8;
     public Integer[][] BoardGrid;
-    private String board_file_path = "images" + File.separator + "board3.png";
+    private String board_white_perspective_file_path = "images" + File.separator + "board3.png";
+    private String board_black_perspective_file_path = "images" + File.separator + "board3_black_perspective.png";
     private String active_square_file_path = "images" + File.separator + "active_square.png";
 
     JButton undoBtn;
@@ -64,7 +65,15 @@ public class Board extends JComponent {
         Moves = new ArrayList<>();
     }
 
-    public void initGrid()
+    public boolean getIsWhitePerspective() {
+        return isWhitePerspective;
+    }
+
+    public void setIsWhitePerspective(boolean whitePerspective) {
+        isWhitePerspective = whitePerspective;
+    }
+
+    public void initGrid(boolean isWhitePerspective)
     {
         for (int i = 0; i < rows; i++)
         {
@@ -77,50 +86,91 @@ public class Board extends JComponent {
         //Image white_piece = loadImage("images/white_pieces/" + piece_name + ".png");
         //Image black_piece = loadImage("images/black_pieces/" + piece_name + ".png");  
 
-        White_Pieces.add(new King(4,7,true,"King.png", this));
-        White_Pieces.add(new Queen(3,7,true,"Queen.png",this));
-        White_Pieces.add(new Bishop(2,7,true,"Bishop.png",this));
-        White_Pieces.add(new Bishop(5,7,true,"Bishop.png",this));
-        White_Pieces.add(new Knight(1,7,true,"Knight.png",this));
-        White_Pieces.add(new Knight(6,7,true,"Knight.png",this));
-        White_Pieces.add(new Rook(0,7,true,"Rook.png",this));
-        White_Pieces.add(new Rook(7,7,true,"Rook.png",this));
-        White_Pieces.add(new Pawn(0,6,true,"Pawn.png",this));
-        White_Pieces.add(new Pawn(1,6,true,"Pawn.png",this));
-        White_Pieces.add(new Pawn(2,6,true,"Pawn.png",this));
-        White_Pieces.add(new Pawn(3,6,true,"Pawn.png",this));
-        White_Pieces.add(new Pawn(4,6,true,"Pawn.png",this));
-        White_Pieces.add(new Pawn(5,6,true,"Pawn.png",this));
-        White_Pieces.add(new Pawn(6,6,true,"Pawn.png",this));
-        White_Pieces.add(new Pawn(7,6,true,"Pawn.png",this));
+        if (isWhitePerspective) {
+            White_Pieces.add(new King(4, 7, true, "King.png", this));
+            White_Pieces.add(new Queen(3, 7, true, "Queen.png", this));
+            White_Pieces.add(new Bishop(2, 7, true, "Bishop.png", this));
+            White_Pieces.add(new Bishop(5, 7, true, "Bishop.png", this));
+            White_Pieces.add(new Knight(1, 7, true, "Knight.png", this));
+            White_Pieces.add(new Knight(6, 7, true, "Knight.png", this));
+            White_Pieces.add(new Rook(0, 7, true, "Rook.png", this));
+            White_Pieces.add(new Rook(7, 7, true, "Rook.png", this));
+            White_Pieces.add(new Pawn(0, 6, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(1, 6, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(2, 6, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(3, 6, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(4, 6, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(5, 6, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(6, 6, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(7, 6, true, "Pawn.png", this));
 
 
-        Black_Pieces.add(new King(4,0,false,"King.png",this));
-        Black_Pieces.add(new Queen(3,0,false,"Queen.png",this));
-        Black_Pieces.add(new Bishop(2,0,false,"Bishop.png",this));
-        Black_Pieces.add(new Bishop(5,0,false,"Bishop.png",this));
-        Black_Pieces.add(new Knight(1,0,false,"Knight.png",this));
-        Black_Pieces.add(new Knight(6,0,false,"Knight.png",this));
-        Black_Pieces.add(new Rook(0,0,false,"Rook.png",this));
-        Black_Pieces.add(new Rook(7,0,false,"Rook.png",this));
-        Black_Pieces.add(new Pawn(0,1,false,"Pawn.png",this));
-        Black_Pieces.add(new Pawn(1,1,false,"Pawn.png",this));
-        Black_Pieces.add(new Pawn(2,1,false,"Pawn.png",this));
-        Black_Pieces.add(new Pawn(3,1,false,"Pawn.png",this));
-        Black_Pieces.add(new Pawn(4,1,false,"Pawn.png",this));
-        Black_Pieces.add(new Pawn(5,1,false,"Pawn.png",this));
-        Black_Pieces.add(new Pawn(6,1,false,"Pawn.png",this));
-        Black_Pieces.add(new Pawn(7,1,false,"Pawn.png",this));
+            Black_Pieces.add(new King(4, 0, false, "King.png", this));
+            Black_Pieces.add(new Queen(3, 0, false, "Queen.png", this));
+            Black_Pieces.add(new Bishop(2, 0, false, "Bishop.png", this));
+            Black_Pieces.add(new Bishop(5, 0, false, "Bishop.png", this));
+            Black_Pieces.add(new Knight(1, 0, false, "Knight.png", this));
+            Black_Pieces.add(new Knight(6, 0, false, "Knight.png", this));
+            Black_Pieces.add(new Rook(0, 0, false, "Rook.png", this));
+            Black_Pieces.add(new Rook(7, 0, false, "Rook.png", this));
+            Black_Pieces.add(new Pawn(0, 1, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(1, 1, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(2, 1, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(3, 1, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(4, 1, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(5, 1, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(6, 1, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(7, 1, false, "Pawn.png", this));
 
-        whiteKing = (King)getPiece(4, 7);
-        blackKing = (King)getPiece(4,0);
+            whiteKing = (King) getPiece(4, 7);
+            blackKing = (King) getPiece(4, 0);
+        }else{
+            White_Pieces.add(new King(3, 0, true, "King.png", this));
+            White_Pieces.add(new Queen(4, 0, true, "Queen.png", this));
+            White_Pieces.add(new Bishop(2, 0, true, "Bishop.png", this));
+            White_Pieces.add(new Bishop(5, 0, true, "Bishop.png", this));
+            White_Pieces.add(new Knight(1, 0, true, "Knight.png", this));
+            White_Pieces.add(new Knight(6, 0, true, "Knight.png", this));
+            White_Pieces.add(new Rook(0, 0, true, "Rook.png", this));
+            White_Pieces.add(new Rook(7, 0, true, "Rook.png", this));
+            White_Pieces.add(new Pawn(0, 1, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(1, 1, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(2, 1, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(3, 1, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(4, 1, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(5, 1, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(6, 1, true, "Pawn.png", this));
+            White_Pieces.add(new Pawn(7, 1, true, "Pawn.png", this));
+
+
+            Black_Pieces.add(new King(3, 7, false, "King.png", this));
+            Black_Pieces.add(new Queen(4, 7, false, "Queen.png", this));
+            Black_Pieces.add(new Bishop(2, 7, false, "Bishop.png", this));
+            Black_Pieces.add(new Bishop(5, 7, false, "Bishop.png", this));
+            Black_Pieces.add(new Knight(1, 7, false, "Knight.png", this));
+            Black_Pieces.add(new Knight(6, 7, false, "Knight.png", this));
+            Black_Pieces.add(new Rook(0, 7, false, "Rook.png", this));
+            Black_Pieces.add(new Rook(7, 7, false, "Rook.png", this));
+            Black_Pieces.add(new Pawn(0, 6, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(1, 6, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(2, 6, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(3, 6, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(4, 6, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(5, 6, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(6, 6, false, "Pawn.png", this));
+            Black_Pieces.add(new Pawn(7, 6, false, "Pawn.png", this));
+
+            whiteKing = (King) getPiece(3, 0);
+            blackKing = (King) getPiece(3, 7);
+        }
+
 
         Moves = new ArrayList<>();
-        fullMoveCounter = 0;
+        fullMoveCounter = 1;
         halfMoveCounter = 0;
         prevHalfMoveCounter = 0;
     }
-    public Board(boolean isAgainstEngine, boolean loadedGame){
+    public Board(boolean isAgainstEngine, boolean loadedGame, boolean isWhitePerspective){
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
         Piece_Graphics = new ArrayList();
@@ -167,7 +217,7 @@ public class Board extends JComponent {
         this.add(saveBtn);
     }
 
-    public Board(boolean isAgainstEngine) {
+    public Board(boolean isAgainstEngine, boolean isWhitePerspective) {
 
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
@@ -175,8 +225,9 @@ public class Board extends JComponent {
         White_Pieces = new ArrayList();
         Black_Pieces = new ArrayList();
         this.isAgainstEngine = isAgainstEngine;
+        this.isWhitePerspective = isWhitePerspective;
 
-        initGrid();
+        initGrid(isWhitePerspective);
 
         this.setBackground(new Color(0x6495ed));
         this.setPreferredSize(new Dimension(560, 560));
@@ -214,14 +265,15 @@ public class Board extends JComponent {
 
         this.add(saveBtn);
 
-        // if(isAgainstEngine){
-        //     stockfish = new Stockfish();
-        //     stockfish.startEngine();
-        //     stockfish.sendCommand("uci");
-        //     stockfish.sendCommand("ucinewgame");
-        // }
-
-
+         if(isAgainstEngine){
+             stockfish = new Stockfish();
+             stockfish.startEngine();
+             stockfish.sendCommand("uci");
+             stockfish.sendCommand("ucinewgame");
+             if(!isWhitePerspective) {
+                 doEngineMove();
+             }
+         }
     }
     class SaveBtnHandler implements ActionListener{
         @Override
@@ -296,7 +348,10 @@ public class Board extends JComponent {
                 lastMovedPiece.setX(lastMove.getInitialSpot().getX());
                 lastMovedPiece.setY(lastMove.getInitialSpot().getY());
 
+                if(lastMovedPieceClass.equals(Pawn.class)){
+                    System.out.println(((Pawn) lastMovedPiece).getIsFirstMove());
 
+                }
                 Moves.remove(lastMove);
                 turnCounter++;
                 drawBoard();
@@ -310,8 +365,10 @@ public class Board extends JComponent {
         Static_Shapes.clear();
         Image active_square = loadImage(active_square_file_path);
         //initGrid();
-        
-        Image board = loadImage(board_file_path);
+        Image board;
+
+        board = isWhitePerspective ? loadImage(board_white_perspective_file_path) : loadImage(board_black_perspective_file_path);
+
         Static_Shapes.add(new DrawingImage(board, new Rectangle2D.Double(0, 0, board.getWidth(null), board.getHeight(null))));
         if(whiteKing.isCheck()){
             Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*whiteKing.getX(),Square_Width*whiteKing.getY(), active_square.getWidth(null), active_square.getHeight(null))));
@@ -358,7 +415,8 @@ public class Board extends JComponent {
     public void resetBoard(){
         White_Pieces.clear();
         Black_Pieces.clear();
-        initGrid();
+        Moves.clear();
+        initGrid(isWhitePerspective);
         
     }
     
@@ -516,35 +574,64 @@ public class Board extends JComponent {
         StringBuffer fen = new StringBuffer();
 
         int nullCtr = 0;
+        int r, f;
         boolean invalidWhiteKCastle = true;
         boolean invalidWhiteQCastle = true;
         boolean invalidBlackKCastle = true;
         boolean invalidBlackQCastle = true;
 
+
         //FEN piece placement
-        //rank
-        for(int r = 0; r <= 7; r++){
-            //file
-            for(int f = 0; f <= 7; f++){
-                Piece piece = getPiece(f, r);
-                if(piece != null){
-                    if(nullCtr != 0){fen.append(nullCtr);}
-                    if(piece.isWhite()){
-                        fen.append(Character.toUpperCase(piece.getAbbrev()));
+        if(isWhitePerspective){
+            //rank
+            for(r = 0; r <= 7; r++){
+                //file
+                for(f = 0; f <= 7; f++){
+                    Piece piece = getPiece(f, r);
+                    if(piece != null){
+                        if(nullCtr != 0){fen.append(nullCtr);}
+                        if(piece.isWhite()){
+                            fen.append(Character.toUpperCase(piece.getAbbrev()));
+                        }else{
+                            fen.append(piece.getAbbrev());
+                        }
+                        nullCtr = 0;
                     }else{
-                        fen.append(piece.getAbbrev());
+                        nullCtr++;
                     }
-                    nullCtr = 0;
-                }else{
-                    nullCtr++;
                 }
+                if(nullCtr != 0){ fen.append(nullCtr);}
+                if(r < 7){
+                    fen.append('/');
+                }
+                nullCtr = 0;
             }
-            if(nullCtr != 0){ fen.append(nullCtr);}
-            if(r < 7){
-                fen.append('/');
+        }else{
+            //rank
+            for(r = 7; r > -1; r--){
+                //file
+                for(f = 7; f > -1; f--){
+                    Piece piece = getPiece(f, r);
+                    if(piece != null){
+                        if(nullCtr != 0){fen.append(nullCtr);}
+                        if(piece.isWhite()){
+                            fen.append(Character.toUpperCase(piece.getAbbrev()));
+                        }else{
+                            fen.append(piece.getAbbrev());
+                        }
+                        nullCtr = 0;
+                    }else{
+                        nullCtr++;
+                    }
+                }
+                if(nullCtr != 0){ fen.append(nullCtr);}
+                if(r > 0){
+                    fen.append('/');
+                }
+                nullCtr = 0;
             }
-            nullCtr = 0;
         }
+
 
         //FEN who moves next
         if(turnCounter % 2 != 1){
@@ -555,51 +642,52 @@ public class Board extends JComponent {
             fen.append(" b ");
         }
 
-        //FEN castling rights
-        Piece checkWhiteKing = getPiece(4, 7);
-        if(checkWhiteKing != null && checkWhiteKing.getClass().equals(King.class)){
-            King whiteKing = (King) checkWhiteKing;
-            if(whiteKing.hasKingSideCastlingRights()){
-                fen.append("K");
-                invalidWhiteKCastle = false;
-            }
-            if(whiteKing.hasQueenSideCastlingRights()){
-                fen.append("Q");
-                invalidWhiteQCastle = false;
-            }
+
+        if(whiteKing.hasKingSideCastlingRights()){
+            fen.append("K");
+            invalidWhiteKCastle = false;
         }
+        if(whiteKing.hasQueenSideCastlingRights()){
+            fen.append("Q");
+            invalidWhiteQCastle = false;
+        }
+
 
         if(invalidWhiteQCastle && invalidWhiteKCastle){
             fen.append("-");
         }
 
-        Piece checkBlackKing = getPiece(4, 0);
-        if(checkBlackKing != null && checkBlackKing.getClass().equals(King.class)){
-            King blackKing = (King) checkBlackKing;
-            if(blackKing.hasKingSideCastlingRights()){
-                fen.append("k");
-                invalidBlackKCastle = false;
-            }
-            if(blackKing.hasQueenSideCastlingRights()){
-                fen.append("q");
-                invalidBlackQCastle = false;
-            }
+        if(blackKing.hasKingSideCastlingRights()){
+            fen.append("k");
+            invalidBlackKCastle = false;
         }
+        if(blackKing.hasQueenSideCastlingRights()){
+            fen.append("q");
+            invalidBlackQCastle = false;
+        }
+
 
        if(invalidBlackQCastle && invalidBlackKCastle){
            fen.append("-");
        }
 
        //FEN possible En Passant targets
-        Move lastMove = Moves.get(Moves.size()-1);
-       if(lastMove.getMovedPiece().getClass().equals(Pawn.class) &&
-               Math.abs(lastMove.getFinalSpot().getY() - lastMove.getInitialSpot().getY()) == 2){
-           if(lastMove.getMovedPiece().isWhite()){
-               fen.append(" ").append(lastMove.getFinalSpot().getXLabel()).append(lastMove.getFinalSpot().getYLabel() - 1);
-           }else{
-               fen.append(" ").append(lastMove.getFinalSpot().getXLabel()).append(lastMove.getFinalSpot().getYLabel() + 1);
-           }
-       }
+        if(!Moves.isEmpty()) {
+            Move lastMove = Moves.get(Moves.size() - 1);
+            if (lastMove.getMovedPiece().getClass().equals(Pawn.class) &&
+                    Math.abs(lastMove.getFinalSpot().getY() - lastMove.getInitialSpot().getY()) == 2) {
+                fen.append(" ");
+                if (lastMove.getMovedPiece().isWhite()) {
+                    fen.append(lastMove.getFinalSpot().getXLabel()).append(lastMove.getFinalSpot().getYLabel() - 1);
+                } else {
+                    fen.append(lastMove.getFinalSpot().getXLabel()).append(lastMove.getFinalSpot().getYLabel() + 1);
+                }
+            } else {
+                fen.append(" -");
+            }
+        }else{
+            fen.append(" -");
+        }
 
        //FEN half move clock
         fen.append(" ").append(halfMoveCounter);
@@ -613,43 +701,50 @@ public class Board extends JComponent {
 
     public void doEngineMove(){
         String bestMove = stockfish.getBestMove(getFen(), 20);
+        System.out.println("BEST MOVE: " + bestMove);
+        Spot initialSpot = convertUci(bestMove.substring(0,2));
+        Spot finalSpot = convertUci(bestMove.substring(2,4));
+        Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
+        Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
 
-        //if(bestMove != null){
-            Spot initialSpot = convertUci(bestMove.substring(0,2));
-            Spot finalSpot = convertUci(bestMove.substring(2,4));
-            Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
-            Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
+        Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot));
 
-            Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot));
-
-            if(capturedPiece != null){
-                if(capturedPiece.isWhite()){
-                    White_Pieces.remove(capturedPiece);
-                }else{
-                    Black_Pieces.remove(capturedPiece);
-                }
-            }
-
-            movedPiece.setX(finalSpot.getX());
-            movedPiece.setY(finalSpot.getY());
-
-            if(movedPiece.getClass().equals(Pawn.class) || capturedPiece != null ){
-                prevHalfMoveCounter = halfMoveCounter;
-                halfMoveCounter = 0;
+        if(capturedPiece != null){
+            if(capturedPiece.isWhite()){
+                White_Pieces.remove(capturedPiece);
             }else{
-                halfMoveCounter++;
+                Black_Pieces.remove(capturedPiece);
             }
+        }
 
-            fullMoveCounter++;
-            turnCounter++;
-        //}
+        movedPiece.setX(finalSpot.getX());
+        movedPiece.setY(finalSpot.getY());
 
+        if(movedPiece.getClass().equals(Pawn.class) || capturedPiece != null ){
+            prevHalfMoveCounter = halfMoveCounter;
+            halfMoveCounter = 0;
+        }else{
+            halfMoveCounter++;
+        }
+
+        fullMoveCounter++;
+        turnCounter++;
+        drawBoard();
+        getFen();
     }
 
     public Spot convertUci(String uciSpot){
-        int convertedX = Math.abs(uciSpot.charAt(0) - 'a');
-        int convertedY = Math.abs(uciSpot.charAt(1) - 56);     //56 is decimal equivalent of char 8
-        return new Spot(convertedX, convertedY);
+        int convertedX;
+        int convertedY;
+        if (isWhitePerspective) {
+             convertedX = Math.abs(uciSpot.charAt(0) - 'a');
+            //56 is decimal equivalent of char 8
+             convertedY = Math.abs(uciSpot.charAt(1) - 56);
+        }else{
+            convertedX =  Math.abs(uciSpot.charAt(0) - 'h');
+            convertedY =  Character.getNumericValue(uciSpot.charAt(1)) - 1;
+        }
+        return new Spot(convertedX, convertedY, isWhitePerspective);
     }
 
     private MouseAdapter mouseAdapter = new MouseAdapter() {
@@ -668,21 +763,29 @@ public class Board extends JComponent {
             int Clicked_Column = d_X / Square_Width;
             boolean is_whites_turn = turnCounter % 2 != 1;
             int movesLastNdx;
+            Piece movedPiece, lastCapturedPiece;
+            Move lastMove;
             //ArrayList<Spot> availMoves;
 
             Piece clicked_piece = getPiece(Clicked_Column, Clicked_Row);
 
             if (Active_Piece == null && clicked_piece != null &&
-                    ((is_whites_turn && clicked_piece.isWhite()) || (!is_whites_turn && clicked_piece.isBlack()))) {
-
+                    ( (!isAgainstEngine && is_whites_turn == clicked_piece.isWhite() )
+                       || (isAgainstEngine && is_whites_turn == isWhitePerspective && clicked_piece.isWhite() == isWhitePerspective)
+            )) {
+                System.out.println("WARD WARD");
                 Active_Piece = clicked_piece;
+                System.out.println(Active_Piece.getX() + " " + Active_Piece.getY());
                 Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
+                System.out.println(Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY()));
 
             } else if (Active_Piece != null && Active_Piece.getX() == Clicked_Column && Active_Piece.getY() == Clicked_Row) {
                 Active_Piece = null;
 
             } else if (Active_Piece != null && Active_Piece.canMove(Clicked_Column, Clicked_Row) &&
-                     ((is_whites_turn && Active_Piece.isWhite()) || (!is_whites_turn && Active_Piece.isBlack()))) {
+                     ((!isAgainstEngine && is_whites_turn == Active_Piece.isWhite())
+                             || (isAgainstEngine && is_whites_turn == isWhitePerspective)
+                     )) {
 
                // availMoves = Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
                 //if(availMoves.stream().anyMatch(s -> s.getX() == Clicked_Column && s.getY() == Clicked_Row)) {
@@ -694,17 +797,20 @@ public class Board extends JComponent {
                     }
                 }
 
-                Moves.add(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row), new Spot(Active_Piece.getX(), Active_Piece.getY()), new Spot(Clicked_Column, Clicked_Row)));
 
+                Moves.add(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row), new Spot(Active_Piece.getX(), Active_Piece.getY(), isWhitePerspective), new Spot(Clicked_Column, Clicked_Row, isWhitePerspective)));
                 movesLastNdx = Moves.size()-1;
+                lastMove = Moves.get(movesLastNdx);
+                movedPiece = Moves.get(movesLastNdx).getMovedPiece();
+                lastCapturedPiece = Moves.get(movesLastNdx).getCapturedPiece();
 
                 //fullmove counter increments everytime black moves
-                    if (Moves.get(movesLastNdx).getMovedPiece().isBlack()) {
+                    if (movedPiece.isBlack()) {
                         fullMoveCounter++;
                     }
 
                     //halfmove counter is reset after captures or pawn moves
-                    if (Moves.get(movesLastNdx).getMovedPiece().getClass().equals(Pawn.class) || Moves.get(movesLastNdx).getCapturedPiece() != null) {
+                    if (movedPiece.getClass().equals(Pawn.class) || lastCapturedPiece != null) {
                         prevHalfMoveCounter = halfMoveCounter;
                         halfMoveCounter = 0;
                     } else {
@@ -760,10 +866,10 @@ public class Board extends JComponent {
                         // if pawn moved for the first time, set isFirstMove to true
                         castedPawn.setIsFirstMove(!castedPawn.getHasMoved());
                         castedPawn.setHasMoved(true);
+
                         //if en passant capture
-                        Piece lastMovedPiece = Moves.get(movesLastNdx).getMovedPiece();
-                        if(Moves.get(movesLastNdx).isEnPassantCapture(board)) {
-                            Piece prevMovedPiece = board.Moves.get(movesLastNdx - 1).getMovedPiece();
+                        if(lastMove.isEnPassantCapture(board)) {
+                            Piece prevMovedPiece = Moves.get(movesLastNdx - 1).getMovedPiece();
                             if (prevMovedPiece.isWhite()) {
                                 White_Pieces.remove(prevMovedPiece);
                             } else {
@@ -793,8 +899,9 @@ public class Board extends JComponent {
                     }
                 //}
             }
-
-            drawBoard();
+            if(!isAgainstEngine || is_whites_turn == isWhitePerspective) {
+                drawBoard();
+            }
         }
 
         @Override

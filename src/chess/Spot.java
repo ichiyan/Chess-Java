@@ -6,12 +6,19 @@ public class Spot {
     private int y;
     private char xLabel;
     private int yLabel;
-    public Spot(int x, int y){
+
+    public Spot(int x, int y, boolean isWhitePerspective){
         this.setX(x);
         this.setY(y);
-        this.xLabel = (char)(this.x + 'a');
-        this.yLabel = 8 - this.y;
+        if(isWhitePerspective) {
+            this.xLabel = (char) (this.x + 'a');
+            this.yLabel = 8 - this.y;
+        }else{
+            this.xLabel = (char) ('h' - this.x);
+            this.yLabel = this.y + 1;
+        }
     }
+
     public void setX(int x)
     {
         this.x = x;
@@ -34,6 +41,7 @@ public class Spot {
 
     public char getXLabel() {
         return xLabel;
+
     }
 
     public void setXLabel(char xLabel) {
@@ -47,6 +55,5 @@ public class Spot {
     public void setYLabel(int yLabel) {
         this.yLabel = yLabel;
     }
-
 
 }

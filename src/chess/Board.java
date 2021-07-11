@@ -278,7 +278,7 @@ public class Board extends JComponent {
     class SaveBtnHandler implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e){
-            saveGame();
+            saveGame(isAgainstEngine);
         }
     }
 
@@ -437,28 +437,44 @@ public class Board extends JComponent {
         }
         return null;
     }
-    public void saveGame(){
+    public void saveGame(boolean isAgainstEngine){
         try{
-            FileWriter saveWrite = new FileWriter("save.dat");
-            saveWrite.write(getFen());
-            saveWrite.close();
-            System.out.println("successfully wrote to the file");
+            if(isAgainstEngine){
+                FileWriter saveWrite = new FileWriter("save2.dat");
+                saveWrite.write(getFen());
+                saveWrite.close();
+                System.out.println("successfully wrote to the file");
+            }else{
+                FileWriter saveWrite = new FileWriter("save.dat");
+                saveWrite.write(getFen());
+                saveWrite.close();
+                System.out.println("successfully wrote to the file");
+            }
         }catch(IOException e){
             System.out.println("An error occurred");
             e.printStackTrace();
         }
     }
-    public void loadGame(){
+    public void loadGame(boolean isAgainstEngine){
         String data = null;
+        Scanner saveReader = null;
         int lastNdx = 0;
         char charAtLastNdx;
 
         try{
-            File saveFile = new File("save.dat");
-            Scanner saveReader = new Scanner(saveFile);
-            while(saveReader.hasNextLine()){
-                data = saveReader.nextLine();
-            }
+            if(isAgainstEngine){
+                File saveFile = new File("save2.dat");
+                saveReader = new Scanner(saveFile);
+                while(saveReader.hasNextLine()){
+                    data = saveReader.nextLine();
+                }
+            }else{
+                File saveFile = new File("save.dat");
+                saveReader = new Scanner(saveFile);
+                while(saveReader.hasNextLine()){
+                    data = saveReader.nextLine();
+                }
+            }   
             saveReader.close();
         } catch(FileNotFoundException e){
             System.out.println("An error has occurred");
@@ -567,7 +583,29 @@ public class Board extends JComponent {
         }
 
         lastNdx++;
-        System.out.println(data.charAt(lastNdx));  
+
+        System.out.println("Character is: " + data.charAt(lastNdx));
+        if(data.charAt(lastNdx) == '-'){
+            lastNdx+=2;
+            System.out.println("Character is: " + data.charAt(lastNdx));
+        }else{
+            if(Character.isLetter(data.charAt(lastNdx))){
+                int xPosition;
+                switch(data.charAt(lastNdx)){
+                    case 'a':  xPosition = 0;
+                    case 'b':  xPosition = 1;
+                    case 'c':  xPosition = 2;
+                    case 'd':  xPosition = 3;
+                    case 'e':  xPosition = 4;
+                    case 'f':  xPosition = 5;
+                    case 'g':  xPosition = 6;
+                    case 'h':  xPosition = 7;
+                    default: break;
+                }
+                lastNdx++;
+
+                //y coordinate
+                int yPosition = Character.getNumericValue(data.charAt(lastNdx));
     }
 
     public String getFen(){

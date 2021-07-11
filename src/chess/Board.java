@@ -286,6 +286,7 @@ public class Board extends JComponent {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(!Moves.isEmpty()){
+                displayedMessage = false;
                 Move lastMove = Moves.get(Moves.size()-1);
                 Piece lastMovedPiece = lastMove.getMovedPiece();
                 Piece capturedPiece = lastMove.getCapturedPiece();
@@ -402,13 +403,16 @@ public class Board extends JComponent {
                     resetBoard();
                     drawBoard();
                 }
+                
             }
+            
             displayedMessage = true;   
         }
             
         
     }
     public void resetBoard(){
+        displayedMessage = false;
         White_Pieces.clear();
         Black_Pieces.clear();
         Moves.clear();

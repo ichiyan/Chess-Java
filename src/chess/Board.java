@@ -393,6 +393,22 @@ public class Board extends JComponent {
         }
         
         this.repaint();
+        displayedMessage = checkResult();
+            
+
+        
+    }
+
+    public void resetBoard(){
+        
+        White_Pieces.clear();
+        Black_Pieces.clear();
+        Moves.clear();
+        
+        initGrid(isWhitePerspective);
+        
+    }
+    public boolean checkResult(){
         if(whiteKing.isCheckmate() || blackKing.isCheckmate()){
             String message = (whiteKing.isCheckmate())?"Black Wins!":"White Wins!";
             Object[] options = {"Play Again",
@@ -402,24 +418,27 @@ public class Board extends JComponent {
                 if(n==0){
                     resetBoard();
                     drawBoard();
+                    return false;
                 }
-                
             }
-            
-            displayedMessage = true;   
+            return true;   
         }
-            
-        
+        if(whiteKing.isDraw() || blackKing.isDraw()){
+            String message = "StaleMate";
+            Object[] options = {"Play Again",
+            "Close",};
+            if(!displayedMessage){
+                int n = JOptionPane.showOptionDialog(null, message, "Draw", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE,null, options, null);
+                if(n==0){
+                    resetBoard();
+                    drawBoard();
+                    return false;
+                }
+            }
+            return true; 
+        }
+        return false;
     }
-    public void resetBoard(){
-        displayedMessage = false;
-        White_Pieces.clear();
-        Black_Pieces.clear();
-        Moves.clear();
-        initGrid(isWhitePerspective);
-        
-    }
-    
     public Piece getPiece(int x, int y) {
         for (Piece p : White_Pieces)
         {

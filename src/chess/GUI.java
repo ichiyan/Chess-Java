@@ -14,9 +14,11 @@ public class GUI extends JFrame {
     JButton startBtn;
     JButton playAgainstEngineBtn;
     JButton loadBtn;
+    JButton loadEngineBtn;
     StartBtnHandler startBtnHandler;
     PlayAgainstEngineHandler playAgainstEngineHandler;
     LoadBtnHandler loadBtnHandler;
+    LoadEngineBtnHandler loadEngineBtnHandler;
 
     public GUI() {
 
@@ -59,10 +61,20 @@ public class GUI extends JFrame {
         playAgainstEngineHandler = new PlayAgainstEngineHandler();
         playAgainstEngineBtn.addActionListener(playAgainstEngineHandler);
 
+        loadEngineBtn = new JButton("Load Previous Engine Game");
+        loadEngineBtn.setBounds(190, 600, 200, 50);
+        loadEngineBtn.setFocusable(false);
+        loadEngineBtn.setBackground(Color.black);
+        loadEngineBtn.setForeground(Color.white);
+
+        loadEngineBtnHandler = new LoadEngineBtnHandler();
+        loadEngineBtn.addActionListener(loadEngineBtnHandler);
+
         panel.add(titlePanel);
         panel.add(startBtn);
         panel.add(loadBtn);
         panel.add(playAgainstEngineBtn);
+        panel.add(loadEngineBtn);
 
         imageIcon = new ImageIcon("images/app_icon.png");
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -82,7 +94,7 @@ public class GUI extends JFrame {
 
     public void loadGameScreen(boolean isAgainstEngine){
         panel.setVisible(false);
-        Board board = new Board(isAgainstEngine, true);
+        Board board = new Board(isAgainstEngine, true, true);
         component = board;
         this.add(component, BorderLayout.CENTER);
     }
@@ -91,6 +103,12 @@ public class GUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e){
             loadGameScreen(false);
+        }
+    }
+    class LoadEngineBtnHandler implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e){
+            loadGameScreen(true);
         }
     }
     class StartBtnHandler implements ActionListener {

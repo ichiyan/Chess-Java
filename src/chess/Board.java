@@ -625,6 +625,8 @@ public class Board extends JComponent {
 
                 //y coordinate
                 int yPosition = Character.getNumericValue(data.charAt(lastNdx));
+            }
+        }
     }
 
     public String getFen(){

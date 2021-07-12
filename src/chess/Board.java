@@ -49,7 +49,7 @@ public class Board extends JComponent {
     JButton saveBtn;
     SaveBtnHandler saveBtnHandler;
 
-    public void loadGrid(){
+    public void loadGrid(boolean isAgainstEngine){
 
         System.out.println(White_Pieces.size());
 
@@ -61,7 +61,7 @@ public class Board extends JComponent {
             }
         }
 
-        loadGame();
+        loadGame(isAgainstEngine);
         Moves = new ArrayList<>();
     }
 
@@ -178,7 +178,12 @@ public class Board extends JComponent {
         Black_Pieces = new ArrayList();
         this.isAgainstEngine = isAgainstEngine;
 
-        loadGrid();
+        if(this.isAgainstEngine){
+            loadGrid(true);    
+        }else{
+            loadGrid(false);
+        }
+ 
 
         this.setBackground(new Color(0x6495ed));
         this.setPreferredSize(new Dimension(560, 560));

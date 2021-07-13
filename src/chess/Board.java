@@ -429,7 +429,7 @@ public class Board extends JComponent {
             return true;   
         }
         if(whiteKing.isDraw() || blackKing.isDraw()){
-            String message = "StaleMate";
+            String message = "Stalemate";
             Object[] options = {"Play Again",
             "Close",};
             if(!displayedMessage){

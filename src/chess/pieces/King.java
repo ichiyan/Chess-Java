@@ -176,22 +176,23 @@ public class King extends Piece {
     }
     public boolean isDraw(){
         //stalemate
-
         boolean isWhitesTurn = board.turnCounter % 2 != 1;
-        if(this.isWhite() && isWhitesTurn){
-            for (Piece piece : board.White_Pieces) {
-                if(!piece.availableMoves(piece.getX(), piece.getY()).isEmpty()){
-                    return false;
+        if(this.isWhite() == isWhitesTurn){
+            if(isWhitesTurn){
+                for (Piece piece : board.White_Pieces) {
+                    if(!piece.availableMoves(piece.getX(), piece.getY()).isEmpty()){
+                        return false;
+                    }
                 }
-            }
-            return true;
-        }else if(this.isBlack() && !isWhitesTurn){
-            for (Piece piece : board.Black_Pieces) {
-                if(!piece.availableMoves(piece.getX(), piece.getY()).isEmpty()){
-                    return false;
+                return true;
+            }else{
+                for (Piece piece : board.Black_Pieces) {
+                    if(!piece.availableMoves(piece.getX(), piece.getY()).isEmpty()){
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
         }
         return false;
     }

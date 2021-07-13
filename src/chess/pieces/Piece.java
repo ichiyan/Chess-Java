@@ -105,7 +105,9 @@ public abstract class Piece {
         Piece pieceAtAvailSpot;
         boolean canMove = true;
         boolean isWhitesTurn = board.turnCounter % 2 != 1;
-
+        if(x>7 || y>7){
+            return false;
+        }
         if( this.isWhite() == (isWhitesTurn)  ) {
             if (board.whiteKing.isCheck() || board.blackKing.isCheck()) {
                 // if King is in check, set piece
@@ -140,9 +142,13 @@ public abstract class Piece {
                 canMove = isWhitesTurn ? !board.whiteKing.isCheck() : !board.blackKing.isCheck();
 
             }
+            if(x == currX && y == currY ){
+                canMove = false;
+            }
             this.setX(currX);
             this.setY(currY);
         }
+        
         return canMove;
     }
 

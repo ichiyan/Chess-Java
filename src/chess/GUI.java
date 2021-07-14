@@ -114,7 +114,7 @@ public class GUI extends JFrame {
     class StartBtnHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            createGameScreen(false, true);
+            createGameScreen(false, false);
             
         }
     }

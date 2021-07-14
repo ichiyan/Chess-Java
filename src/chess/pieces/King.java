@@ -48,9 +48,9 @@ public class King extends Piece {
         if(Math.abs(destination_x-this.getX()) > 1 || Math.abs(destination_y-this.getY())  > 1 ){
             if(destination_y == this.getY()) {
                 if (destination_x - this.getX() == 2) {
-                   return canCastleKingSide();
+                   return  board.getIsWhitePerspective() ? canCastleKingSide() : canCastleQueenSide();
                 } else if (destination_x - this.getX() == -2) {
-                    return canCastleQueenSide();
+                    return board.getIsWhitePerspective() ? canCastleQueenSide() : canCastleKingSide();
                 }
             }
             return false;
@@ -67,15 +67,22 @@ public class King extends Piece {
     }
 
 
-
     public boolean canCastleKingSide(){
-        Piece kingRook = board.getPiece(7, this.getY());
+        Piece kingRook = board.getIsWhitePerspective() ? board.getPiece(7, this.getY()) : board.getPiece(0, this.getY());
         if (this.has_moved || kingRook==null || ( kingRook.getClass().equals(Rook.class) && ((Rook)kingRook).getHasMoved() ) ) {
             return false;
         } else {
-            for(int i = this.getX();i<=this.getX()+2;i++){
-                if(isUnderAttack(i, this.getY()) || (i+1<7 && board.getPiece(i+1, this.getY()) != null)){
-                    return false;
+            if(board.getIsWhitePerspective()) {
+                for (int i = this.getX(); i <= this.getX() + 2; i++) {
+                    if (isUnderAttack(i, this.getY()) || (i + 1 < 7 && board.getPiece(i + 1, this.getY()) != null)) {
+                        return false;
+                    }
+                }
+            }else{
+                for (int i = this.getX(); i >= this.getX() - 2; i--) {
+                    if (isUnderAttack(i, this.getY()) || (i - 1 > 0 && board.getPiece(i - 1, this.getY()) != null)) {
+                        return false;
+                    }
                 }
             }
         }
@@ -84,13 +91,21 @@ public class King extends Piece {
 
 
     public boolean canCastleQueenSide(){
-        Piece queenRook = board.getPiece(0, this.getY());
+        Piece queenRook =  board.getIsWhitePerspective() ? board.getPiece(0, this.getY()) : board.getPiece(7, this.getY());
         if (this.has_moved || queenRook==null || ( queenRook.getClass().equals(Rook.class) && ((Rook)queenRook).getHasMoved() )) {
             return false;
         } else {
-            for(int i = this.getX();i>=this.getX()-2;i--){
-                if(isUnderAttack(i, this.getY()) || (board.getPiece(i-1, this.getY()) != null )){
-                    return false;
+            if(board.getIsWhitePerspective()) {
+                for (int i = this.getX(); i >= this.getX() - 2; i--) {
+                    if (isUnderAttack(i, this.getY()) || (board.getPiece(i - 1, this.getY()) != null)) {
+                        return false;
+                    }
+                }
+            }else{
+                for (int i = this.getX(); i <= this.getX() + 2; i++) {
+                    if (isUnderAttack(i, this.getY()) || (board.getPiece(i + 1, this.getY()) != null)) {
+                        return false;
+                    }
                 }
             }
         }
@@ -98,7 +113,7 @@ public class King extends Piece {
     }
 
     public boolean hasQueenSideCastlingRights(){
-        Piece queenRook = board.getPiece(0, this.getY());
+        Piece queenRook =  board.getIsWhitePerspective() ? board.getPiece(0, this.getY()) : board.getPiece(7, this.getY());
         if (this.has_moved || queenRook==null || ( queenRook.getClass().equals(Rook.class) && ((Rook)queenRook).getHasMoved() )) {
             return false;
         }
@@ -106,7 +121,7 @@ public class King extends Piece {
     }
 
     public boolean hasKingSideCastlingRights(){
-        Piece kingRook = board.getPiece(7, this.getY());
+        Piece kingRook = board.getIsWhitePerspective() ? board.getPiece(7, this.getY()) : board.getPiece(0, this.getY());
         if (this.has_moved || kingRook==null || ( kingRook.getClass().equals(Rook.class) && ((Rook)kingRook).getHasMoved() ) ) {
             return false;
         }

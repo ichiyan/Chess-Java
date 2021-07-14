@@ -177,7 +177,7 @@ public class King extends Piece {
     public boolean isDraw(){
         //stalemate
         boolean isWhitesTurn = board.turnCounter % 2 != 1;
-        if(this.isWhite() == isWhitesTurn){
+        if(this.isWhite() == isWhitesTurn && !this.isCheck()){
             if(isWhitesTurn){
                 for (Piece piece : board.White_Pieces) {
                     if(!piece.availableMoves(piece.getX(), piece.getY()).isEmpty()){
@@ -194,6 +194,6 @@ public class King extends Piece {
                 return true;
             }
         }
-        return false;
+        return board.halfMoveCounter>=50;
     }
 }

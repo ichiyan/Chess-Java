@@ -414,35 +414,31 @@ public class Board extends JComponent {
         
     }
     public boolean checkResult(){
+        String message = "", header = "";
+        Object[] options = {"Play Again","Close",};
+        int n;
+        boolean status = false;
+        
         if(whiteKing.isCheckmate() || blackKing.isCheckmate()){
-            String message = (whiteKing.isCheckmate())?"Black Wins!":"White Wins!";
-            Object[] options = {"Play Again",
-            "Close",};
-            if(!displayedMessage){
-                int n = JOptionPane.showOptionDialog(null, message, "Checkmate", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE,null, options, null);
-                if(n==0){
-                    resetBoard();
-                    drawBoard();
-                    return false;
-                }
-            }
-            return true;   
+            message = (whiteKing.isCheckmate())?"Black Wins!":"White Wins!";
+            header = "Checkmate";
+            status = true;  
+        }else if(whiteKing.isDraw() || blackKing.isDraw()){
+            message = "Stalemate";
+            header = "Draw";
+            status = true;
         }
-        if(whiteKing.isDraw() || blackKing.isDraw()){
-            String message = "Stalemate";
-            Object[] options = {"Play Again",
-            "Close",};
-            if(!displayedMessage){
-                int n = JOptionPane.showOptionDialog(null, message, "Draw", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE,null, options, null);
-                if(n==0){
-                    resetBoard();
-                    drawBoard();
-                    return false;
-                }
+        if(status && !displayedMessage){
+            n = JOptionPane.showOptionDialog(null, message, header, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE,null, options, null);
+            if(n==0){
+                resetBoard();
+                drawBoard();
+                return false;
             }
-            return true; 
+            
         }
-        return false;
+        return status;
+        
     }
     public Piece getPiece(int x, int y) {
         for (Piece p : White_Pieces)

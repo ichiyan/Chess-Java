@@ -105,13 +105,14 @@ public abstract class Piece {
         Piece pieceAtAvailSpot;
         boolean canMove = true;
         boolean isWhitesTurn = board.turnCounter % 2 != 1;
+        pieceAtAvailSpot = board.getPiece(x, y);
         if(x>7 || y>7){
             return false;
         }
         if( this.isWhite() == (isWhitesTurn)  ) {
             if (board.whiteKing.isCheck() || board.blackKing.isCheck()) {
                 // if King is in check, set piece
-                pieceAtAvailSpot = board.getPiece(x, y);
+               
                 this.setX(x);
                 this.setY(y);
                 // if set piece results to King no longer in check (block path of attacking piece or capture attacking piece)
@@ -139,7 +140,13 @@ public abstract class Piece {
                 // King is not in check but if moving a piece results to ally King being in check, then move is not allowed
                 this.setX(x);
                 this.setY(y);
-                canMove = isWhitesTurn ? !board.whiteKing.isCheck() : !board.blackKing.isCheck();
+                if(pieceAtAvailSpot != null ){
+                    canMove = pieceAtAvailSpot.isWhite() == !isWhitesTurn;
+                }else{
+                    canMove = isWhitesTurn ? !board.whiteKing.isCheck() : !board.blackKing.isCheck();
+                }
+                    
+
 
             }
             if(x == currX && y == currY ){

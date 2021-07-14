@@ -6,6 +6,8 @@ public class King extends Piece {
     private boolean has_moved;
     private boolean isFirstMove;
     private boolean isCastleMove;
+    private boolean hasQSideCastlingRights;
+    private boolean hasKSideCastlingRights;
 
     public King(int x, int y, boolean is_white, String file_path, Board board)
     {
@@ -13,6 +15,8 @@ public class King extends Piece {
         has_moved = false;
         isFirstMove = false;
         isCastleMove = false;
+        hasQSideCastlingRights = true;
+        hasKSideCastlingRights = true;
     }
 
     public void setHasMoved(boolean has_moved)
@@ -38,6 +42,22 @@ public class King extends Piece {
 
     public void setIsCastleMove(boolean castleMove) {
         isCastleMove = castleMove;
+    }
+
+    public boolean getHasQSideCastlingRights() {
+        return hasQSideCastlingRights;
+    }
+
+    public void setHasQSideCastlingRights(boolean hasQSideCastlingRights) {
+        this.hasQSideCastlingRights = hasQSideCastlingRights;
+    }
+
+    public boolean getHasKSideCastlingRights() {
+        return hasKSideCastlingRights;
+    }
+
+    public void setHasKSideCastlingRights(boolean hasKSideCastlingRights) {
+        this.hasKSideCastlingRights = hasKSideCastlingRights;
     }
 
     @Override
@@ -111,23 +131,6 @@ public class King extends Piece {
         }
         return true;
     }
-
-    public boolean hasQueenSideCastlingRights(){
-        Piece queenRook =  board.getIsWhitePerspective() ? board.getPiece(0, this.getY()) : board.getPiece(7, this.getY());
-        if (this.has_moved || queenRook==null || ( queenRook.getClass().equals(Rook.class) && ((Rook)queenRook).getHasMoved() )) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean hasKingSideCastlingRights(){
-        Piece kingRook = board.getIsWhitePerspective() ? board.getPiece(7, this.getY()) : board.getPiece(0, this.getY());
-        if (this.has_moved || kingRook==null || ( kingRook.getClass().equals(Rook.class) && ((Rook)kingRook).getHasMoved() ) ) {
-            return false;
-        }
-        return true;
-    }
-
 
     public boolean isUnderAttack(int x, int y){
 

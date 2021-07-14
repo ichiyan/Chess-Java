@@ -82,35 +82,35 @@ public class Move {
 
     public String convertToAlgebraicNotation (){
 
-        String notation = "";
+        StringBuffer notation = new StringBuffer();
 
         if(movedPiece.getClass().equals(Pawn.class)){
             if(capturedPiece != null){
-                notation = initialSpot.getXLabel() + "x";
+                notation.append(initialSpot.getXLabel()).append('x');
             }
-            notation += finalSpot.getXLabel() + Integer.toString(finalSpot.getYLabel());
+            notation.append(finalSpot.getXLabel()).append(finalSpot.getYLabel());
         }else if (movedPiece.getClass().equals(King.class) && ( Math.abs(initialSpot.getX() - finalSpot.getX()) == 2 )){
            //castling
             if(board.getIsWhitePerspective()){
-                notation = initialSpot.getX() > finalSpot.getX() ? "0-0-0" : "0-0";
+                notation.append(initialSpot.getX() > finalSpot.getX() ? "0-0-0" : "0-0");
             }else{
-                notation = initialSpot.getX() > finalSpot.getX() ? "0-0" : "0-0-0";
+                notation.append(initialSpot.getX() > finalSpot.getX() ? "0-0" : "0-0-0");
             }
         }else{
             //notation = Character.toString(Character.toUpperCase(movedPiece.getAbbrev()));
-            notation = movedPiece.isWhite() ? movedPiece.getUnicodeWhite() : movedPiece.getUnicodeBlack();
+            notation.append(movedPiece.isWhite() ? movedPiece.getUnicodeWhite() : movedPiece.getUnicodeBlack());
             if (capturedPiece != null){
-                notation += "x";
+               notation.append('x');
             }
-            notation += finalSpot.getXLabel() + Integer.toString(finalSpot.getYLabel());
+            notation.append(finalSpot.getXLabel()).append(finalSpot.getYLabel());
         }
 
         if( (board.whiteKing.isCheck() && !board.whiteKing.isCheckmate()) || (board.blackKing.isCheck() && !board.blackKing.isCheckmate())){
-            notation += "+";
+            notation.append('+');
         }else if (board.whiteKing.isCheckmate() || board.blackKing.isCheckmate()){
-            notation += "#";
+            notation.append('#');
         }
 
-        return notation;
+        return notation.toString();
     }
 }

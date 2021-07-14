@@ -61,8 +61,8 @@ public class Board extends JComponent {
             }
         }
 
-        loadGame(isAgainstEngine);
         Moves = new ArrayList<>();
+        loadGame(isAgainstEngine);
     }
 
     public boolean getIsWhitePerspective() {
@@ -478,6 +478,8 @@ public class Board extends JComponent {
         Scanner saveReader = null;
         int lastNdx = 0;
         char charAtLastNdx;
+        StringBuffer castlingRights = new StringBuffer();
+        String stringCastlingRights;
 
         try{
             if(isAgainstEngine){
@@ -499,7 +501,7 @@ public class Board extends JComponent {
             e.printStackTrace();
         }
 
-
+        //set pieces
         outerloop:
         for(int r = 0; r <= 7; r++){
             System.out.println("R is " + r);
@@ -579,28 +581,51 @@ public class Board extends JComponent {
         }
 
         lastNdx++;
+
+        //set turn
         if(data.charAt(lastNdx) == 'w'){
             System.out.println("White turn");
+            turnCounter = 0;
             lastNdx += 2;
         }else{
             System.out.println("Black turn");
+            turnCounter = 1;
             lastNdx += 2;
         }
-          
-        this.drawBoard();
 
+        //castling rights
         while(data.charAt(lastNdx) != ' '){
-            switch(data.charAt(lastNdx)){
-                case 'K': this.whiteKing.canCastleKingSide(); break;
-                case 'Q': this.whiteKing.canCastleQueenSide(); break;
-                case 'k': this.blackKing.canCastleKingSide(); break;
-                case 'q': this.blackKing.canCastleKingSide(); break;
-                case '-': break;
-            }
+            castlingRights.append(data.charAt(lastNdx));
             lastNdx++;
         }
 
+        stringCastlingRights = castlingRights.toString();
+        System.out.println("CR: " + stringCastlingRights);
+        if(stringCastlingRights.contains("-")){
+            whiteKing.setHasMoved(true);
+            whiteKing.setHasQSideCastlingRights(false);
+            whiteKing.setHasKSideCastlingRights(false);
+            blackKing.setHasMoved(true);
+            blackKing.setHasQSideCastlingRights(false);
+            blackKing.setHasKSideCastlingRights(false);
+        }else{
+            if(!stringCastlingRights.contains("Q")) {
+                whiteKing.setHasQSideCastlingRights(false);
+            }
+            if(!stringCastlingRights.contains("K")) {
+                whiteKing.setHasKSideCastlingRights(false);
+            }
+            if(!stringCastlingRights.contains("q")) {
+                blackKing.setHasQSideCastlingRights(false);
+            }
+            if(!stringCastlingRights.contains("k")) {
+                blackKing.setHasKSideCastlingRights(false);
+            }
+        }
+
         lastNdx++;
+
+        this.drawBoard();
 
         System.out.println("Character is: " + data.charAt(lastNdx));
         if(data.charAt(lastNdx) == '-'){
@@ -700,32 +725,26 @@ public class Board extends JComponent {
             fen.append(" b ");
         }
 
-
-        if(whiteKing.hasKingSideCastlingRights()){
+        //FEN castling rights
+        if(whiteKing.getHasKSideCastlingRights()){
             fen.append("K");
             invalidWhiteKCastle = false;
         }
-        if(whiteKing.hasQueenSideCastlingRights()){
+        if(whiteKing.getHasQSideCastlingRights()){
             fen.append("Q");
             invalidWhiteQCastle = false;
         }
 
-
-        if(invalidWhiteQCastle && invalidWhiteKCastle){
-            fen.append("-");
-        }
-
-        if(blackKing.hasKingSideCastlingRights()){
+        if(blackKing.getHasKSideCastlingRights()){
             fen.append("k");
             invalidBlackKCastle = false;
         }
-        if(blackKing.hasQueenSideCastlingRights()){
+        if(blackKing.getHasQSideCastlingRights()){
             fen.append("q");
             invalidBlackQCastle = false;
         }
 
-
-       if(invalidBlackQCastle && invalidBlackKCastle){
+       if(invalidWhiteQCastle && invalidWhiteKCastle && invalidBlackQCastle && invalidBlackKCastle){
            fen.append("-");
        }
 
@@ -983,7 +1002,45 @@ public class Board extends JComponent {
                         blackKing = castedKing;
                     }
                     castedKing.setHasMoved(true);
+                    castedKing.setHasQSideCastlingRights(false);
+                    castedKing.setHasKSideCastlingRights(false);
                 }
+
+                if (Active_Piece.getClass().equals(Rook.class) && ((Rook)Active_Piece).getHasMoved() == false) {
+                    Rook castedRook = (Rook) (Active_Piece);
+                    castedRook.setIsFirstMove(!castedRook.getHasMoved());
+                    castedRook.setHasMoved(true);
+                    if (isWhitePerspective) {
+                        if (castedRook.getX() == 0) {
+                            if (castedRook.getY() == 7) {
+                                whiteKing.setHasQSideCastlingRights(false);
+                            } else if (castedRook.getY() == 0){
+                                blackKing.setHasQSideCastlingRights(false);
+                            }
+                        } else if (castedRook.getX() == 7){
+                            if (castedRook.getY() == 7) {
+                                whiteKing.setHasKSideCastlingRights(false);
+                            } else if (castedRook.getY() == 0){
+                                blackKing.setHasKSideCastlingRights(false);
+                            }
+                        }
+                    }else{
+                        if (castedRook.getX() == 0) {
+                            if (castedRook.getY() == 7) {
+                                blackKing.setHasKSideCastlingRights(false);
+                            } else if (castedRook.getY() == 0){
+                                whiteKing.setHasKSideCastlingRights(false);
+                            }
+                        } else if (castedRook.getX() == 7){
+                            if (castedRook.getY() == 7) {
+                                blackKing.setHasQSideCastlingRights(false);
+                            } else if (castedRook.getY() == 0){
+                                whiteKing.setHasQSideCastlingRights(false);
+                            }
+                        }
+                    }
+                }
+
 
                 // do move
                 Active_Piece.setX(Clicked_Column);
@@ -1007,10 +1064,6 @@ public class Board extends JComponent {
                         Moves.get(movesLastNdx).setCapturedPiece(prevMovedPiece);
                     }
 
-                } else if (Active_Piece.getClass().equals(Rook.class)) {
-                    Rook castedRook = (Rook) (Active_Piece);
-                    castedRook.setIsFirstMove(!castedRook.getHasMoved());
-                    castedRook.setHasMoved(true);
                 }
 
                 //if piece is pawn, check if promotable

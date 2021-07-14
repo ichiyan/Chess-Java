@@ -200,7 +200,7 @@ public class Board extends JComponent {
         drawBoard();
 
         undoBtn = new JButton("Undo Move");
-        undoBtn.setBounds(220, 580, 100, 40);
+        undoBtn.setBounds(150, 580, 100, 40);
         undoBtn.setFocusable(false);
         undoBtn.setBackground(Color.BLACK);
         undoBtn.setForeground(Color.WHITE);
@@ -249,7 +249,7 @@ public class Board extends JComponent {
         drawBoard();
 
         undoBtn = new JButton("Undo Move");
-        undoBtn.setBounds(220, 580, 100, 40);
+        undoBtn.setBounds(150, 580, 100, 40);
         undoBtn.setFocusable(false);
         undoBtn.setBackground(Color.BLACK);
         undoBtn.setForeground(Color.WHITE);

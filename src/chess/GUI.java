@@ -35,7 +35,7 @@ public class GUI extends JFrame {
         titlePanel.add(titleLabel);
 
         startBtn = new JButton("Start New Game");
-        startBtn.setBounds(190, 300, 200, 50);
+        startBtn.setBounds(180, 300, 200, 50);
         startBtn.setFocusable(false);
         startBtn.setBackground(Color.BLACK);
         startBtn.setForeground(Color.WHITE);
@@ -44,7 +44,7 @@ public class GUI extends JFrame {
         startBtn.addActionListener(startBtnHandler);
 
         loadBtn = new JButton("Load Previous Game");
-        loadBtn.setBounds(190, 400, 200, 50);
+        loadBtn.setBounds(50, 550, 200, 50);
         loadBtn.setFocusable(false);
         loadBtn.setBackground(Color.black);
         loadBtn.setForeground(Color.white);
@@ -53,7 +53,7 @@ public class GUI extends JFrame {
         loadBtn.addActionListener(loadBtnHandler);
 
         playAgainstEngineBtn = new JButton("Play Against Engine");
-        playAgainstEngineBtn.setBounds(190, 500, 200, 50);
+        playAgainstEngineBtn.setBounds(180, 400, 200, 50);
         playAgainstEngineBtn.setFocusable(false);
         playAgainstEngineBtn.setBackground(Color.BLACK);
         playAgainstEngineBtn.setForeground(Color.WHITE);
@@ -62,7 +62,7 @@ public class GUI extends JFrame {
         playAgainstEngineBtn.addActionListener(playAgainstEngineHandler);
 
         loadEngineBtn = new JButton("Load Previous Engine Game");
-        loadEngineBtn.setBounds(190, 600, 200, 50);
+        loadEngineBtn.setBounds(300, 550, 200, 50);
         loadEngineBtn.setFocusable(false);
         loadEngineBtn.setBackground(Color.black);
         loadEngineBtn.setForeground(Color.white);

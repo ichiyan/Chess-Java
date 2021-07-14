@@ -9,7 +9,7 @@ public class King extends Piece {
 
     public King(int x, int y, boolean is_white, String file_path, Board board)
     {
-        super(x,y,is_white,file_path, board, 'k');
+        super(x,y,is_white,file_path, board, 'k', "\u2654", "\u265A");
         has_moved = false;
         isFirstMove = false;
         isCastleMove = false;

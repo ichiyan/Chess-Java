@@ -6,7 +6,7 @@ public class Queen extends Piece {
 
     public Queen(int x, int y, boolean is_white, String file_path, Board board)
     {
-        super(x,y,is_white,file_path, board, 'q');
+        super(x,y,is_white,file_path, board, 'q', "\u2655", "\u265B");
     }
     
     @Override

@@ -1,15 +1,19 @@
 package chess;
 
+import chess.pieces.King;
 import chess.pieces.Pawn;
 import chess.pieces.Piece;
 
 public class Move {
+    private Board board;
     private Piece movedPiece;
     private Piece capturedPiece;
     private Spot initialSpot;
     private Spot finalSpot;
+    private String notation;
 
-    public Move(Piece movedPiece, Piece capturedPiece, Spot initialSpot, Spot finalSpot) {
+    public Move(Piece movedPiece, Piece capturedPiece, Spot initialSpot, Spot finalSpot, Board board) {
+        this.board = board;
         this.movedPiece = movedPiece;
         this.capturedPiece = capturedPiece;
         this.initialSpot = initialSpot;
@@ -48,6 +52,14 @@ public class Move {
         this.finalSpot = finalSpot;
     }
 
+    public String getNotation() {
+        return notation;
+    }
+
+    public void setNotation(String notation) {
+        this.notation = notation;
+    }
+
     public boolean isEnPassant(Board board, Move move){
         Piece movedPiece = move.getMovedPiece();
         return (movedPiece.getClass().equals(Pawn.class) && Math.abs(move.getFinalSpot().getY() - move.getInitialSpot().getY()) == 2 );
@@ -66,5 +78,39 @@ public class Move {
             }
         }
         return false;
+    }
+
+    public String convertToAlgebraicNotation (){
+
+        String notation = "";
+
+        if(movedPiece.getClass().equals(Pawn.class)){
+            if(capturedPiece != null){
+                notation = initialSpot.getXLabel() + "x";
+            }
+            notation += finalSpot.getXLabel() + Integer.toString(finalSpot.getYLabel());
+        }else if (movedPiece.getClass().equals(King.class) && ( Math.abs(initialSpot.getX() - finalSpot.getX()) == 2 )){
+           //castling
+            if(board.getIsWhitePerspective()){
+                notation = initialSpot.getX() > finalSpot.getX() ? "0-0-0" : "0-0";
+            }else{
+                notation = initialSpot.getX() > finalSpot.getX() ? "0-0" : "0-0-0";
+            }
+        }else{
+            //notation = Character.toString(Character.toUpperCase(movedPiece.getAbbrev()));
+            notation = movedPiece.isWhite() ? movedPiece.getUnicodeWhite() : movedPiece.getUnicodeBlack();
+            if (capturedPiece != null){
+                notation += "x";
+            }
+            notation += finalSpot.getXLabel() + Integer.toString(finalSpot.getYLabel());
+        }
+
+        if( (board.whiteKing.isCheck() && !board.whiteKing.isCheckmate()) || (board.blackKing.isCheck() && !board.blackKing.isCheckmate())){
+            notation += "+";
+        }else if (board.whiteKing.isCheckmate() || board.blackKing.isCheckmate()){
+            notation += "#";
+        }
+
+        return notation;
     }
 }

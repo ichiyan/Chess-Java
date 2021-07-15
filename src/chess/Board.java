@@ -473,6 +473,11 @@ public class Board extends JComponent {
             e.printStackTrace();
         }
     }
+
+    public void loadPieces(){
+
+    }
+
     public void loadGame(boolean isAgainstEngine){
         String data = null;
         Scanner saveReader = null;
@@ -533,6 +538,11 @@ public class Board extends JComponent {
                         case 'P' -> {
                             White_Pieces.add(new Pawn(f, r, true, "Pawn.png", this));
                             System.out.println("Created P at " + f + " and " + r);
+
+                            Pawn piece = (Pawn) White_Pieces.get(White_Pieces.size()-1);
+                            if(piece.getY() != 6){
+                                piece.setHasMoved(true);
+                            }
                         }
                     }
                     lastNdx++;
@@ -562,6 +572,11 @@ public class Board extends JComponent {
                         case 'p' -> {
                             Black_Pieces.add(new Pawn(f, r, false, "Pawn.png", this));
                             System.out.println("Created p at" + f + " and " + r);
+
+                            Pawn piece = (Pawn) Black_Pieces.get(Black_Pieces.size()-1);
+                            if(piece.getY() != 1){
+                                piece.setHasMoved(true);
+                            }
                         }
                     }
                     lastNdx++;
@@ -628,6 +643,8 @@ public class Board extends JComponent {
         this.drawBoard();
 
         System.out.println("Character is: " + data.charAt(lastNdx));
+
+        //pawn en passant not finished btw
         if(data.charAt(lastNdx) == '-'){
             lastNdx+=2;
             System.out.println("Character is: " + data.charAt(lastNdx));
@@ -673,7 +690,6 @@ public class Board extends JComponent {
             lastNdx++;
         }
         this.halfMoveCounter = Integer.parseInt(str);
-       
     }
 
     public String getFen(){

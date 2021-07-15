@@ -22,6 +22,7 @@ public class Board extends JComponent {
     public int prevHalfMoveCounter = 0;  //stores halfMoveCounter before reset in case of undo
     private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
     private boolean displayedMessage = false;
+    private ImagePanel panel;
 
     private final int Square_Width = 65;
     public Board board = this;
@@ -43,14 +44,12 @@ public class Board extends JComponent {
     private String board_white_perspective_file_path = "images" + File.separator + "board3.png";
     private String board_black_perspective_file_path = "images" + File.separator + "board3_black_perspective.png";
     private String active_square_file_path = "images" + File.separator + "active_square.png";
-
+    public MovePanel movePanel;
     JButton undoBtn;
     UndoBtnHandler undoBtnHandler;
     JButton saveBtn;
     SaveBtnHandler saveBtnHandler;
-    MovePanel movePanel;
-    StringBuffer notation = new StringBuffer();
-    
+
     public void loadGrid(boolean isAgainstEngine){
 
         System.out.println(White_Pieces.size());
@@ -86,7 +85,7 @@ public class Board extends JComponent {
         }
 
         //Image white_piece = loadImage("images/white_pieces/" + piece_name + ".png");
-        //Image black_piece = loadImage("images/black_pieces/" + piece_name + ".png");  
+        //Image black_piece = loadImage("images/black_pieces/" + piece_name + ".png");
 
         if (isWhitePerspective) {
             White_Pieces.add(new King(4, 7, true, "King.png", this));
@@ -172,23 +171,22 @@ public class Board extends JComponent {
         halfMoveCounter = 0;
         prevHalfMoveCounter = 0;
     }
-    public Board(boolean isAgainstEngine, boolean loadedGame, boolean isWhitePerspective, MovePanel movePanel){
+    public Board(boolean isAgainstEngine, boolean loadedGame, boolean isWhitePerspective){
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
         Piece_Graphics = new ArrayList();
         White_Pieces = new ArrayList();
         Black_Pieces = new ArrayList();
         this.isAgainstEngine = isAgainstEngine;
-        this.isWhitePerspective = isWhitePerspective;
-        this.movePanel = movePanel;
-        if(loadedGame){
-            loadGrid(isAgainstEngine);    
-        }else{
-            initGrid(isWhitePerspective);
-        }
- 
 
-        this.setBackground(Color.LIGHT_GRAY);
+        if(this.isAgainstEngine){
+            loadGrid(true);
+        }else{
+            loadGrid(false);
+        }
+
+
+        this.setBackground(new Color(0x6495ed));
         this.setPreferredSize(new Dimension(560, 560));
         this.setMinimumSize(new Dimension(100, 100));
         this.setMaximumSize(new Dimension(1000, 1000));
@@ -223,22 +221,72 @@ public class Board extends JComponent {
         saveBtn.addActionListener(saveBtnHandler);
 
         this.add(saveBtn);
-
-         if(isAgainstEngine){
-             stockfish = new Stockfish();
-             stockfish.startEngine();
-             stockfish.sendCommand("uci");
-             stockfish.sendCommand("ucinewgame");
-             if(!isWhitePerspective) {
-                 doEngineMove();
-             }
-         }
     }
 
+    public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel) {
+
+        BoardGrid = new Integer[rows][cols];
+        Static_Shapes = new ArrayList();
+        Piece_Graphics = new ArrayList();
+        White_Pieces = new ArrayList();
+        Black_Pieces = new ArrayList();
+        this.isAgainstEngine = isAgainstEngine;
+        this.isWhitePerspective = isWhitePerspective;
+        this.panel = panel;
+        this.movePanel = movePanel;
+        initGrid(isWhitePerspective);
+
+        this.setBackground(new Color(0x6495ed));
+        this.setPreferredSize(new Dimension(560, 560));
+        this.setMinimumSize(new Dimension(100, 100));
+        this.setMaximumSize(new Dimension(1000, 1000));
+
+        this.addMouseListener(mouseAdapter);
+        this.addComponentListener(componentAdapter);
+        this.addKeyListener(keyAdapter);
+
+
+        this.setVisible(true);
+        this.requestFocus();
+        drawBoard();
+
+        undoBtn = new JButton("Undo Move");
+        undoBtn.setBounds(150, 580, 100, 40);
+        undoBtn.setFocusable(false);
+        undoBtn.setBackground(Color.BLACK);
+        undoBtn.setForeground(Color.WHITE);
+
+        undoBtnHandler = new UndoBtnHandler();
+        undoBtn.addActionListener(undoBtnHandler);
+
+        this.add(undoBtn);
+
+        saveBtn = new JButton("Back to Menu");
+        saveBtn.setBounds(320, 580, 120, 40);
+        saveBtn.setFocusable(false);
+        saveBtn.setBackground(Color.BLACK);
+        saveBtn.setForeground(Color.WHITE);
+
+        saveBtnHandler = new SaveBtnHandler();
+        saveBtn.addActionListener(saveBtnHandler);
+
+        this.add(saveBtn);
+
+        if(isAgainstEngine){
+            stockfish = new Stockfish();
+            stockfish.startEngine();
+            stockfish.sendCommand("uci");
+            stockfish.sendCommand("ucinewgame");
+            if(!isWhitePerspective) {
+                doEngineMove();
+            }
+        }
+    }
     class SaveBtnHandler implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e){
             saveGame(isAgainstEngine);
+            panel.setVisible(true);
         }
     }
 
@@ -296,9 +344,9 @@ public class Board extends JComponent {
                         Black_Pieces.add(capturedPiece);
                     }
 
-                   // if(!lastMove.isEnPassantCapture(board)){
-                        capturedPiece.setX(lastMove.getFinalSpot().getX());
-                        capturedPiece.setY(lastMove.getFinalSpot().getY());
+                    // if(!lastMove.isEnPassantCapture(board)){
+                    capturedPiece.setX(lastMove.getFinalSpot().getX());
+                    capturedPiece.setY(lastMove.getFinalSpot().getY());
 //                    }else{
 //                        Move prevMove = Moves.get(Moves.size()-2);
 //                        capturedPiece.setX(prevMove.getFinalSpot().getX());
@@ -337,7 +385,7 @@ public class Board extends JComponent {
             Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*Active_Piece.getX(),Square_Width*Active_Piece.getY(), active_square.getWidth(null), active_square.getHeight(null))));
             Active_Piece.moves.forEach((move) -> Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*move.getX(),Square_Width*move.getY(), active_square.getWidth(null), active_square.getHeight(null)))));
         }
-        
+
         for (Piece white_piece : White_Pieces) {
             int COL = white_piece.getX();
             int ROW = white_piece.getY();
@@ -357,13 +405,13 @@ public class Board extends JComponent {
     }
 
     public void resetBoard(){
-        
+
         White_Pieces.clear();
         Black_Pieces.clear();
         Moves.clear();
-        
+
         initGrid(isWhitePerspective);
-        
+
     }
 
     public boolean checkResult(){
@@ -371,11 +419,11 @@ public class Board extends JComponent {
         Object[] options = {"Play Again","Close",};
         int n;
         boolean status = false;
-        
+
         if(whiteKing.isCheckmate() || blackKing.isCheckmate()){
             message = (whiteKing.isCheckmate())?"Black Wins!":"White Wins!";
             header = "Checkmate";
-            status = true;  
+            status = true;
         }else if(whiteKing.isDraw() || blackKing.isDraw()){
             message = "Stalemate";
             header = "Draw";
@@ -388,10 +436,10 @@ public class Board extends JComponent {
                 drawBoard();
                 return false;
             }
-            
+
         }
         return status;
-        
+
     }
 
     public void promotePawn(Pawn promotedPawn){
@@ -509,7 +557,7 @@ public class Board extends JComponent {
                 while(saveReader.hasNextLine()){
                     data = saveReader.nextLine();
                 }
-            }   
+            }
             saveReader.close();
         } catch(FileNotFoundException e){
             System.out.println("An error has occurred");
@@ -520,7 +568,7 @@ public class Board extends JComponent {
         outerloop:
         for(int r = 0; r <= 7; r++){
             for(int f = 0; f <= 7; f++){
-               charAtLastNdx = data.charAt(lastNdx);
+                charAtLastNdx = data.charAt(lastNdx);
                 if(Character.isUpperCase(charAtLastNdx)){
                     switch (charAtLastNdx) {
                         case 'R' -> {
@@ -780,11 +828,11 @@ public class Board extends JComponent {
             invalidBlackQCastle = false;
         }
 
-       if(invalidWhiteQCastle && invalidWhiteKCastle && invalidBlackQCastle && invalidBlackKCastle){
-           fen.append("-");
-       }
+        if(invalidWhiteQCastle && invalidWhiteKCastle && invalidBlackQCastle && invalidBlackKCastle){
+            fen.append("-");
+        }
 
-       //FEN possible En Passant targets
+        //FEN possible En Passant targets
         if(!Moves.isEmpty()) {
             Move lastMove = Moves.get(Moves.size() - 1);
             if (lastMove.getMovedPiece().getClass().equals(Pawn.class) &&
@@ -802,145 +850,144 @@ public class Board extends JComponent {
             fen.append(" -");
         }
 
-       //FEN half move clock
+        //FEN half move clock
         fen.append(" ").append(halfMoveCounter);
 
-       //FEN full move counter
+        //FEN full move counter
         fen.append(" ").append(fullMoveCounter);
 
-       System.out.println(fen);
-       return fen.toString();
+        System.out.println(fen);
+        return fen.toString();
     }
-    
     public void doEngineMove(){
         String bestMove = stockfish.getBestMove(getFen(), 20);
         System.out.println("BEST MOVE: " + bestMove);
 
-            Spot initialSpot = convertUci(bestMove.substring(0, 2));
-            Spot finalSpot = convertUci(bestMove.substring(2, 4));
-            Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
-            Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
+        Spot initialSpot = convertUci(bestMove.substring(0, 2));
+        Spot finalSpot = convertUci(bestMove.substring(2, 4));
+        Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
+        Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
 
-            Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot, this));
+        Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot, this));
 
-            //castling
-            if (movedPiece.getClass().equals(King.class) && ( Math.abs(initialSpot.getX() - finalSpot.getX()) == 2 )) {
-                Rook castleRook;
-                if (initialSpot.getX() > finalSpot.getX()) {
-                    castleRook = (Rook) getPiece(0, finalSpot.getY());
-                    castleRook.setX(finalSpot.getX() + 1);
-                } else {
-                    castleRook = (Rook) getPiece(7, finalSpot.getY());
-                    castleRook.setX(finalSpot.getX() - 1);
-                }
-                ((King) movedPiece).setHasMoved(true);
-            }
-
-            //promotion
-            if (bestMove.length() > 4) {
-                char promotion = bestMove.charAt(4);
-                switch (promotion) {
-                    case 'b' -> {
-                        if (movedPiece.isWhite()) {
-                            White_Pieces.remove(movedPiece);
-                            White_Pieces.add(new Bishop(finalSpot.getX(), finalSpot.getY(), true, "Bishop.png", this));
-                        } else {
-                            Black_Pieces.remove(movedPiece);
-                            Black_Pieces.add(new Bishop(finalSpot.getX(), finalSpot.getY(), false, "Bishop.png", this));
-                        }
-                    }
-                    case 'n' -> {
-                        if (movedPiece.isWhite()) {
-                            White_Pieces.remove(movedPiece);
-                            White_Pieces.add(new Knight(finalSpot.getX(), finalSpot.getY(), true, "Knight.png", this));
-                        } else {
-                            Black_Pieces.remove(movedPiece);
-                            Black_Pieces.add(new Knight(finalSpot.getX(), finalSpot.getY(), false, "Knight.png", this));
-                        }
-                    }
-                    case 'r' -> {
-                        if (movedPiece.isWhite()) {
-                            White_Pieces.remove(movedPiece);
-                            White_Pieces.add(new Rook(finalSpot.getX(), finalSpot.getY(), true, "Rook.png", this));
-                        } else {
-                            Black_Pieces.remove(movedPiece);
-                            Black_Pieces.add(new Rook(finalSpot.getX(), finalSpot.getY(), false, "Rook.png", this));
-                        }
-                    }
-                    case 'q' -> {
-                        if (movedPiece.isWhite()) {
-                            White_Pieces.remove(movedPiece);
-                            White_Pieces.add(new Queen(finalSpot.getX(), finalSpot.getY(), true, "Queen.png", this));
-                        } else {
-                            Black_Pieces.remove(movedPiece);
-                            Black_Pieces.add(new Queen(finalSpot.getX(), finalSpot.getY(), false, "Queen.png", this));
-                        }
-                    }
-                }
-            }
-
-            //normal capture
-            if (capturedPiece != null) {
-                if (capturedPiece.isWhite()) {
-                    White_Pieces.remove(capturedPiece);
-                } else {
-                    Black_Pieces.remove(capturedPiece);
-                }
-            }
-
-            // en passant capture
-            int lastNdx = Moves.size() - 1;
-            if (Moves.get(lastNdx).isEnPassantCapture(board)) {
-                Piece prevMovedPiece = Moves.get(lastNdx - 1).getMovedPiece();
-                if (prevMovedPiece.isWhite()) {
-                    White_Pieces.remove(prevMovedPiece);
-                } else {
-                    Black_Pieces.remove(prevMovedPiece);
-                }
-                Moves.get(lastNdx).setCapturedPiece(prevMovedPiece);
-            }
-
-            movedPiece.setX(finalSpot.getX());
-            movedPiece.setY(finalSpot.getY());
-
-            if (movedPiece.getClass().equals(Pawn.class) || capturedPiece != null) {
-                prevHalfMoveCounter = halfMoveCounter;
-                halfMoveCounter = 0;
+        //castling
+        if (movedPiece.getClass().equals(King.class) && ( Math.abs(initialSpot.getX() - finalSpot.getX()) == 2 )) {
+            Rook castleRook;
+            if (initialSpot.getX() > finalSpot.getX()) {
+                castleRook = (Rook) getPiece(0, finalSpot.getY());
+                castleRook.setX(finalSpot.getX() + 1);
             } else {
-                halfMoveCounter++;
+                castleRook = (Rook) getPiece(7, finalSpot.getY());
+                castleRook.setX(finalSpot.getX() - 1);
             }
+            ((King) movedPiece).setHasMoved(true);
+        }
 
-            fullMoveCounter++;
-            turnCounter++;
-            drawBoard();
+        //promotion
+        if (bestMove.length() > 4) {
+            char promotion = bestMove.charAt(4);
+            switch (promotion) {
+                case 'b' -> {
+                    if (movedPiece.isWhite()) {
+                        White_Pieces.remove(movedPiece);
+                        White_Pieces.add(new Bishop(finalSpot.getX(), finalSpot.getY(), true, "Bishop.png", this));
+                    } else {
+                        Black_Pieces.remove(movedPiece);
+                        Black_Pieces.add(new Bishop(finalSpot.getX(), finalSpot.getY(), false, "Bishop.png", this));
+                    }
+                }
+                case 'n' -> {
+                    if (movedPiece.isWhite()) {
+                        White_Pieces.remove(movedPiece);
+                        White_Pieces.add(new Knight(finalSpot.getX(), finalSpot.getY(), true, "Knight.png", this));
+                    } else {
+                        Black_Pieces.remove(movedPiece);
+                        Black_Pieces.add(new Knight(finalSpot.getX(), finalSpot.getY(), false, "Knight.png", this));
+                    }
+                }
+                case 'r' -> {
+                    if (movedPiece.isWhite()) {
+                        White_Pieces.remove(movedPiece);
+                        White_Pieces.add(new Rook(finalSpot.getX(), finalSpot.getY(), true, "Rook.png", this));
+                    } else {
+                        Black_Pieces.remove(movedPiece);
+                        Black_Pieces.add(new Rook(finalSpot.getX(), finalSpot.getY(), false, "Rook.png", this));
+                    }
+                }
+                case 'q' -> {
+                    if (movedPiece.isWhite()) {
+                        White_Pieces.remove(movedPiece);
+                        White_Pieces.add(new Queen(finalSpot.getX(), finalSpot.getY(), true, "Queen.png", this));
+                    } else {
+                        Black_Pieces.remove(movedPiece);
+                        Black_Pieces.add(new Queen(finalSpot.getX(), finalSpot.getY(), false, "Queen.png", this));
+                    }
+                }
+            }
+        }
+
+        //normal capture
+        if (capturedPiece != null) {
+            if (capturedPiece.isWhite()) {
+                White_Pieces.remove(capturedPiece);
+            } else {
+                Black_Pieces.remove(capturedPiece);
+            }
+        }
+
+        // en passant capture
+        int lastNdx = Moves.size() - 1;
+        if (Moves.get(lastNdx).isEnPassantCapture(board)) {
+            Piece prevMovedPiece = Moves.get(lastNdx - 1).getMovedPiece();
+            if (prevMovedPiece.isWhite()) {
+                White_Pieces.remove(prevMovedPiece);
+            } else {
+                Black_Pieces.remove(prevMovedPiece);
+            }
+            Moves.get(lastNdx).setCapturedPiece(prevMovedPiece);
+        }
+
+        movedPiece.setX(finalSpot.getX());
+        movedPiece.setY(finalSpot.getY());
+
+        if (movedPiece.getClass().equals(Pawn.class) || capturedPiece != null) {
+            prevHalfMoveCounter = halfMoveCounter;
+            halfMoveCounter = 0;
+        } else {
+            halfMoveCounter++;
+        }
+
+        fullMoveCounter++;
+        turnCounter++;
+        drawBoard();
     }
 
     public Spot convertUci(String uciSpot){
         int convertedX;
         int convertedY;
         if (isWhitePerspective) {
-             convertedX = Math.abs(uciSpot.charAt(0) - 'a');
+            convertedX = Math.abs(uciSpot.charAt(0) - 'a');
             //56 is decimal equivalent of char 8
-             convertedY = Math.abs(uciSpot.charAt(1) - 56);
+            convertedY = Math.abs(uciSpot.charAt(1) - 56);
         }else{
             convertedX =  Math.abs(uciSpot.charAt(0) - 'h');
             convertedY =  Character.getNumericValue(uciSpot.charAt(1)) - 1;
         }
         return new Spot(convertedX, convertedY, isWhitePerspective);
     }
-
+    
     private MouseAdapter mouseAdapter = new MouseAdapter() {
 
         @Override
         public void mouseClicked(MouseEvent e) {
 
-                
+
         }
 
         @Override
         public void mousePressed(MouseEvent e) {
             int d_X = e.getX();
-            int d_Y = e.getY();  
+            int d_Y = e.getY();
             int Clicked_Row = d_Y / Square_Width;
             int Clicked_Column = d_X / Square_Width;
             boolean is_whites_turn = turnCounter % 2 != 1;
@@ -952,8 +999,8 @@ public class Board extends JComponent {
 
             if (Active_Piece == null && clicked_piece != null &&
                     ( (!isAgainstEngine && is_whites_turn == clicked_piece.isWhite() )
-                       || (isAgainstEngine && is_whites_turn == isWhitePerspective && clicked_piece.isWhite() == isWhitePerspective)
-            )) {
+                            || (isAgainstEngine && is_whites_turn == isWhitePerspective && clicked_piece.isWhite() == isWhitePerspective)
+                    )) {
                 Active_Piece = clicked_piece;
                 Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
 
@@ -961,11 +1008,11 @@ public class Board extends JComponent {
                 Active_Piece = null;
 
             } else if (Active_Piece != null && Active_Piece.canMove(Clicked_Column, Clicked_Row) &&
-                     ((!isAgainstEngine && is_whites_turn == Active_Piece.isWhite())
-                             || (isAgainstEngine && is_whites_turn == isWhitePerspective)
-                     )) {
+                    ((!isAgainstEngine && is_whites_turn == Active_Piece.isWhite())
+                            || (isAgainstEngine && is_whites_turn == isWhitePerspective)
+                    )) {
 
-               // availMoves = Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
+                // availMoves = Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
                 //if(availMoves.stream().anyMatch(s -> s.getX() == Clicked_Column && s.getY() == Clicked_Row)) {
 
 
@@ -983,13 +1030,7 @@ public class Board extends JComponent {
                         Black_Pieces.remove(clicked_piece);
                     }
                 }
-
                 
-                Moves.add(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row), new Spot(Active_Piece.getX(), Active_Piece.getY(), isWhitePerspective), new Spot(Clicked_Column, Clicked_Row, isWhitePerspective)));
-                movesLastNdx = Moves.size()-1;
-                lastMove = Moves.get(movesLastNdx);
-                movedPiece = Moves.get(movesLastNdx).getMovedPiece();
-                lastCapturedPiece = Moves.get(movesLastNdx).getCapturedPiece();
                 //full move counter increments everytime black moves, set to 1 at the start of the game
                 if (movedPiece.isBlack()) {
                     fullMoveCounter++;
@@ -1109,6 +1150,7 @@ public class Board extends JComponent {
                 if(Clicked_Row == 0 || Clicked_Row == 7){
                     if(Active_Piece.getClass().equals(Pawn.class)){
                         promotePawn((Pawn)Active_Piece);
+                        lastMove.setIsPromotion(true);
                     }
                 }
                 Active_Piece = null;
@@ -1119,8 +1161,9 @@ public class Board extends JComponent {
                 if(!Moves.isEmpty()){
                     //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
                     Moves.get(Moves.size()-1).setNotation(Moves.get(Moves.size()-1).convertToAlgebraicNotation());
-                    movePanel.updateMove(Moves.get(Moves.size()-1).getNotation());
                     System.out.println("NOTATION: " + Moves.get(Moves.size()-1).getNotation());
+                    movePanel.updateMove(Moves.get(Moves.size()-1).getNotation(),fullMoveCounter,turnCounter);
+                    
                 }
 
                 if (isAgainstEngine && is_whites_turn == isWhitePerspective) {
@@ -1142,7 +1185,7 @@ public class Board extends JComponent {
         }
 
         @Override
-        public void mouseDragged(MouseEvent e) {		
+        public void mouseDragged(MouseEvent e) {
         }
 
         @Override
@@ -1150,11 +1193,11 @@ public class Board extends JComponent {
         }
 
         @Override
-        public void mouseWheelMoved(MouseWheelEvent e) 
+        public void mouseWheelMoved(MouseWheelEvent e)
         {
-        }	
+        }
 
-        
+
     };
 
     private void adjustShapePositions(double dx, double dy) {
@@ -1162,16 +1205,16 @@ public class Board extends JComponent {
         Static_Shapes.get(0).adjustPosition(dx, dy);
         this.repaint();
 
-    } 
-        
-        
-      
+    }
+
+
+
     private Image loadImage(String imageFile) {
         try {
-               return ImageIO.read(new File(imageFile));
+            return ImageIO.read(new File(imageFile));
         }
         catch (IOException e) {
-                return NULL_IMAGE;
+            return NULL_IMAGE;
         }
     }
 
@@ -1189,12 +1232,12 @@ public class Board extends JComponent {
         g2.setColor(getBackground());
         g2.fillRect(0,  0, getWidth(), getHeight());
     }
-       
+
 
     private void drawShapes(Graphics2D g2) {
         for (DrawingShape shape : Static_Shapes) {
             shape.draw(g2);
-        }	
+        }
         for (DrawingShape shape : Piece_Graphics) {
             shape.draw(g2);
         }
@@ -1220,7 +1263,7 @@ public class Board extends JComponent {
         @Override
         public void componentShown(ComponentEvent e) {
 
-        }	
+        }
     };
 
     private KeyAdapter keyAdapter = new KeyAdapter() {
@@ -1238,7 +1281,7 @@ public class Board extends JComponent {
         @Override
         public void keyTyped(KeyEvent e) {
 
-        }	
+        }
     };
 
 }
@@ -1258,25 +1301,25 @@ class DrawingImage implements DrawingShape {
     public Rectangle2D rect;
 
     public DrawingImage(Image image, Rectangle2D rect) {
-            this.image = image;
-            this.rect = rect;
+        this.image = image;
+        this.rect = rect;
     }
 
     @Override
     public boolean contains(Graphics2D g2, double x, double y) {
-            return rect.contains(x, y);
+        return rect.contains(x, y);
     }
 
     @Override
     public void adjustPosition(double dx, double dy) {
-            rect.setRect(rect.getX() + dx, rect.getY() + dy, rect.getWidth(), rect.getHeight());	
+        rect.setRect(rect.getX() + dx, rect.getY() + dy, rect.getWidth(), rect.getHeight());
     }
 
     @Override
     public void draw(Graphics2D g2) {
-            Rectangle2D bounds = rect.getBounds2D();
-            g2.drawImage(image, (int)bounds.getMinX(), (int)bounds.getMinY(), (int)bounds.getMaxX(), (int)bounds.getMaxY(),
-                                            0, 0, image.getWidth(null), image.getHeight(null), null);
+        Rectangle2D bounds = rect.getBounds2D();
+        g2.drawImage(image, (int)bounds.getMinX(), (int)bounds.getMinY(), (int)bounds.getMaxX(), (int)bounds.getMaxY(),
+                0, 0, image.getWidth(null), image.getHeight(null), null);
     }
 
 }

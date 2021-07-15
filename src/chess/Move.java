@@ -11,6 +11,7 @@ public class Move {
     private Spot initialSpot;
     private Spot finalSpot;
     private String notation;
+    private boolean isPromotion;
 
     public Move(Piece movedPiece, Piece capturedPiece, Spot initialSpot, Spot finalSpot, Board board) {
         this.board = board;
@@ -18,7 +19,9 @@ public class Move {
         this.capturedPiece = capturedPiece;
         this.initialSpot = initialSpot;
         this.finalSpot = finalSpot;
+        this.isPromotion = false;
     }
+
 
     public Piece getMovedPiece() {
         return movedPiece;
@@ -52,6 +55,14 @@ public class Move {
         this.finalSpot = finalSpot;
     }
 
+    public boolean getIsPromotion() {
+        return isPromotion;
+    }
+
+    public void setIsPromotion(boolean promotion) {
+        isPromotion = promotion;
+    }
+
     public String getNotation() {
         return notation;
     }
@@ -59,6 +70,7 @@ public class Move {
     public void setNotation(String notation) {
         this.notation = notation;
     }
+
 
     public boolean isEnPassant(Board board, Move move){
         Piece movedPiece = move.getMovedPiece();
@@ -83,12 +95,17 @@ public class Move {
     public String convertToAlgebraicNotation (){
 
         StringBuffer notation = new StringBuffer();
+        Piece promotedPiece;
 
         if(movedPiece.getClass().equals(Pawn.class)){
             if(capturedPiece != null){
                 notation.append(initialSpot.getXLabel()).append('x');
             }
             notation.append(finalSpot.getXLabel()).append(finalSpot.getYLabel());
+            if(isPromotion){
+                promotedPiece = board.getPiece(finalSpot.getX(), finalSpot.getY());
+                notation.append(promotedPiece.isWhite() ? promotedPiece.getUnicodeWhite() : promotedPiece.getUnicodeBlack());
+            }
         }else if (movedPiece.getClass().equals(King.class) && ( Math.abs(initialSpot.getX() - finalSpot.getX()) == 2 )){
            //castling
             if(board.getIsWhitePerspective()){

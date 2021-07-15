@@ -6,13 +6,17 @@ public class King extends Piece {
     private boolean has_moved;
     private boolean isFirstMove;
     private boolean isCastleMove;
+    private boolean hasQSideCastlingRights;
+    private boolean hasKSideCastlingRights;
 
     public King(int x, int y, boolean is_white, String file_path, Board board)
     {
-        super(x,y,is_white,file_path, board, 'k');
+        super(x,y,is_white,file_path, board, 'k', "\u2654", "\u265A");
         has_moved = false;
         isFirstMove = false;
         isCastleMove = false;
+        hasQSideCastlingRights = true;
+        hasKSideCastlingRights = true;
     }
 
     public void setHasMoved(boolean has_moved)
@@ -40,6 +44,22 @@ public class King extends Piece {
         isCastleMove = castleMove;
     }
 
+    public boolean getHasQSideCastlingRights() {
+        return hasQSideCastlingRights;
+    }
+
+    public void setHasQSideCastlingRights(boolean hasQSideCastlingRights) {
+        this.hasQSideCastlingRights = hasQSideCastlingRights;
+    }
+
+    public boolean getHasKSideCastlingRights() {
+        return hasKSideCastlingRights;
+    }
+
+    public void setHasKSideCastlingRights(boolean hasKSideCastlingRights) {
+        this.hasKSideCastlingRights = hasKSideCastlingRights;
+    }
+
     @Override
     public boolean canMove(int destination_x, int destination_y) {
         Piece testPiece;
@@ -48,9 +68,9 @@ public class King extends Piece {
         if(Math.abs(destination_x-this.getX()) > 1 || Math.abs(destination_y-this.getY())  > 1 ){
             if(destination_y == this.getY()) {
                 if (destination_x - this.getX() == 2) {
-                   return canCastleKingSide();
+                   return  board.getIsWhitePerspective() ? canCastleKingSide() : canCastleQueenSide();
                 } else if (destination_x - this.getX() == -2) {
-                    return canCastleQueenSide();
+                    return board.getIsWhitePerspective() ? canCastleQueenSide() : canCastleKingSide();
                 }
             }
             return false;
@@ -67,15 +87,23 @@ public class King extends Piece {
     }
 
 
-
     public boolean canCastleKingSide(){
-        Piece kingRook = board.getPiece(7, this.getY());
-        if (this.has_moved || kingRook==null || ( kingRook.getClass().equals(Rook.class) && ((Rook)kingRook).getHasMoved() ) ) {
+//        Piece kingRook = board.getIsWhitePerspective() ? board.getPiece(7, this.getY()) : board.getPiece(0, this.getY());
+//        if (this.has_moved || this.hasKSideCastlingRights == false || kingRook==null || ( kingRook.getClass().equals(Rook.class) && ((Rook)kingRook).getHasMoved() )) {
+        if (this.hasKSideCastlingRights == false) {
             return false;
         } else {
-            for(int i = this.getX();i<=this.getX()+2;i++){
-                if(isUnderAttack(i, this.getY()) || (i+1<7 && board.getPiece(i+1, this.getY()) != null)){
-                    return false;
+            if(board.getIsWhitePerspective()) {
+                for (int i = this.getX(); i <= this.getX() + 2; i++) {
+                    if (isUnderAttack(i, this.getY()) || (i + 1 < 7 && board.getPiece(i + 1, this.getY()) != null)) {
+                        return false;
+                    }
+                }
+            }else{
+                for (int i = this.getX(); i >= this.getX() - 2; i--) {
+                    if (isUnderAttack(i, this.getY()) || (i - 1 > 0 && board.getPiece(i - 1, this.getY()) != null)) {
+                        return false;
+                    }
                 }
             }
         }
@@ -84,35 +112,27 @@ public class King extends Piece {
 
 
     public boolean canCastleQueenSide(){
-        Piece queenRook = board.getPiece(0, this.getY());
-        if (this.has_moved || queenRook==null || ( queenRook.getClass().equals(Rook.class) && ((Rook)queenRook).getHasMoved() )) {
-            return false;
+        //Piece queenRook =  board.getIsWhitePerspective() ? board.getPiece(0, this.getY()) : board.getPiece(7, this.getY());
+        //if (this.has_moved || this.hasQSideCastlingRights == false || queenRook==null || ( queenRook.getClass().equals(Rook.class) && ((Rook)queenRook).getHasMoved() )) {
+        if (this.hasQSideCastlingRights == false) {
+             return false;
         } else {
-            for(int i = this.getX();i>=this.getX()-2;i--){
-                if(isUnderAttack(i, this.getY()) || (board.getPiece(i-1, this.getY()) != null )){
-                    return false;
+            if(board.getIsWhitePerspective()) {
+                for (int i = this.getX(); i >= this.getX() - 2; i--) {
+                    if (isUnderAttack(i, this.getY()) || (board.getPiece(i - 1, this.getY()) != null)) {
+                        return false;
+                    }
+                }
+            }else{
+                for (int i = this.getX(); i <= this.getX() + 2; i++) {
+                    if (isUnderAttack(i, this.getY()) || (board.getPiece(i + 1, this.getY()) != null)) {
+                        return false;
+                    }
                 }
             }
         }
         return true;
     }
-
-    public boolean hasQueenSideCastlingRights(){
-        Piece queenRook = board.getPiece(0, this.getY());
-        if (this.has_moved || queenRook==null || ( queenRook.getClass().equals(Rook.class) && ((Rook)queenRook).getHasMoved() )) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean hasKingSideCastlingRights(){
-        Piece kingRook = board.getPiece(7, this.getY());
-        if (this.has_moved || kingRook==null || ( kingRook.getClass().equals(Rook.class) && ((Rook)kingRook).getHasMoved() ) ) {
-            return false;
-        }
-        return true;
-    }
-
 
     public boolean isUnderAttack(int x, int y){
 

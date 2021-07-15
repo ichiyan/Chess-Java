@@ -11,11 +11,13 @@ public abstract class Piece {
     private String file_path;
     public Board board;
     private char abbrev;
+    private String unicodeWhite;
+    private String unicodeBlack;
     public ArrayList<Spot> moves;
     private int currX;
     private int currY;
 
-    public Piece(int x, int y, boolean is_white, String file_path, Board board, char abbrev)
+    public Piece(int x, int y, boolean is_white, String file_path, Board board, char abbrev, String unicodeWhite, String unicodeBlack)
     {
         
         this.is_white = is_white;
@@ -23,6 +25,8 @@ public abstract class Piece {
         this.file_path = file_path;
         this.board = board;
         this.abbrev = abbrev;
+        this.unicodeWhite = unicodeWhite;
+        this.unicodeBlack = unicodeBlack;
         moves = new ArrayList<Spot>();
         moves.clear();
     }
@@ -76,6 +80,22 @@ public abstract class Piece {
         this.abbrev = abbrev;
     }
 
+    public String getUnicodeWhite() {
+        return unicodeWhite;
+    }
+
+    public void setUnicodeWhite(String unicodeWhite) {
+        this.unicodeWhite = unicodeWhite;
+    }
+
+    public String getUnicodeBlack() {
+        return unicodeBlack;
+    }
+
+    public void setUnicodeBlack(String unicodeBlack) {
+        this.unicodeBlack = unicodeBlack;
+    }
+
     public abstract boolean canMove(int destination_x, int destination_y);
 
     public ArrayList<Spot> availableMoves(int currX, int currY){
@@ -109,16 +129,15 @@ public abstract class Piece {
         if(x>7 || y>7){
             return false;
         }
+
         if( this.isWhite() == (isWhitesTurn)  ) {
             if (board.whiteKing.isCheck() || board.blackKing.isCheck()) {
                 // if King is in check, set piece
-               
                 this.setX(x);
                 this.setY(y);
                 // if set piece results to King no longer in check (block path of attacking piece or capture attacking piece)
                 // and if King captures attacking piece and is no longer under attack, then move is valid
                 if (isWhitesTurn) {
-//
                     canMove = !board.whiteKing.isCheck() || (pieceAtAvailSpot != null
                             && pieceAtAvailSpot.canMove(board.whiteKing.getX(), board.whiteKing.getY())
                             && !(this.getClass().equals(King.class) && board.whiteKing.isUnderAttack(x, y))
@@ -145,10 +164,8 @@ public abstract class Piece {
                 }else{
                     canMove = isWhitesTurn ? !board.whiteKing.isCheck() : !board.blackKing.isCheck();
                 }
-                    
-
-
             }
+
             if(x == currX && y == currY ){
                 canMove = false;
             }

@@ -11,7 +11,7 @@ public class Pawn extends Piece {
 
     public Pawn(int x, int y, boolean is_white, String file_path, Board board)
     {
-        super(x,y,is_white,file_path, board, 'p');
+        super(x,y,is_white,file_path, board, 'p', "\u2659", "\u265F");
         has_moved = false;
         isFirstMove = false;
 
@@ -101,14 +101,16 @@ public class Pawn extends Piece {
             }
 
             //en passant capture
-            if( (this.getY() == 3 || this.getY() == 4) && destination_y !=3 && destination_y != 4 ){
-                Move lastMoved = board.Moves.get(board.Moves.size()-1);
-                Piece movedPiece = lastMoved.getMovedPiece();
-                if(lastMoved.isEnPassant(board, lastMoved) && movedPiece.isWhite() != this.isWhite()){
-                    if (lastMoved.getFinalSpot().getY() - lastMoved.getInitialSpot().getY() > 0) {
-                        return (destination_y == lastMoved.getFinalSpot().getY()-1 && destination_x == movedPiece.getX());
-                    }else{
-                        return (destination_y == lastMoved.getFinalSpot().getY()+1 && destination_x == movedPiece.getX());
+            if (!board.Moves.isEmpty()) {
+                if ((this.getY() == 3 || this.getY() == 4) && destination_y != 3 && destination_y != 4) {
+                    Move lastMoved = board.Moves.get(board.Moves.size() - 1);
+                    Piece movedPiece = lastMoved.getMovedPiece();
+                    if (lastMoved.isEnPassant(board, lastMoved) && movedPiece.isWhite() != this.isWhite()) {
+                        if (lastMoved.getFinalSpot().getY() - lastMoved.getInitialSpot().getY() > 0) {
+                            return (destination_y == lastMoved.getFinalSpot().getY() - 1 && destination_x == movedPiece.getX());
+                        } else {
+                            return (destination_y == lastMoved.getFinalSpot().getY() + 1 && destination_x == movedPiece.getX());
+                        }
                     }
                 }
             }

@@ -63,8 +63,8 @@ public class Board extends JComponent {
             }
         }
 
-        loadGame(isAgainstEngine);
         Moves = new ArrayList<>();
+        loadGame(isAgainstEngine);
     }
 
     public boolean getIsWhitePerspective() {
@@ -334,7 +334,6 @@ public class Board extends JComponent {
         }
         if (Active_Piece != null)
         {
-            
             Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*Active_Piece.getX(),Square_Width*Active_Piece.getY(), active_square.getWidth(null), active_square.getHeight(null))));
             Active_Piece.moves.forEach((move) -> Static_Shapes.add(new DrawingImage(active_square, new Rectangle2D.Double(Square_Width*move.getX(),Square_Width*move.getY(), active_square.getWidth(null), active_square.getHeight(null)))));
         }
@@ -351,12 +350,10 @@ public class Board extends JComponent {
             Image piece = loadImage("images" + File.separator + "black_pieces" + File.separator + black_piece.getFilePath());
             Piece_Graphics.add(new DrawingImage(piece, new Rectangle2D.Double(Square_Width * COL + 10, Square_Width * ROW + 10, piece.getWidth(null), piece.getHeight(null))));
         }
-        
+
         this.repaint();
         displayedMessage = checkResult();
 
-
-        
     }
 
     public void resetBoard(){
@@ -368,6 +365,7 @@ public class Board extends JComponent {
         initGrid(isWhitePerspective);
         
     }
+
     public boolean checkResult(){
         String message = "", header = "";
         Object[] options = {"Play Again","Close",};
@@ -384,7 +382,7 @@ public class Board extends JComponent {
             status = true;
         }
         if(status && !displayedMessage){
-            n = JOptionPane.showOptionDialog(null, message, header, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE,null, options, null);
+            n = JOptionPane.showOptionDialog(this, message, header, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE,null, options, null);
             if(n==0){
                 resetBoard();
                 drawBoard();
@@ -395,6 +393,64 @@ public class Board extends JComponent {
         return status;
         
     }
+
+    public void promotePawn(Pawn promotedPawn){
+
+        int ndx, x, y;
+
+        if(promotedPawn.isWhite()){
+            ndx = board.White_Pieces.indexOf(promotedPawn);
+        }else{
+            ndx = board.Black_Pieces.indexOf(promotedPawn);
+        }
+
+        x = promotedPawn.getX();
+        y = promotedPawn.getY();
+
+        Object[] options = {"Bishop", "Knight", "Rook", "Queen"};
+        int n = JOptionPane.showOptionDialog(this,
+                "Promote pawn to: ",
+                "Pawn Promotion",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                options,
+                null);
+
+        switch (n) {
+            case 0 -> {
+                if(promotedPawn.isWhite()){
+                    board.White_Pieces.set(ndx, new Bishop(x, y, true, "Bishop.png", board));
+                }else{
+                    board.Black_Pieces.set(ndx, new Bishop(x, y, false, "Bishop.png", board));
+                }
+            }
+            case 1 -> {
+                if(promotedPawn.isWhite()){
+                    board.White_Pieces.set(ndx, new Knight(x, y, true, "Knight.png", board));
+                }else{
+                    board.Black_Pieces.set(ndx, new Knight(x, y, false, "Knight.png", board));
+                }
+            }
+            case 2 -> {
+                if(promotedPawn.isWhite()){
+                    board.White_Pieces.set(ndx, new Rook(x, y, true, "Rook.png", board));
+                }else{
+                    board.Black_Pieces.set(ndx, new Rook(x, y, false, "Rook.png", board));
+                }
+            }
+            case 3 -> {
+                if(promotedPawn.isWhite()){
+                    board.White_Pieces.set(ndx, new Queen(x, y, true, "Queen.png", board));
+                }else{
+                    board.Black_Pieces.set(ndx, new Queen(x, y, false, "Queen.png", board));
+                }
+            }
+        }
+        board.drawBoard();
+    }
+
+
     public Piece getPiece(int x, int y) {
         for (Piece p : White_Pieces)
         {
@@ -412,29 +468,33 @@ public class Board extends JComponent {
         }
         return null;
     }
+
     public void saveGame(boolean isAgainstEngine){
         try{
+            FileWriter saveWrite;
             if(isAgainstEngine){
-                FileWriter saveWrite = new FileWriter("save2.dat");
-                saveWrite.write(getFen());
-                saveWrite.close();
-                System.out.println("successfully wrote to the file");
+                saveWrite = new FileWriter("save2.dat");
             }else{
-                FileWriter saveWrite = new FileWriter("save.dat");
-                saveWrite.write(getFen());
-                saveWrite.close();
-                System.out.println("successfully wrote to the file");
+                saveWrite = new FileWriter("save.dat");
             }
+            saveWrite.write(getFen());
+            saveWrite.close();
+            System.out.println("successfully wrote to the file");
         }catch(IOException e){
             System.out.println("An error occurred");
             e.printStackTrace();
         }
     }
+
+
     public void loadGame(boolean isAgainstEngine){
         String data = null;
         Scanner saveReader = null;
         int lastNdx = 0;
         char charAtLastNdx;
+        StringBuffer castlingRights = new StringBuffer();
+        StringBuffer moveCtr = new StringBuffer();
+        String stringCastlingRights;
 
         try{
             if(isAgainstEngine){
@@ -456,67 +516,75 @@ public class Board extends JComponent {
             e.printStackTrace();
         }
 
-        
+        //set pieces
         outerloop:
         for(int r = 0; r <= 7; r++){
-            System.out.println("R is " + r);
             for(int f = 0; f <= 7; f++){
                charAtLastNdx = data.charAt(lastNdx);
                 if(Character.isUpperCase(charAtLastNdx)){
                     switch (charAtLastNdx) {
                         case 'R' -> {
                             White_Pieces.add(new Rook(f, r, true, "Rook.png", this));
-                            System.out.println("Created R at " + f + " and " + r);
+//                            System.out.println("Created R at " + f + " and " + r);
                         }
                         case 'N' -> {
                             White_Pieces.add(new Knight(f, r, true, "Knight.png", this));
-                            System.out.println("Created N at " + f + " and " + r);
+//                            System.out.println("Created N at " + f + " and " + r);
                         }
                         case 'B' -> {
                             White_Pieces.add(new Bishop(f, r, true, "Bishop.png", this));
-                            System.out.println("Created B at " + f + " and " + r);
+//                            System.out.println("Created B at " + f + " and " + r);
                         }
                         case 'Q' -> {
                             White_Pieces.add(new Queen(f, r, true, "Queen.png", this));
-                            System.out.println("Created Q at " + f + " and " + r);
+//                            System.out.println("Created Q at " + f + " and " + r);
                         }
                         case 'K' -> {
                             White_Pieces.add(new King(f, r, true, "King.png", this));
-                            System.out.println("Created K at " + f + " and " + r);
+//                            System.out.println("Created K at " + f + " and " + r);
                             this.whiteKing = (King) White_Pieces.get(White_Pieces.size() - 1);
                         }
                         case 'P' -> {
                             White_Pieces.add(new Pawn(f, r, true, "Pawn.png", this));
-                            System.out.println("Created P at " + f + " and " + r);
-                        }
+//                            System.out.println("Created P at " + f + " and " + r);
+
+                            Pawn piece = (Pawn) White_Pieces.get(White_Pieces.size()-1);
+                            if( (isWhitePerspective && piece.getY() != 6) || (piece.getY() != 1 && !isWhitePerspective) ){
+                                piece.setHasMoved(true);
+                            }                     }
                     }
                     lastNdx++;
                 }else if(Character.isLowerCase(data.charAt(lastNdx))){
                     switch (data.charAt(lastNdx)) {
                         case 'r' -> {
                             Black_Pieces.add(new Rook(f, r, false, "Rook.png", this));
-                            System.out.println("Created r at" + f + " and " + r);
+//                            System.out.println("Created r at" + f + " and " + r);
                         }
                         case 'n' -> {
                             Black_Pieces.add(new Knight(f, r, false, "Knight.png", this));
-                            System.out.println("Created n at" + f + " and " + r);
+//                            System.out.println("Created n at" + f + " and " + r);
                         }
                         case 'b' -> {
                             Black_Pieces.add(new Bishop(f, r, false, "Bishop.png", this));
-                            System.out.println("Created b at" + f + " and " + r);
+//                            System.out.println("Created b at" + f + " and " + r);
                         }
                         case 'q' -> {
                             Black_Pieces.add(new Queen(f, r, false, "Queen.png", this));
-                            System.out.println("Created q at" + f + " and " + r);
+//                            System.out.println("Created q at" + f + " and " + r);
                         }
                         case 'k' -> {
                             Black_Pieces.add(new King(f, r, false, "King.png", this));
-                            System.out.println("Created k at" + f + " and " + r);
+//                            System.out.println("Created k at" + f + " and " + r);
                             this.blackKing = (King) Black_Pieces.get(Black_Pieces.size() - 1);
                         }
                         case 'p' -> {
                             Black_Pieces.add(new Pawn(f, r, false, "Pawn.png", this));
-                            System.out.println("Created p at" + f + " and " + r);
+//                            System.out.println("Created p at" + f + " and " + r);
+
+                            Pawn piece = (Pawn) Black_Pieces.get(Black_Pieces.size()-1);
+                            if( (isWhitePerspective && piece.getY() != 1) || (piece.getY() != 6 && !isWhitePerspective) ){
+                                piece.setHasMoved(true);
+                            }
                         }
                     }
                     lastNdx++;
@@ -536,53 +604,89 @@ public class Board extends JComponent {
         }
 
         lastNdx++;
+
+        //set turn
         if(data.charAt(lastNdx) == 'w'){
             System.out.println("White turn");
-            lastNdx += 2;
+            turnCounter = 0;
         }else{
             System.out.println("Black turn");
-            lastNdx += 2;
+            turnCounter = 1;
         }
-          
-        this.drawBoard();
+        lastNdx += 2;
 
+        //castling rights
         while(data.charAt(lastNdx) != ' '){
-            switch(data.charAt(lastNdx)){
-                case 'K': this.whiteKing.canCastleKingSide(); break;
-                case 'Q': this.whiteKing.canCastleQueenSide(); break;
-                case 'k': this.blackKing.canCastleKingSide(); break;
-                case 'q': this.blackKing.canCastleKingSide(); break;
-                case '-': break;
-            }
+            castlingRights.append(data.charAt(lastNdx));
             lastNdx++;
+        }
+
+        stringCastlingRights = castlingRights.toString();
+        if(stringCastlingRights.contains("-")){
+            whiteKing.setHasMoved(true);
+            whiteKing.setHasQSideCastlingRights(false);
+            whiteKing.setHasKSideCastlingRights(false);
+            blackKing.setHasMoved(true);
+            blackKing.setHasQSideCastlingRights(false);
+            blackKing.setHasKSideCastlingRights(false);
+        }else{
+            if(!stringCastlingRights.contains("Q")) {
+                whiteKing.setHasQSideCastlingRights(false);
+            }
+            if(!stringCastlingRights.contains("K")) {
+                whiteKing.setHasKSideCastlingRights(false);
+            }
+            if(!stringCastlingRights.contains("q")) {
+                blackKing.setHasQSideCastlingRights(false);
+            }
+            if(!stringCastlingRights.contains("k")) {
+                blackKing.setHasKSideCastlingRights(false);
+            }
         }
 
         lastNdx++;
 
-        System.out.println("Character is: " + data.charAt(lastNdx));
+        //en passant target
         if(data.charAt(lastNdx) == '-'){
             lastNdx+=2;
-            System.out.println("Character is: " + data.charAt(lastNdx));
         }else{
-            if(Character.isLetter(data.charAt(lastNdx))){
-                int xPosition;
-                switch(data.charAt(lastNdx)){
-                    case 'a':  xPosition = 0;
-                    case 'b':  xPosition = 1;
-                    case 'c':  xPosition = 2;
-                    case 'd':  xPosition = 3;
-                    case 'e':  xPosition = 4;
-                    case 'f':  xPosition = 5;
-                    case 'g':  xPosition = 6;
-                    case 'h':  xPosition = 7;
-                    default: break;
-                }
-                lastNdx++;
+            lastNdx+=3;
+        }
 
-                //y coordinate
-                int yPosition = Character.getNumericValue(data.charAt(lastNdx));
+        //half move
+        while(data.charAt(lastNdx) != ' '){
+            moveCtr.append(data.charAt(lastNdx));
+            lastNdx++;
+        }
+        this.halfMoveCounter = Integer.parseInt(moveCtr.toString());
+        System.out.println("HALFMOVE: " + halfMoveCounter);
+
+        lastNdx++;
+
+        //full move
+        moveCtr = new StringBuffer();
+        while(lastNdx < data.length()){
+            moveCtr.append(data.charAt(lastNdx));
+            lastNdx++;
+        }
+        this.fullMoveCounter = Integer.parseInt(moveCtr.toString());
+        System.out.println("FULLMOVE: " + fullMoveCounter);
+
+        //change board perspective to what is saved
+        this.isWhitePerspective = true;
+        this.drawBoard();
+
+        if(isAgainstEngine){
+            stockfish = new Stockfish();
+            stockfish.startEngine();
+            stockfish.sendCommand("uci");
+            stockfish.sendCommand("ucinewgame");
+            if(!isWhitePerspective) {
+                doEngineMove();
             }
         }
+
+
     }
 
     public String getFen(){
@@ -657,32 +761,26 @@ public class Board extends JComponent {
             fen.append(" b ");
         }
 
-
-        if(whiteKing.hasKingSideCastlingRights()){
+        //FEN castling rights
+        if(whiteKing.getHasKSideCastlingRights()){
             fen.append("K");
             invalidWhiteKCastle = false;
         }
-        if(whiteKing.hasQueenSideCastlingRights()){
+        if(whiteKing.getHasQSideCastlingRights()){
             fen.append("Q");
             invalidWhiteQCastle = false;
         }
 
-
-        if(invalidWhiteQCastle && invalidWhiteKCastle){
-            fen.append("-");
-        }
-
-        if(blackKing.hasKingSideCastlingRights()){
+        if(blackKing.getHasKSideCastlingRights()){
             fen.append("k");
             invalidBlackKCastle = false;
         }
-        if(blackKing.hasQueenSideCastlingRights()){
+        if(blackKing.getHasQSideCastlingRights()){
             fen.append("q");
             invalidBlackQCastle = false;
         }
 
-
-       if(invalidBlackQCastle && invalidBlackKCastle){
+       if(invalidWhiteQCastle && invalidWhiteKCastle && invalidBlackQCastle && invalidBlackKCastle){
            fen.append("-");
        }
 
@@ -782,7 +880,7 @@ public class Board extends JComponent {
             Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
             Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
 
-            Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot));
+            Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot, this));
 
             //castling
             if (movedPiece.getClass().equals(King.class) && ( Math.abs(initialSpot.getX() - finalSpot.getX()) == 2 )) {
@@ -908,7 +1006,6 @@ public class Board extends JComponent {
             int movesLastNdx;
             Piece movedPiece, lastCapturedPiece;
             Move lastMove;
-            //ArrayList<Spot> availMoves;
 
             Piece clicked_piece = getPiece(Clicked_Column, Clicked_Row);
 
@@ -917,9 +1014,7 @@ public class Board extends JComponent {
                        || (isAgainstEngine && is_whites_turn == isWhitePerspective && clicked_piece.isWhite() == isWhitePerspective)
             )) {
                 Active_Piece = clicked_piece;
-               // System.out.println(Active_Piece.getX() + " " + Active_Piece.getY());
                 Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
-               // System.out.println(Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY()));
 
             } else if (Active_Piece != null && Active_Piece.getX() == Clicked_Column && Active_Piece.getY() == Clicked_Row) {
                 Active_Piece = null;
@@ -931,6 +1026,15 @@ public class Board extends JComponent {
 
                // availMoves = Active_Piece.availableMoves(Active_Piece.getX(), Active_Piece.getY());
                 //if(availMoves.stream().anyMatch(s -> s.getX() == Clicked_Column && s.getY() == Clicked_Row)) {
+
+
+                Moves.add(new Move(Active_Piece, clicked_piece, new Spot(Active_Piece.getX(), Active_Piece.getY(), isWhitePerspective), new Spot(Clicked_Column, Clicked_Row, isWhitePerspective), board));
+                movesLastNdx = Moves.size()-1;
+                lastMove = Moves.get(movesLastNdx);
+                movedPiece = Moves.get(movesLastNdx).getMovedPiece();
+                lastCapturedPiece = Moves.get(movesLastNdx).getCapturedPiece();
+
+
                 if (clicked_piece != null) {
                     if (clicked_piece.isWhite()) {
                         White_Pieces.remove(clicked_piece);
@@ -945,105 +1049,154 @@ public class Board extends JComponent {
                 lastMove = Moves.get(movesLastNdx);
                 movedPiece = Moves.get(movesLastNdx).getMovedPiece();
                 lastCapturedPiece = Moves.get(movesLastNdx).getCapturedPiece();
+                //full move counter increments everytime black moves, set to 1 at the start of the game
+                if (movedPiece.isBlack()) {
+                    fullMoveCounter++;
+                }
 
-                //fullmove counter increments everytime black moves
-                    if (movedPiece.isBlack()) {
-                        fullMoveCounter++;
-                    }
+                //half move counter is reset after captures or pawn moves
+                if (movedPiece.getClass().equals(Pawn.class) || lastCapturedPiece != null) {
+                    prevHalfMoveCounter = halfMoveCounter;
+                    halfMoveCounter = 0;
+                } else {
+                    halfMoveCounter++;
+                }
 
-                    //halfmove counter is reset after captures or pawn moves
-                    if (movedPiece.getClass().equals(Pawn.class) || lastCapturedPiece != null) {
-                        prevHalfMoveCounter = halfMoveCounter;
-                        halfMoveCounter = 0;
-                    } else {
-                        halfMoveCounter++;
-                    }
 
-                    //castling
-                    if (Active_Piece.getClass().equals(King.class)) {
-                        King castedKing = (King) (Active_Piece);
-                        if (Clicked_Column - Active_Piece.getX() == 2) {
-                            Rook rook = (Rook) getPiece(7, Clicked_Row);
-                            rook.setX(Clicked_Column - 1);
-                            rook.setIsFirstMove(!rook.getHasMoved());
-                            if (!castedKing.getIsCastleMove()) {
-                                castedKing.setIsCastleMove(true);
-                                castedKing.setIsFirstMove(true);
-                            } else {
-                                castedKing.setIsCastleMove(false);
-                            }
-
-                            rook.setHasMoved(true);
-
-                        } else if (Clicked_Column - Active_Piece.getX() == -2) {
-                            Rook rook = (Rook) getPiece(0, Clicked_Row);
-                            rook.setX(Clicked_Column + 1);
-                            rook.setIsFirstMove(!rook.getHasMoved());
-
-                            if (!castedKing.getIsCastleMove()) {
-                                castedKing.setIsCastleMove(true);
-                                castedKing.setIsFirstMove(true);
-                            } else {
-                                castedKing.setIsCastleMove(false);
-                            }
-                            rook.setHasMoved(true);
-                        }
-
-                        castedKing.setIsFirstMove(!castedKing.getHasMoved());
-                        if (castedKing.isWhite()) {
-                            whiteKing = castedKing;
+                //castling
+                if (Active_Piece.getClass().equals(King.class)) {
+                    King castedKing = (King) (Active_Piece);
+                    if (Clicked_Column - Active_Piece.getX() == 2) {
+                        Rook rook = (Rook) getPiece(7, Clicked_Row);
+                        rook.setX(Clicked_Column - 1);
+                        rook.setIsFirstMove(!rook.getHasMoved());
+                        if (!castedKing.getIsCastleMove()) {
+                            castedKing.setIsCastleMove(true);
+                            castedKing.setIsFirstMove(true);
                         } else {
-                            blackKing = castedKing;
+                            castedKing.setIsCastleMove(false);
                         }
-                        castedKing.setHasMoved(true);
+
+                        rook.setHasMoved(true);
+
+                    } else if (Clicked_Column - Active_Piece.getX() == -2) {
+                        Rook rook = (Rook) getPiece(0, Clicked_Row);
+                        rook.setX(Clicked_Column + 1);
+                        rook.setIsFirstMove(!rook.getHasMoved());
+
+                        if (!castedKing.getIsCastleMove()) {
+                            castedKing.setIsCastleMove(true);
+                            castedKing.setIsFirstMove(true);
+                        } else {
+                            castedKing.setIsCastleMove(false);
+                        }
+                        rook.setHasMoved(true);
                     }
 
-                    // do move
-                    Active_Piece.setX(Clicked_Column);
-                    Active_Piece.setY(Clicked_Row);
+                    castedKing.setIsFirstMove(!castedKing.getHasMoved());
+                    if (castedKing.isWhite()) {
+                        whiteKing = castedKing;
+                    } else {
+                        blackKing = castedKing;
+                    }
+                    castedKing.setHasMoved(true);
+                    castedKing.setHasQSideCastlingRights(false);
+                    castedKing.setHasKSideCastlingRights(false);
+                }
 
-                    // if piece is a pawn/rook, set piece's has_moved to true
-                    if (Active_Piece.getClass().equals(Pawn.class)) {
-                        Pawn castedPawn = (Pawn) (Active_Piece);
-                        // if pawn moved for the first time, set isFirstMove to true
-                        castedPawn.setIsFirstMove(!castedPawn.getHasMoved());
-                        castedPawn.setHasMoved(true);
-
-                        //if en passant capture
-                        if(lastMove.isEnPassantCapture(board)) {
-                            Piece prevMovedPiece = Moves.get(movesLastNdx - 1).getMovedPiece();
-                            if (prevMovedPiece.isWhite()) {
-                                White_Pieces.remove(prevMovedPiece);
-                            } else {
-                                Black_Pieces.remove(prevMovedPiece);
+                if (Active_Piece.getClass().equals(Rook.class) && ((Rook)Active_Piece).getHasMoved() == false) {
+                    Rook castedRook = (Rook) (Active_Piece);
+                    castedRook.setIsFirstMove(!castedRook.getHasMoved());
+                    castedRook.setHasMoved(true);
+                    if (isWhitePerspective) {
+                        if (castedRook.getX() == 0) {
+                            if (castedRook.getY() == 7) {
+                                whiteKing.setHasQSideCastlingRights(false);
+                            } else if (castedRook.getY() == 0){
+                                blackKing.setHasQSideCastlingRights(false);
                             }
-                            Moves.get(movesLastNdx).setCapturedPiece(prevMovedPiece);
+                        } else if (castedRook.getX() == 7){
+                            if (castedRook.getY() == 7) {
+                                whiteKing.setHasKSideCastlingRights(false);
+                            } else if (castedRook.getY() == 0){
+                                blackKing.setHasKSideCastlingRights(false);
+                            }
                         }
-
-                    } else if (Active_Piece.getClass().equals(Rook.class)) {
-                        Rook castedRook = (Rook) (Active_Piece);
-                        castedRook.setIsFirstMove(!castedRook.getHasMoved());
-                        castedRook.setHasMoved(true);
-                    }
-
-                    //if piece is pawn, check if promotable
-                    if(Clicked_Row == 0 || Clicked_Row == 7){
-                        if(Active_Piece.getClass().equals(Pawn.class)){
-                            Pawn promotedPawn = (Pawn) (Active_Piece);
-                            promotedPawn.isPromotion(promotedPawn);
+                    }else{
+                        if (castedRook.getX() == 0) {
+                            if (castedRook.getY() == 7) {
+                                blackKing.setHasKSideCastlingRights(false);
+                            } else if (castedRook.getY() == 0){
+                                whiteKing.setHasKSideCastlingRights(false);
+                            }
+                        } else if (castedRook.getX() == 7){
+                            if (castedRook.getY() == 7) {
+                                blackKing.setHasQSideCastlingRights(false);
+                            } else if (castedRook.getY() == 0){
+                                whiteKing.setHasQSideCastlingRights(false);
+                            }
                         }
                     }
-                    Active_Piece = null;
-                    getFen();
-                    turnCounter++;
-                    if (isAgainstEngine && is_whites_turn == isWhitePerspective) {
-                        doEngineMove();
+                }
+
+
+                // do move
+                Active_Piece.setX(Clicked_Column);
+                Active_Piece.setY(Clicked_Row);
+
+                // if piece is a pawn/rook, set piece's has_moved to true
+                if (Active_Piece.getClass().equals(Pawn.class)) {
+                    Pawn castedPawn = (Pawn) (Active_Piece);
+                    // if pawn moved for the first time, set isFirstMove to true
+                    castedPawn.setIsFirstMove(!castedPawn.getHasMoved());
+                    castedPawn.setHasMoved(true);
+
+                    //if en passant capture
+                    if(lastMove.isEnPassantCapture(board)) {
+                        Piece prevMovedPiece = Moves.get(movesLastNdx - 1).getMovedPiece();
+                        if (prevMovedPiece.isWhite()) {
+                            White_Pieces.remove(prevMovedPiece);
+                        } else {
+                            Black_Pieces.remove(prevMovedPiece);
+                        }
+                        Moves.get(movesLastNdx).setCapturedPiece(prevMovedPiece);
                     }
-                //}
+
+                }
+
+                //if piece is pawn, check if promotable
+                if(Clicked_Row == 0 || Clicked_Row == 7){
+                    if(Active_Piece.getClass().equals(Pawn.class)){
+                        promotePawn((Pawn)Active_Piece);
+                    }
+                }
+                Active_Piece = null;
+                getFen();
+                turnCounter++;
+
+                //test print
+                if(!Moves.isEmpty()){
+                    //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
+                    Moves.get(Moves.size()-1).setNotation(Moves.get(Moves.size()-1).convertToAlgebraicNotation());
+                    System.out.println("NOTATION: " + Moves.get(Moves.size()-1).getNotation());
+                }
+
+                if (isAgainstEngine && is_whites_turn == isWhitePerspective) {
+                    doEngineMove();
+                    //test print
+                    if(!Moves.isEmpty()){
+                        //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
+                        Moves.get(Moves.size()-1).setNotation(Moves.get(Moves.size()-1).convertToAlgebraicNotation());
+                        System.out.println("NOTATION: " + Moves.get(Moves.size()-1).getNotation());
+                    }
+                }
+
             }
+
             if(!isAgainstEngine || is_whites_turn == isWhitePerspective) {
                 drawBoard();
             }
+
         }
 
         @Override

@@ -111,7 +111,7 @@ public class GUI extends JFrame {
 
     public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective) {
         panel.setVisible(false);
-        component = new Board(isAgainstEngine, isWhitePerspective);
+        component = new Board(isAgainstEngine, isWhitePerspective, panel);
         this.add(component, BorderLayout.CENTER);
     }
 

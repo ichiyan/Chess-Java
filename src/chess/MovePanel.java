@@ -26,6 +26,7 @@ public class MovePanel extends JPanel{
         title.setPreferredSize(new Dimension(100, 50));
 
         textArea = new JTextArea(5, 20);
+        textArea.setFont(new Font(null, Font.BOLD, 12));
         textArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(textArea);
 

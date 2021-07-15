@@ -811,66 +811,7 @@ public class Board extends JComponent {
        System.out.println(fen);
        return fen.toString();
     }
-    public String getNotation(Piece piece, int dest_x, int dest_y){
-        StringBuffer move = new StringBuffer();
-        boolean isWhitesTurn = board.turnCounter % 2 != 1;
-        String piece_notation= "",column ="";
-        if(piece.getClass().equals(Rook.class)){
-            piece_notation = "R";
-        }else if(piece.getClass().equals(Knight.class)){
-            piece_notation = "N";
-        }else if(piece.getClass().equals(Bishop.class)){
-            piece_notation = "B";
-        }else if(piece.getClass().equals(King.class)){
-            piece_notation = "K";
-        }else if(piece.getClass().equals(Queen.class)){
-            piece_notation = "Q";
-        }
-        switch (dest_x) {
-            case 0:
-                column = "a";
-                break;
-            case 1:
-                column = "b";
-                break;
-            case 2:
-                column = "c";    
-                break;
-            case 3:
-                column = "d";
-                break;
-            case 4:
-                column = "e";
-                break;
-            case 5:
-                column = "f";
-                break;
-            case 6:
-                column = "g";
-                break;
-            case 7:
-                column = "h";
-                break;    
-            default:
-                break;
-        }
-        dest_y += 8-dest_y*2;
-
-        if(isWhitesTurn){
-            move.append(fullMoveCounter);
-            move.append(". ");
-            move.append(piece_notation+column+dest_y);
-            
-        }else{
-            move.insert(move.length(),"  ");
-            move.append(piece_notation+column+dest_y);
-            move.append(System.getProperty("line.separator"));
-        }
-            
-        
-        
-        return move.toString();
-    }
+    
     public void doEngineMove(){
         String bestMove = stockfish.getBestMove(getFen(), 20);
         System.out.println("BEST MOVE: " + bestMove);
@@ -1043,7 +984,7 @@ public class Board extends JComponent {
                     }
                 }
 
-                movePanel.updateMove(getNotation(Active_Piece, Clicked_Column, Clicked_Row)); 
+                
                 Moves.add(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row), new Spot(Active_Piece.getX(), Active_Piece.getY(), isWhitePerspective), new Spot(Clicked_Column, Clicked_Row, isWhitePerspective)));
                 movesLastNdx = Moves.size()-1;
                 lastMove = Moves.get(movesLastNdx);
@@ -1178,6 +1119,7 @@ public class Board extends JComponent {
                 if(!Moves.isEmpty()){
                     //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
                     Moves.get(Moves.size()-1).setNotation(Moves.get(Moves.size()-1).convertToAlgebraicNotation());
+                    movePanel.updateMove(Moves.get(Moves.size()-1).getNotation());
                     System.out.println("NOTATION: " + Moves.get(Moves.size()-1).getNotation());
                 }
 

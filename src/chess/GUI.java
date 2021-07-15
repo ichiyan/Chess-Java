@@ -86,25 +86,38 @@ public class GUI extends JFrame {
         this.setVisible(true);
     }
 
-    public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective) {
-        panel.setVisible(false);
-        MovePanel mp = new MovePanel();
-        mp.setMinimumSize(new Dimension(350, 560));
-
-        component = new Board(isAgainstEngine,false, isWhitePerspective,mp, panel);
-        component.setMinimumSize(new Dimension(560, 560));
-
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
-        this.add(splitPane, BorderLayout.CENTER);
-
+//    public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective) {
+//        panel.setVisible(false);
+//        MovePanel mp = new MovePanel();
+//        mp.setMinimumSize(new Dimension(350, 560));
+//
+//        component = new Board(isAgainstEngine,false, isWhitePerspective,mp, panel);
+//        component.setMinimumSize(new Dimension(560, 560));
+//
+//
+//        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
+//        this.add(splitPane, BorderLayout.CENTER);
+//
 //        component = new Board(isAgainstEngine, isWhitePerspective, panel);
 //        this.add(component, BorderLayout.CENTER);
+//    }
+//
+//    public void loadGameScreen(boolean isAgainstEngine){
+//        panel.setVisible(false);
+//        Board board = new Board(isAgainstEngine, true, true, null, panel);
+//        component = board;
+//        this.add(component, BorderLayout.CENTER);
+//    }
+
+    public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective) {
+        panel.setVisible(false);
+        component = new Board(isAgainstEngine, isWhitePerspective);
+        this.add(component, BorderLayout.CENTER);
     }
 
     public void loadGameScreen(boolean isAgainstEngine){
         panel.setVisible(false);
-        Board board = new Board(isAgainstEngine, true, true, null, panel);
+        Board board = new Board(isAgainstEngine, true, true);
         component = board;
         this.add(component, BorderLayout.CENTER);
     }
@@ -125,7 +138,7 @@ public class GUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             createGameScreen(false, true);
-            
+
         }
     }
 
@@ -169,3 +182,5 @@ class ImagePanel extends JPanel {
     }
 
 }
+
+

@@ -91,18 +91,20 @@ public class GUI extends JFrame {
         MovePanel mp = new MovePanel();
         mp.setMinimumSize(new Dimension(350, 560));
 
-        component = new Board(isAgainstEngine,false, isWhitePerspective,mp);
+        component = new Board(isAgainstEngine,false, isWhitePerspective,mp, panel);
         component.setMinimumSize(new Dimension(560, 560));
 
-        
+
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
         this.add(splitPane, BorderLayout.CENTER);
 
+//        component = new Board(isAgainstEngine, isWhitePerspective, panel);
+//        this.add(component, BorderLayout.CENTER);
     }
 
     public void loadGameScreen(boolean isAgainstEngine){
         panel.setVisible(false);
-        Board board = new Board(isAgainstEngine, true, true, null);
+        Board board = new Board(isAgainstEngine, true, true, null, panel);
         component = board;
         this.add(component, BorderLayout.CENTER);
     }

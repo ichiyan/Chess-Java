@@ -23,6 +23,8 @@ public class Board extends JComponent {
     private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
     private boolean displayedMessage = false;
 
+    private ImagePanel panel;
+
     private final int Square_Width = 65;
     public Board board = this;
     public ArrayList<Piece> White_Pieces;
@@ -49,8 +51,7 @@ public class Board extends JComponent {
     JButton saveBtn;
     SaveBtnHandler saveBtnHandler;
     MovePanel movePanel;
-    StringBuffer notation = new StringBuffer();
-    
+
     public void loadGrid(boolean isAgainstEngine){
 
         System.out.println(White_Pieces.size());
@@ -172,7 +173,7 @@ public class Board extends JComponent {
         halfMoveCounter = 0;
         prevHalfMoveCounter = 0;
     }
-    public Board(boolean isAgainstEngine, boolean loadedGame, boolean isWhitePerspective, MovePanel movePanel){
+    public Board(boolean isAgainstEngine, boolean loadedGame, boolean isWhitePerspective, MovePanel movePanel,ImagePanel panel){
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
         Piece_Graphics = new ArrayList();
@@ -182,11 +183,14 @@ public class Board extends JComponent {
         this.isWhitePerspective = isWhitePerspective;
         this.movePanel = movePanel;
         if(loadedGame){
-            loadGrid(isAgainstEngine);    
+            loadGrid(isAgainstEngine);
         }else{
             initGrid(isWhitePerspective);
         }
- 
+
+        this.panel = panel;
+
+        initGrid(isWhitePerspective);
 
         this.setBackground(Color.LIGHT_GRAY);
         this.setPreferredSize(new Dimension(560, 560));
@@ -213,8 +217,8 @@ public class Board extends JComponent {
 
         this.add(undoBtn);
 
-        saveBtn = new JButton("Save Game");
-        saveBtn.setBounds(320, 580, 100, 40);
+        saveBtn = new JButton("Back to Menu");
+        saveBtn.setBounds(320, 580, 120, 40);
         saveBtn.setFocusable(false);
         saveBtn.setBackground(Color.BLACK);
         saveBtn.setForeground(Color.WHITE);
@@ -239,6 +243,7 @@ public class Board extends JComponent {
         @Override
         public void actionPerformed(ActionEvent e){
             saveGame(isAgainstEngine);
+            panel.setVisible(true);
         }
     }
 
@@ -811,66 +816,7 @@ public class Board extends JComponent {
        System.out.println(fen);
        return fen.toString();
     }
-    public String getNotation(Piece piece, int dest_x, int dest_y){
-        StringBuffer move = new StringBuffer();
-        boolean isWhitesTurn = board.turnCounter % 2 != 1;
-        String piece_notation= "",column ="";
-        if(piece.getClass().equals(Rook.class)){
-            piece_notation = "R";
-        }else if(piece.getClass().equals(Knight.class)){
-            piece_notation = "N";
-        }else if(piece.getClass().equals(Bishop.class)){
-            piece_notation = "B";
-        }else if(piece.getClass().equals(King.class)){
-            piece_notation = "K";
-        }else if(piece.getClass().equals(Queen.class)){
-            piece_notation = "Q";
-        }
-        switch (dest_x) {
-            case 0:
-                column = "a";
-                break;
-            case 1:
-                column = "b";
-                break;
-            case 2:
-                column = "c";    
-                break;
-            case 3:
-                column = "d";
-                break;
-            case 4:
-                column = "e";
-                break;
-            case 5:
-                column = "f";
-                break;
-            case 6:
-                column = "g";
-                break;
-            case 7:
-                column = "h";
-                break;    
-            default:
-                break;
-        }
-        dest_y += 8-dest_y*2;
 
-        if(isWhitesTurn){
-            move.append(fullMoveCounter);
-            move.append(". ");
-            move.append(piece_notation+column+dest_y);
-            
-        }else{
-            move.insert(move.length(),"  ");
-            move.append(piece_notation+column+dest_y);
-            move.append(System.getProperty("line.separator"));
-        }
-            
-        
-        
-        return move.toString();
-    }
     public void doEngineMove(){
         String bestMove = stockfish.getBestMove(getFen(), 20);
         System.out.println("BEST MOVE: " + bestMove);
@@ -1043,12 +989,6 @@ public class Board extends JComponent {
                     }
                 }
 
-                movePanel.updateMove(getNotation(Active_Piece, Clicked_Column, Clicked_Row)); 
-                Moves.add(new Move(Active_Piece, getPiece(Clicked_Column, Clicked_Row), new Spot(Active_Piece.getX(), Active_Piece.getY(), isWhitePerspective), new Spot(Clicked_Column, Clicked_Row, isWhitePerspective)));
-                movesLastNdx = Moves.size()-1;
-                lastMove = Moves.get(movesLastNdx);
-                movedPiece = Moves.get(movesLastNdx).getMovedPiece();
-                lastCapturedPiece = Moves.get(movesLastNdx).getCapturedPiece();
                 //full move counter increments everytime black moves, set to 1 at the start of the game
                 if (movedPiece.isBlack()) {
                     fullMoveCounter++;
@@ -1168,6 +1108,7 @@ public class Board extends JComponent {
                 if(Clicked_Row == 0 || Clicked_Row == 7){
                     if(Active_Piece.getClass().equals(Pawn.class)){
                         promotePawn((Pawn)Active_Piece);
+                        lastMove.setIsPromotion(true);
                     }
                 }
                 Active_Piece = null;
@@ -1222,8 +1163,7 @@ public class Board extends JComponent {
 
     } 
         
-        
-      
+
     private Image loadImage(String imageFile) {
         try {
                return ImageIO.read(new File(imageFile));

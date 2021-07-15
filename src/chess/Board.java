@@ -22,6 +22,7 @@ public class Board extends JComponent {
     public int prevHalfMoveCounter = 0;  //stores halfMoveCounter before reset in case of undo
     private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
     private boolean displayedMessage = false;
+    private ImagePanel panel;
 
     private final int Square_Width = 65;
     public Board board = this;
@@ -222,7 +223,7 @@ public class Board extends JComponent {
         this.add(saveBtn);
     }
 
-    public Board(boolean isAgainstEngine, boolean isWhitePerspective) {
+    public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel) {
 
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
@@ -231,6 +232,7 @@ public class Board extends JComponent {
         Black_Pieces = new ArrayList();
         this.isAgainstEngine = isAgainstEngine;
         this.isWhitePerspective = isWhitePerspective;
+        this.panel = panel;
 
         initGrid(isWhitePerspective);
 
@@ -259,8 +261,8 @@ public class Board extends JComponent {
 
         this.add(undoBtn);
 
-        saveBtn = new JButton("Save Game");
-        saveBtn.setBounds(320, 580, 100, 40);
+        saveBtn = new JButton("Back to Menu");
+        saveBtn.setBounds(320, 580, 120, 40);
         saveBtn.setFocusable(false);
         saveBtn.setBackground(Color.BLACK);
         saveBtn.setForeground(Color.WHITE);
@@ -284,6 +286,7 @@ public class Board extends JComponent {
         @Override
         public void actionPerformed(ActionEvent e){
             saveGame(isAgainstEngine);
+            panel.setVisible(true);
         }
     }
 
@@ -1148,6 +1151,7 @@ public class Board extends JComponent {
                 if(Clicked_Row == 0 || Clicked_Row == 7){
                     if(Active_Piece.getClass().equals(Pawn.class)){
                         promotePawn((Pawn)Active_Piece);
+                        lastMove.setIsPromotion(true);
                     }
                 }
                 Active_Piece = null;

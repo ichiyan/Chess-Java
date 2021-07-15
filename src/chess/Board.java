@@ -651,6 +651,29 @@ public class Board extends JComponent {
                 int yPosition = Character.getNumericValue(data.charAt(lastNdx));
             }
         }
+        System.out.println("Character is: " + data.charAt(lastNdx));
+
+        String str = "";
+        while(data.charAt(lastNdx) != ' '){
+            
+            str = str + data.charAt(lastNdx);
+            lastNdx++;
+        }
+        System.out.println(str);
+        this.fullMoveCounter = Integer.parseInt(str);
+
+        lastNdx++;
+
+        System.out.println("Character is: " + data.charAt(lastNdx));
+
+        str = "";
+        while(lastNdx < data.length()){
+            
+            str = str + data.charAt(lastNdx);
+            lastNdx++;
+        }
+        this.halfMoveCounter = Integer.parseInt(str);
+       
     }
 
     public String getFen(){

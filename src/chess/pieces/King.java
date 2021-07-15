@@ -194,6 +194,6 @@ public class King extends Piece {
                 return true;
             }
         }
-        return board.halfMoveCounter>=50;
+        return board.halfMoveCounter>=100;
     }
 }

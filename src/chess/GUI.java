@@ -22,10 +22,10 @@ public class GUI extends JFrame {
 
     public GUI() {
 
-        panel = new ImagePanel(new ImageIcon("images/background2.jpg").getImage().getScaledInstance(560, 650, Image.SCALE_SMOOTH));
+        panel = new ImagePanel(new ImageIcon("images/background2.jpg").getImage().getScaledInstance(800, 650, Image.SCALE_SMOOTH));
 
         titlePanel = new JPanel();
-        titlePanel.setBounds(130, 100, 300, 100);
+        titlePanel.setBounds(250, 100, 300, 100);
         titlePanel.setBackground(Color.BLACK);
 
         titleLabel = new JLabel("CHESS");
@@ -35,7 +35,7 @@ public class GUI extends JFrame {
         titlePanel.add(titleLabel);
 
         startBtn = new JButton("Start New Game");
-        startBtn.setBounds(180, 300, 200, 50);
+        startBtn.setBounds(300, 300, 200, 50);
         startBtn.setFocusable(false);
         startBtn.setBackground(Color.BLACK);
         startBtn.setForeground(Color.WHITE);
@@ -44,7 +44,7 @@ public class GUI extends JFrame {
         startBtn.addActionListener(startBtnHandler);
 
         loadBtn = new JButton("Load Previous Game");
-        loadBtn.setBounds(50, 550, 200, 50);
+        loadBtn.setBounds(170, 550, 200, 50);
         loadBtn.setFocusable(false);
         loadBtn.setBackground(Color.black);
         loadBtn.setForeground(Color.white);
@@ -53,7 +53,7 @@ public class GUI extends JFrame {
         loadBtn.addActionListener(loadBtnHandler);
 
         playAgainstEngineBtn = new JButton("Play Against Engine");
-        playAgainstEngineBtn.setBounds(180, 400, 200, 50);
+        playAgainstEngineBtn.setBounds(300, 400, 200, 50);
         playAgainstEngineBtn.setFocusable(false);
         playAgainstEngineBtn.setBackground(Color.BLACK);
         playAgainstEngineBtn.setForeground(Color.WHITE);
@@ -62,7 +62,7 @@ public class GUI extends JFrame {
         playAgainstEngineBtn.addActionListener(playAgainstEngineHandler);
 
         loadEngineBtn = new JButton("Load Previous Engine Game");
-        loadEngineBtn.setBounds(300, 550, 200, 50);
+        loadEngineBtn.setBounds(420, 550, 200, 50);
         loadEngineBtn.setFocusable(false);
         loadEngineBtn.setBackground(Color.black);
         loadEngineBtn.setForeground(Color.white);
@@ -88,13 +88,21 @@ public class GUI extends JFrame {
 
     public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective) {
         panel.setVisible(false);
-        component = new Board(isAgainstEngine, isWhitePerspective);
-        this.add(component, BorderLayout.CENTER);
+        MovePanel mp = new MovePanel();
+        mp.setMinimumSize(new Dimension(350, 560));
+
+        component = new Board(isAgainstEngine,false, isWhitePerspective,mp);
+        component.setMinimumSize(new Dimension(560, 560));
+
+        
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
+        this.add(splitPane, BorderLayout.CENTER);
+
     }
 
     public void loadGameScreen(boolean isAgainstEngine){
         panel.setVisible(false);
-        Board board = new Board(isAgainstEngine, true, true);
+        Board board = new Board(isAgainstEngine, true, true, null);
         component = board;
         this.add(component, BorderLayout.CENTER);
     }
@@ -146,7 +154,7 @@ class ImagePanel extends JPanel {
     public ImagePanel(Image img){
         this.img = img;
         //Dimension size = new Dimension(img.getWidth(null), img.getHeight(null));
-        this.setPreferredSize(new Dimension(560, 650));
+        this.setPreferredSize(new Dimension(800, 650));
         this.setMinimumSize(new Dimension(100, 100));
         this.setMaximumSize(new Dimension(1000, 1000));
         setLayout(null);

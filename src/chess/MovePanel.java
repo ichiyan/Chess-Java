@@ -14,13 +14,13 @@ public class MovePanel extends JPanel{
     private JLabel title;
     protected JTextArea textArea;
     private final static String newline = "\n";
-    private StringBuffer moves = new StringBuffer();
+    
     
     public MovePanel(){
         
         super(new GridBagLayout());
 
-        title = new JLabel("Moves");
+        title = new JLabel("      Moves");
         title.setFont(new Font(null, Font.BOLD, 16));
         title.setOpaque(false);
         title.setPreferredSize(new Dimension(100, 50));
@@ -28,13 +28,14 @@ public class MovePanel extends JPanel{
         textArea = new JTextArea(5, 20);
         textArea.setFont(new Font(null, Font.BOLD, 12));
         textArea.setEditable(false);
+        
         JScrollPane scrollPane = new JScrollPane(textArea);
 
         //Add Components to this panel.
         GridBagConstraints c = new GridBagConstraints();
 
         c.gridwidth = GridBagConstraints.REMAINDER;
-        c.fill = GridBagConstraints.HORIZONTAL;
+        c.fill = GridBagConstraints.CENTER;
         add(title, c);
  
         c.fill = GridBagConstraints.BOTH;
@@ -43,14 +44,32 @@ public class MovePanel extends JPanel{
         add(scrollPane, c);
     }
     
-    public void updateMove(String move){
+    public void updateMove(String move,int fullMoveCounter,int turnCounter){
+        StringBuffer fullMove = new StringBuffer();
+        boolean isWhitesTurn = !(turnCounter % 2 != 1);
+        String template="",toAppend="";
         
-        moves.append(move);
 
-        textArea.append(move);
+        if(isWhitesTurn){
+            template = "%d.) %-15s";
+            toAppend=String.format(template, fullMoveCounter,move);
+            fullMove.append(toAppend);
+            
+        }else{
+            
+            template = "%s%n";
+            toAppend=String.format(template, move);
+            fullMove.append(toAppend);
+            
+        }
+        
+            
+        
+        textArea.append(fullMove.toString());
         
         
     }
+    
     public void undoMove(){
         
     }

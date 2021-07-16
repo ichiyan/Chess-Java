@@ -30,7 +30,7 @@ public class Board extends JComponent {
     public Board board = this;
     public ArrayList<Piece> White_Pieces;
     public ArrayList<Piece> Black_Pieces;
-
+    
     public King whiteKing;
     public King blackKing;
     public ArrayList<Move> Moves;
@@ -47,6 +47,7 @@ public class Board extends JComponent {
     private String board_black_perspective_file_path = "images" + File.separator + "board3_black_perspective.png";
     private String active_square_file_path = "images" + File.separator + "active_square.png";
     public MovePanel movePanel;
+    public GUI gui;
     JButton undoBtn;
     UndoBtnHandler undoBtnHandler;
     JButton saveBtn;
@@ -177,7 +178,7 @@ public class Board extends JComponent {
         prevHalfMoveCounter = 0;
     }
 
-    public Board(boolean isAgainstEngine, boolean loadedGame, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level){
+    public Board(boolean isAgainstEngine, boolean loadedGame, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level, GUI gui){
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
         Piece_Graphics = new ArrayList();
@@ -263,7 +264,7 @@ public class Board extends JComponent {
 
     }
 
-    public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level, int timeLimit) {
+    public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level, int timeLimit, GUI gui) {
 
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
@@ -275,7 +276,7 @@ public class Board extends JComponent {
         this.panel = panel;
         this.skillLevel = level;
         this.timeLimit = timeLimit;
-
+        this.gui = gui;
         this.movePanel = movePanel;
         initGrid(isWhitePerspective);
 
@@ -356,6 +357,7 @@ public class Board extends JComponent {
         public void actionPerformed(ActionEvent e){
             saveGame(isAgainstEngine);
             new GUI();
+            gui.dispose();
             panel.setVisible(true);
         }
     }

@@ -257,8 +257,6 @@ public class Board extends JComponent {
                     Move lastEngineMove = Moves.get(Moves.size()-1);
                     lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
                     System.out.println("NOTATION: " + lastEngineMove.getNotation());
-                    
-
                 }
             }
         }

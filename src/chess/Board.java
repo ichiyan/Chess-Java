@@ -590,6 +590,13 @@ public class Board extends JComponent {
             bw = new BufferedWriter(saveWrite);
             int isWhitePerspective = this.isWhitePerspective ? 1 : 0;    
             bw.write(getFen() + " " + isWhitePerspective);
+            bw.newLine();
+
+            for(int i=0; i < Moves.size(); i++){
+                bw.write(Moves.get(i).getNotation());
+                bw.newLine();
+            }
+            
             bw.close();
 
             System.out.println("successfully wrote to the file");
@@ -799,10 +806,9 @@ public class Board extends JComponent {
         }else{
             this.isWhitePerspective = false;
         }
-        this.isWhitePerspective = true;
         this.drawBoard();
 
-        
+
         if(isAgainstEngine){
             stockfish = new Stockfish();
             stockfish.startEngine();

@@ -54,6 +54,7 @@ public class Board extends JComponent {
 
     //ChessClock lowerClock, upperClock;
     GameClock clock;
+    int timeLimit = 300;
 
     public void loadGrid(boolean isAgainstEngine){
 
@@ -211,14 +212,10 @@ public class Board extends JComponent {
         this.requestFocus();
         drawBoard();
 
-//        ChessClock2 chessClock2 = new ChessClock2(ChessClock2.Player.LEFT);
-//        Instant start = chessClock2.gameStart();
-//
 //        lowerClock = new ChessClock();
-//        lowerClock.setLocation(550, 580);
-//        lowerClock.minimumSize();
+//        lowerClock.setLocation(20, 580);
 //        upperClock = new ChessClock();
-//
+
 //        this.add("UpperClock", upperClock);
 //        this.add("LowerClock", lowerClock);
 
@@ -270,7 +267,7 @@ public class Board extends JComponent {
 
     }
 
-    public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level) {
+    public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level, int timeLimit) {
 
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
@@ -281,6 +278,7 @@ public class Board extends JComponent {
         this.isWhitePerspective = isWhitePerspective;
         this.panel = panel;
         this.skillLevel = level;
+        this.timeLimit = timeLimit;
 
         this.movePanel = movePanel;
         initGrid(isWhitePerspective);
@@ -512,7 +510,7 @@ public class Board extends JComponent {
             status = true;
         }
         if(clock != null){
-            String time = clock.timeLeft();
+            String time = clock.outOfTime();
             if(time != "none"){
                 message = time;
                 header = "Ran out of time";
@@ -609,10 +607,10 @@ public class Board extends JComponent {
     }
 
     public void saveGame(boolean isAgainstEngine){
-
         try{
             FileWriter saveWrite;
-            BufferedWriter bw;
+            FileWriter saveTime = new FileWriter("time.dat");
+            BufferedWriter bw, bw2;
             if(isAgainstEngine){
                 saveWrite = new FileWriter("save2.dat");
             }else{
@@ -626,7 +624,7 @@ public class Board extends JComponent {
             if(isAgainstEngine){
                 bw.write(" " + this.skillLevel);
             }
-            
+
             bw.newLine();
 
 
@@ -636,9 +634,17 @@ public class Board extends JComponent {
             }
             
             bw.close();
-
-            System.out.println("successfully wrote to the file");
             clock.stop();
+
+            int timeW = clock.timeLeftW();
+            int timeB = clock.timeLeftB();
+            bw2 = new BufferedWriter(saveTime);
+            bw2.write(timeW + "\r\n" + timeB);
+            bw2.close();
+
+            System.out.println(timeW);
+            System.out.println("successfully wrote to the file");
+
         }catch(IOException e){
             System.out.println("An error occurred");
             e.printStackTrace();
@@ -648,6 +654,7 @@ public class Board extends JComponent {
 
     public void loadGame(boolean isAgainstEngine){
         String data = null;
+        ArrayList<Integer> dataT = new ArrayList<>();
         Scanner saveReader = null;
         Scanner saveTimeReader = null;
         int lastNdx = 0;
@@ -882,12 +889,12 @@ public class Board extends JComponent {
 
             this.skillLevel = Integer.parseInt(levelBfr.toString());
         }
-        
+
 
         loadMoves();
 
 
-        
+
         this.drawBoard();
 
 
@@ -916,15 +923,19 @@ public class Board extends JComponent {
             }else{
                 br = new BufferedReader(new FileReader("save.dat"));
             }
-            
+
             br.readLine();
 
             try{
                 String line;
                 while((line = br.readLine()) != null){
-                    System.out.println(line);
+                    System.out.println("The line is: " + line);
 
-                    this.movePanel.updateMove(line, fullMoveCtr++, halfMoveCtr++);
+                    if(halfMoveCtr % 2 == 0){
+                        this.movePanel.updateMove(line, fullMoveCtr, halfMoveCtr++);
+                    }else{
+                        this.movePanel.updateMove(line, fullMoveCtr++, halfMoveCtr++);
+                    }
                 } 
             }finally {
                 br.close();

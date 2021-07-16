@@ -110,10 +110,25 @@ public class GUI extends JFrame {
 //    }
 
     public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective, int level) {
+        JOptionPane optionPane = new JOptionPane();
+        JSlider slider = new JSlider(0,20);
+        slider.setMajorTickSpacing(5);
+        slider.setMinorTickSpacing(1);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
+        //optionPane.add(this.panel);
+        optionPane.setMessage(new Object[] { "Select time limit per player(in min): ", slider });
+        optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
+        JDialog dialog = optionPane.createDialog(panel, "Select Time Limit");
+        dialog.setVisible(true);
+        int timeLimit = slider.getValue();
+        timeLimit *= 60;
+        System.out.println("Time Limit " + timeLimit);
+
         panel.setVisible(false);
         MovePanel mp = new MovePanel();
         mp.setMinimumSize(new Dimension(350, 560));
-        component = new Board(isAgainstEngine, isWhitePerspective, panel,mp, level);
+        component = new Board(isAgainstEngine, isWhitePerspective, panel,mp, level, timeLimit);
         component.setMinimumSize(new Dimension(560, 560));
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
         this.add(splitPane, BorderLayout.CENTER);

@@ -260,7 +260,7 @@ public class Board extends JComponent {
                     Move lastEngineMove = Moves.get(Moves.size()-1);
                     lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
                     System.out.println("NOTATION: " + lastEngineMove.getNotation());
-                    movePanel.updateMove(lastEngineMove.getNotation(),fullMoveCounter,turnCounter);
+                    
 
                 }
             }
@@ -348,7 +348,7 @@ public class Board extends JComponent {
                     Move lastEngineMove = Moves.get(Moves.size()-1);
                     lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
                     System.out.println("NOTATION: " + lastEngineMove.getNotation());
-                    movePanel.updateMove(lastEngineMove.getNotation(),fullMoveCounter,turnCounter);
+                    
 
                 }
             }
@@ -1041,8 +1041,8 @@ public class Board extends JComponent {
         Spot finalSpot = convertUci(bestMove.substring(2, 4));
         Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
         Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
-
-        Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot, this));
+        Move madeMove = new Move(movedPiece, capturedPiece, initialSpot, finalSpot, this);
+        Moves.add(madeMove);
 
         //castling
         if (movedPiece.getClass().equals(King.class) && ( Math.abs(initialSpot.getX() - finalSpot.getX()) == 2 )) {
@@ -1130,9 +1130,14 @@ public class Board extends JComponent {
         } else {
             halfMoveCounter++;
         }
-
-        fullMoveCounter++;
+        int test = fullMoveCounter;
+        if(movedPiece.isBlack()){
+            fullMoveCounter++;
+        }
         turnCounter++;
+        movePanel.updateMove(madeMove.convertToAlgebraicNotation(),fullMoveCounter,turnCounter);
+        
+       
         clock.switchClocks();
         drawBoard();
     }
@@ -1349,7 +1354,7 @@ public class Board extends JComponent {
                         Move lastEngineMove = Moves.get(Moves.size()-1);
                         lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
                         System.out.println("NOTATION: " + lastEngineMove.getNotation());
-                        movePanel.updateMove(lastEngineMove.getNotation(),fullMoveCounter,turnCounter);
+                       
 
                     }
                 }

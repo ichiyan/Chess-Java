@@ -13,9 +13,9 @@ public class Stockfish {
     private OutputStreamWriter processWriter;
 
     //Gab's stockfish path. To execute your stockfish, comment out my path and add your own path.
-    //private static final String PATH = "C:/Users/Gabriela Balisacan/Downloads/exe/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
+    private static final String PATH = "C:/Users/Gabriela Balisacan/Downloads/exe/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
     // private static final String PATH = "D:/Dave/Downloads/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
-    private static final String PATH = "C:/Users/lenovo/OneDrive - usc.edu.ph/Documents/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
+    //private static final String PATH = "C:/Users/lenovo/OneDrive - usc.edu.ph/Documents/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
 
     public boolean startEngine(){
         try {
@@ -87,7 +87,11 @@ public class Stockfish {
         sendCommand("go depth " + depth);
         String bestMove = getOutput();
 
-        bestMove = StringUtils.substringBetween(bestMove, "bestmove ", " ponder");
+        if (bestMove.contains("ponder")) {
+            bestMove = StringUtils.substringBetween(bestMove, "bestmove ", " ponder");
+        }else{
+            bestMove = bestMove.substring(9);
+        }
         return bestMove;
     }
 

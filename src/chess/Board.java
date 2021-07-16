@@ -176,20 +176,24 @@ public class Board extends JComponent {
         prevHalfMoveCounter = 0;
     }
 
-    public Board(boolean isAgainstEngine, boolean loadedGame, boolean isWhitePerspective){
+    public Board(boolean isAgainstEngine, boolean loadedGame, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level){
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
         Piece_Graphics = new ArrayList();
         White_Pieces = new ArrayList();
         Black_Pieces = new ArrayList();
         this.isAgainstEngine = isAgainstEngine;
+        this.isWhitePerspective = isWhitePerspective;
+        this.panel = panel;
+        this.skillLevel = level;
 
         if(this.isAgainstEngine){
             loadGrid(true);
         }else{
             loadGrid(false);
         }
-
+        this.movePanel = movePanel;
+        initGrid(isWhitePerspective);
 
         this.setBackground(new Color(0x6495ed));
         this.setPreferredSize(new Dimension(560, 560));
@@ -205,10 +209,14 @@ public class Board extends JComponent {
         this.requestFocus();
         drawBoard();
 
+//        ChessClock2 chessClock2 = new ChessClock2(ChessClock2.Player.LEFT);
+//        Instant start = chessClock2.gameStart();
+//
 //        lowerClock = new ChessClock();
-//        lowerClock.setLocation(20, 580);
+//        lowerClock.setLocation(550, 580);
+//        lowerClock.minimumSize();
 //        upperClock = new ChessClock();
-
+//
 //        this.add("UpperClock", upperClock);
 //        this.add("LowerClock", lowerClock);
 
@@ -218,7 +226,7 @@ public class Board extends JComponent {
         this.add(clock);
 
         undoBtn = new JButton("Undo Move");
-        undoBtn.setBounds(150, 580, 100, 40);
+        undoBtn.setBounds(250, 580, 100, 40);
         undoBtn.setFocusable(false);
         undoBtn.setBackground(Color.BLACK);
         undoBtn.setForeground(Color.WHITE);
@@ -228,8 +236,8 @@ public class Board extends JComponent {
 
         this.add(undoBtn);
 
-        saveBtn = new JButton("Save Game");
-        saveBtn.setBounds(320, 580, 100, 40);
+        saveBtn = new JButton("Back to Menu");
+        saveBtn.setBounds(400, 580, 120, 40);
         saveBtn.setFocusable(false);
         saveBtn.setBackground(Color.BLACK);
         saveBtn.setForeground(Color.WHITE);
@@ -238,6 +246,26 @@ public class Board extends JComponent {
         saveBtn.addActionListener(saveBtnHandler);
 
         this.add(saveBtn);
+
+        if(isAgainstEngine){
+            stockfish = new Stockfish();
+            stockfish.startEngine();
+            stockfish.sendCommand("uci");
+            stockfish.sendCommand("ucinewgame");
+            stockfish.sendCommand("setoption name Skill Level value " + skillLevel);
+            if(!isWhitePerspective) {
+                doEngineMove();
+                if(!Moves.isEmpty()){
+                    //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
+                    Move lastEngineMove = Moves.get(Moves.size()-1);
+                    lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
+                    System.out.println("NOTATION: " + lastEngineMove.getNotation());
+                    movePanel.updateMove(lastEngineMove.getNotation(),fullMoveCounter,turnCounter);
+
+                }
+            }
+        }
+
     }
 
     public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level) {
@@ -578,6 +606,7 @@ public class Board extends JComponent {
     }
 
     public void saveGame(boolean isAgainstEngine){
+
         try{
             FileWriter saveWrite;
             BufferedWriter bw;
@@ -590,7 +619,13 @@ public class Board extends JComponent {
             bw = new BufferedWriter(saveWrite);
             int isWhitePerspective = this.isWhitePerspective ? 1 : 0;    
             bw.write(getFen() + " " + isWhitePerspective);
+
+            if(isAgainstEngine){
+                bw.write(" " + this.skillLevel);
+            }
+            
             bw.newLine();
+
 
             for(int i=0; i < Moves.size(); i++){
                 bw.write(Moves.get(i).getNotation());
@@ -621,16 +656,13 @@ public class Board extends JComponent {
             if(isAgainstEngine){
                 File saveFile = new File("save2.dat");
                 saveReader = new Scanner(saveFile);
-                while(saveReader.hasNextLine()){
-                    data = saveReader.nextLine();
-                }
+                data = saveReader.nextLine();
             }else{
                 File saveFile = new File("save.dat");
                 saveReader = new Scanner(saveFile);
-                while(saveReader.hasNextLine()){
-                    data = saveReader.nextLine();
-                }
+                data = saveReader.nextLine();
             }
+
             saveReader.close();
         } catch(FileNotFoundException e){
             System.out.println("An error has occurred");
@@ -638,6 +670,7 @@ public class Board extends JComponent {
         }
 
         //set pieces
+
         outerloop:
         for(int r = 0; r <= 7; r++){
             for(int f = 0; f <= 7; f++){
@@ -727,17 +760,20 @@ public class Board extends JComponent {
         lastNdx++;
 
         //set turn
-        if(data.charAt(lastNdx) == 'w'){
-            System.out.println("White turn");
-            turnCounter = 0;
-            clock.setClockSide("w");
-            clock.run();
-        }else{
-            System.out.println("Black turn");
-            turnCounter = 1;
-            clock.setClockSide("b");
-            clock.run();
-        }
+
+        // if(data.charAt(lastNdx) == 'w'){
+        //     System.out.println("White turn");
+        //     turnCounter = 0;
+        //     clock.setClockSide("w");
+        //     clock.run();
+        // }else{
+        //     System.out.println("Black turn");
+        //     turnCounter = 1;
+        //     clock.setClockSide("b");
+        //     clock.run();
+        // }
+
+
         lastNdx += 2;
 
         //castling rights
@@ -806,6 +842,26 @@ public class Board extends JComponent {
         }else{
             this.isWhitePerspective = false;
         }
+
+        //loads engine level
+        if(isAgainstEngine){
+            lastNdx += 2;
+
+            StringBuffer levelBfr = new StringBuffer();
+
+            while(data.charAt(lastNdx) < data.length()){
+            levelBfr.append(data.charAt(lastNdx));
+            lastNdx++;
+            }
+
+            this.skillLevel = Integer.parseInt(levelBfr.toString());
+        }
+        
+
+        loadMoves();
+
+
+        
         this.drawBoard();
 
 
@@ -821,6 +877,36 @@ public class Board extends JComponent {
         }
 
 
+    }
+
+    public void loadMoves(){
+        int fullMoveCtr = 1;
+        int halfMoveCtr = 0;
+        try{
+            BufferedReader br;
+
+            if(isAgainstEngine){
+                br = new BufferedReader(new FileReader("save2.dat"));
+            }else{
+                br = new BufferedReader(new FileReader("save.dat"));
+            }
+            
+            br.readLine();
+
+            try{
+                String line;
+                while((line = br.readLine()) != null){
+                    System.out.println(line);
+
+                    this.movePanel.updateMove(line, fullMoveCtr++, halfMoveCtr);
+                } 
+            }finally {
+                br.close();
+            }
+        } catch(IOException e){
+            System.out.println("An error occurred");
+            e.printStackTrace();
+        }
     }
 
     public String getFen(){

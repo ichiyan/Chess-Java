@@ -121,9 +121,12 @@ public class GUI extends JFrame {
 
     public void loadGameScreen(boolean isAgainstEngine){
         panel.setVisible(false);
-        Board board = new Board(isAgainstEngine, true, true);
+        MovePanel mp = new MovePanel();
+        mp.setMinimumSize(new Dimension(200, 560));
+        Board board = new Board(isAgainstEngine, true, true, panel, mp, -1);
         component = board;
-        this.add(component, BorderLayout.CENTER);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
+        this.add(splitPane, BorderLayout.CENTER);
     }
 
     class LoadBtnHandler implements ActionListener{

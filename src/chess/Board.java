@@ -357,6 +357,7 @@ public class Board extends JComponent {
         @Override
         public void actionPerformed(ActionEvent e){
             saveGame(isAgainstEngine);
+            new GUI();
             panel.setVisible(true);
         }
     }

@@ -907,7 +907,7 @@ public class Board extends JComponent {
 
     public void loadMoves(){
         int fullMoveCtr = 1;
-        int halfMoveCtr = 1;
+        int halfMoveCtr = 0;
         try{
             BufferedReader br;
 

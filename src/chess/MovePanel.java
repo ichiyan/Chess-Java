@@ -54,12 +54,15 @@ public class MovePanel extends JPanel{
 
         if(isWhitesTurn){
             template = "%d.) %-15s";
-            toAppend=String.format(template, fullMoveCounter, move);
-            fullMove.append(toAppend);    
-        }else{      
+            toAppend=String.format(template, fullMoveCounter,move);
+            fullMove.append(toAppend);
+            
+        }else{
+            
             template = "%s%n";
             toAppend=String.format(template, move);
-            fullMove.append(toAppend);       
+            fullMove.append(toAppend);
+            
         }
         
             

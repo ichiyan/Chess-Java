@@ -77,7 +77,20 @@ public class King extends Piece {
         }else{
             if(testPiece!=null && testPiece.isWhite() == this.isWhite()){
                 return false;
-            }else if(isUnderAttack(destination_x, destination_y)) {
+            }
+
+            //Kings can't attack each other
+            int xPos = this.isWhite() ? board.blackKing.getX() : board.whiteKing.getX();
+            int yPos = this.isWhite() ? board.blackKing.getY() : board.whiteKing.getY();
+
+            if( (destination_x == xPos + 1 && destination_y == yPos) || (destination_x == xPos - 1 && destination_y == yPos )
+                    || (destination_x == xPos && destination_y == yPos + 1) || (destination_x == xPos && destination_y == yPos - 1)
+                    || (destination_x == xPos + 1 && destination_y == yPos + 1) || (destination_x == xPos - 1 && destination_y == yPos + 1)
+                    || (destination_x == xPos - 1 && destination_y == yPos - 1)  || (destination_x == xPos + 1 && destination_y == yPos - 1) ){
+                return false;
+            }
+
+            if(isUnderAttack(destination_x, destination_y)) {
                 return false;
             }
         }

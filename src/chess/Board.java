@@ -257,8 +257,6 @@ public class Board extends JComponent {
                     Move lastEngineMove = Moves.get(Moves.size()-1);
                     lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
                     System.out.println("NOTATION: " + lastEngineMove.getNotation());
-                    
-
                 }
             }
         }
@@ -608,12 +606,14 @@ public class Board extends JComponent {
     public void saveGame(boolean isAgainstEngine){
         try{
             FileWriter saveWrite;
-            FileWriter saveTime = new FileWriter("time.dat");
+            FileWriter saveTime;
             BufferedWriter bw, bw2;
             if(isAgainstEngine){
                 saveWrite = new FileWriter("save2.dat");
+                saveTime = new FileWriter("time2.dat");
             }else{
                 saveWrite = new FileWriter("save.dat");
+                saveTime = new FileWriter("time.dat");
             }
             
             bw = new BufferedWriter(saveWrite);
@@ -625,7 +625,6 @@ public class Board extends JComponent {
             }
 
             bw.newLine();
-
 
             for(int i=0; i < Moves.size(); i++){
                 bw.write(Moves.get(i).getNotation());
@@ -663,17 +662,21 @@ public class Board extends JComponent {
 
         try{
             File saveFile;
+            Scanner saveTimeReader;
+
             if(isAgainstEngine){
                 saveFile = new File("save2.dat");
+                saveTimeReader = new Scanner(new FileReader("time2.dat"));
             }else{
                 saveFile = new File("save.dat");
+                saveTimeReader = new Scanner(new FileReader("time.dat"));
             }
             saveReader = new Scanner(saveFile);
             data = saveReader.nextLine();
             saveReader.close();
 
             //File saveTimeFile = new File("time.dat");
-            Scanner saveTimeReader = new Scanner(new FileReader("time.dat"));
+            //Scanner saveTimeReader = new Scanner(new FileReader("time.dat"));
             while(saveTimeReader.hasNext()){
                 dataT.add(saveTimeReader.nextInt());
             }

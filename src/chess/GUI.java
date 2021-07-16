@@ -109,15 +109,15 @@ public class GUI extends JFrame {
 //        this.add(component, BorderLayout.CENTER);
 //    }
 
-    public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective) {
+    public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective, int level) {
         panel.setVisible(false);
         MovePanel mp = new MovePanel();
         mp.setMinimumSize(new Dimension(350, 560));
-        component = new Board(isAgainstEngine, isWhitePerspective, panel,mp);
+        component = new Board(isAgainstEngine, isWhitePerspective, panel,mp, level);
         component.setMinimumSize(new Dimension(560, 560));
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
         this.add(splitPane, BorderLayout.CENTER);
-        
+
     }
 
     public void loadGameScreen(boolean isAgainstEngine){
@@ -142,7 +142,7 @@ public class GUI extends JFrame {
     class StartBtnHandler implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            createGameScreen(false, true);
+            createGameScreen(false, true, -1);
 
         }
     }
@@ -150,6 +150,7 @@ public class GUI extends JFrame {
     class PlayAgainstEngineHandler implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
+            int level;
             Object[] options = {"White", "Black",};
             int n = JOptionPane.showOptionDialog(panel,
                     "Play as: ",
@@ -159,10 +160,33 @@ public class GUI extends JFrame {
                     null,
                     options,
                     null);
+
+            JOptionPane optionPane = new JOptionPane();
+            JSlider slider = new JSlider(0,20);
+            slider.setMajorTickSpacing(5);
+            slider.setMinorTickSpacing(1);
+            slider.setPaintTicks(true);
+            slider.setPaintLabels(true);
+//            ChangeListener changeListener = new ChangeListener() {
+//                public void stateChanged(ChangeEvent changeEvent) {
+//                    JSlider theSlider = (JSlider) changeEvent.getSource();
+//                    if (!theSlider.getValueIsAdjusting()) {
+//                        optionPane.setInputValue(slider.getValue());
+//                        level[0] = slider.getValue();
+//                    }
+//                }
+//            };
+            optionPane.setMessage(new Object[] { "Select level: ", slider });
+            optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
+            JDialog dialog = optionPane.createDialog(panel, "Select Skill Level");
+            dialog.setVisible(true);
+            level = slider.getValue();
+            System.out.println("LEVEL " + level);
+
             if (n == 0){
-                createGameScreen(true, true);
+                createGameScreen(true, true, level);
             }else if (n == 1){
-                createGameScreen(true, false);
+                createGameScreen(true, false, level);
             }
         }
     }

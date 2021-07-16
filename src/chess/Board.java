@@ -897,9 +897,13 @@ public class Board extends JComponent {
             try{
                 String line;
                 while((line = br.readLine()) != null){
-                    System.out.println(line);
+                    System.out.println("The line is: " + line);
 
-                    this.movePanel.updateMove(line, fullMoveCtr++, halfMoveCtr++);
+                    if(halfMoveCtr % 2 == 0){
+                        this.movePanel.updateMove(line, fullMoveCtr, halfMoveCtr++);
+                    }else{
+                        this.movePanel.updateMove(line, fullMoveCtr++, halfMoveCtr++);
+                    }
                 } 
             }finally {
                 br.close();

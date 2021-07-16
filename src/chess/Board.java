@@ -195,7 +195,6 @@ public class Board extends JComponent {
             loadGrid(false);
         }
         this.movePanel = movePanel;
-        initGrid(isWhitePerspective);
 
         this.setBackground(new Color(0x6495ed));
         this.setPreferredSize(new Dimension(560, 560));
@@ -962,7 +961,7 @@ public class Board extends JComponent {
                 for(f = 0; f <= 7; f++){
                     Piece piece = getPiece(f, r);
                     if(piece != null){
-                        if(nullCtr != 0){fen.append(nullCtr);}
+                         if(nullCtr != 0){fen.append(nullCtr);}
                         if(piece.isWhite()){
                             fen.append(Character.toUpperCase(piece.getAbbrev()));
                         }else{

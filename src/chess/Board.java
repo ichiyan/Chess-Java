@@ -54,6 +54,7 @@ public class Board extends JComponent {
 
     //ChessClock lowerClock, upperClock;
     GameClock clock;
+    int timeLimit = 300;
 
     public void loadGrid(boolean isAgainstEngine){
 
@@ -186,6 +187,8 @@ public class Board extends JComponent {
         this.isWhitePerspective = isWhitePerspective;
         this.panel = panel;
         this.skillLevel = level;
+        //add savedTime intializer here
+
         this.movePanel = movePanel;
         if(this.isAgainstEngine){
             loadGrid(true);
@@ -209,14 +212,10 @@ public class Board extends JComponent {
         this.requestFocus();
         drawBoard();
 
-//        ChessClock2 chessClock2 = new ChessClock2(ChessClock2.Player.LEFT);
-//        Instant start = chessClock2.gameStart();
-//
 //        lowerClock = new ChessClock();
-//        lowerClock.setLocation(550, 580);
-//        lowerClock.minimumSize();
+//        lowerClock.setLocation(20, 580);
 //        upperClock = new ChessClock();
-//
+
 //        this.add("UpperClock", upperClock);
 //        this.add("LowerClock", lowerClock);
 
@@ -268,7 +267,7 @@ public class Board extends JComponent {
 
     }
 
-    public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level) {
+    public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level, int timeLimit) {
 
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
@@ -279,6 +278,7 @@ public class Board extends JComponent {
         this.isWhitePerspective = isWhitePerspective;
         this.panel = panel;
         this.skillLevel = level;
+        this.timeLimit = timeLimit;
 
         this.movePanel = movePanel;
         initGrid(isWhitePerspective);
@@ -510,7 +510,7 @@ public class Board extends JComponent {
             status = true;
         }
         if(clock != null){
-            String time = clock.timeLeft();
+            String time = clock.outOfTime();
             if(time != "none"){
                 message = time;
                 header = "Ran out of time";
@@ -607,10 +607,10 @@ public class Board extends JComponent {
     }
 
     public void saveGame(boolean isAgainstEngine){
-
         try{
             FileWriter saveWrite;
-            BufferedWriter bw;
+            FileWriter saveTime = new FileWriter("time.dat");
+            BufferedWriter bw, bw2;
             if(isAgainstEngine){
                 saveWrite = new FileWriter("save2.dat");
             }else{
@@ -624,7 +624,7 @@ public class Board extends JComponent {
             if(isAgainstEngine){
                 bw.write(" " + this.skillLevel);
             }
-            
+
             bw.newLine();
 
 
@@ -634,9 +634,17 @@ public class Board extends JComponent {
             }
             
             bw.close();
-
-            System.out.println("successfully wrote to the file");
             clock.stop();
+
+            int timeW = clock.timeLeftW();
+            int timeB = clock.timeLeftB();
+            bw2 = new BufferedWriter(saveTime);
+            bw2.write(timeW + "\r\n" + timeB);
+            bw2.close();
+
+            System.out.println(timeW);
+            System.out.println("successfully wrote to the file");
+
         }catch(IOException e){
             System.out.println("An error occurred");
             e.printStackTrace();
@@ -646,7 +654,9 @@ public class Board extends JComponent {
 
     public void loadGame(boolean isAgainstEngine){
         String data = null;
+        ArrayList<Integer> dataT = new ArrayList<>();
         Scanner saveReader = null;
+        Scanner saveTimeReader = null;
         int lastNdx = 0;
         char charAtLastNdx;
         StringBuffer castlingRights = new StringBuffer();
@@ -665,6 +675,14 @@ public class Board extends JComponent {
             }
 
             saveReader.close();
+
+            //File saveTimeFile = new File("time.dat");
+            saveTimeReader = new Scanner(new FileReader("time.dat"));
+            while(saveTimeReader.hasNext()){
+                dataT.add(saveTimeReader.nextInt());
+            }
+            saveTimeReader.close();
+            System.out.println("why?!" + dataT);
         } catch(FileNotFoundException e){
             System.out.println("An error has occurred");
             e.printStackTrace();
@@ -761,19 +779,33 @@ public class Board extends JComponent {
         lastNdx++;
 
         //set turn
-
-        // if(data.charAt(lastNdx) == 'w'){
-        //     System.out.println("White turn");
-        //     turnCounter = 0;
-        //     clock.setClockSide("w");
-        //     clock.run();
-        // }else{
-        //     System.out.println("Black turn");
-        //     turnCounter = 1;
-        //     clock.setClockSide("b");
-        //     clock.run();
-        // }
-
+        if(clock == null){
+            clock = new GameClock(this);
+            clock.setSize(new Dimension(200, 80));
+            clock.setLocation(new Point(0, 560));
+            //clock.run();
+            this.add(clock);
+        }else {
+            if(data.charAt(lastNdx) == 'w'){
+                System.out.println("White turn");
+                turnCounter = 0;
+                clock = new GameClock(this, dataT.get(0), dataT.get(1));
+                clock.setSize(new Dimension(200, 80));
+                clock.setLocation(new Point(0, 560));
+                clock.setClockSide("w");
+                clock.run();
+                this.add(clock);
+            }else{
+                System.out.println("Black turn");
+                turnCounter = 1;
+                clock = new GameClock(this, dataT.get(0), dataT.get(1));
+                clock.setSize(new Dimension(200, 80));
+                clock.setLocation(new Point(0, 560));
+                clock.setClockSide("b");
+                clock.run();
+                this.add(clock);
+            }
+        }
 
         lastNdx += 2;
 
@@ -857,12 +889,12 @@ public class Board extends JComponent {
 
             this.skillLevel = Integer.parseInt(levelBfr.toString());
         }
-        
+
 
         loadMoves();
 
 
-        
+
         this.drawBoard();
 
 
@@ -891,7 +923,7 @@ public class Board extends JComponent {
             }else{
                 br = new BufferedReader(new FileReader("save.dat"));
             }
-            
+
             br.readLine();
 
             try{

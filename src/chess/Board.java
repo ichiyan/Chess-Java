@@ -187,6 +187,7 @@ public class Board extends JComponent {
         this.isWhitePerspective = isWhitePerspective;
         this.panel = panel;
         this.skillLevel = level;
+        //add savedTime intializer here
 
         this.movePanel = movePanel;
         if(this.isAgainstEngine){
@@ -218,10 +219,10 @@ public class Board extends JComponent {
 //        this.add("UpperClock", upperClock);
 //        this.add("LowerClock", lowerClock);
 
-//        clock = new GameClock(this);
-//        clock.setSize(new Dimension(200, 80));
-//        clock.setLocation(new Point(0, 560));
-//        this.add(clock);
+        clock = new GameClock(this);
+        clock.setSize(new Dimension(200, 80));
+        clock.setLocation(new Point(0, 560));
+        this.add(clock);
 
         undoBtn = new JButton("Undo Move");
         undoBtn.setBounds(250, 580, 100, 40);
@@ -258,7 +259,7 @@ public class Board extends JComponent {
                     Move lastEngineMove = Moves.get(Moves.size()-1);
                     lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
                     System.out.println("NOTATION: " + lastEngineMove.getNotation());
-                    
+                    movePanel.updateMove(lastEngineMove.getNotation(),fullMoveCounter,turnCounter);
 
                 }
             }
@@ -347,7 +348,7 @@ public class Board extends JComponent {
                     Move lastEngineMove = Moves.get(Moves.size()-1);
                     lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
                     System.out.println("NOTATION: " + lastEngineMove.getNotation());
-                    
+                    movePanel.updateMove(lastEngineMove.getNotation(),fullMoveCounter,turnCounter);
 
                 }
             }
@@ -655,6 +656,7 @@ public class Board extends JComponent {
         String data = null;
         ArrayList<Integer> dataT = new ArrayList<>();
         Scanner saveReader = null;
+        Scanner saveTimeReader = null;
         int lastNdx = 0;
         char charAtLastNdx;
         StringBuffer castlingRights = new StringBuffer();
@@ -662,24 +664,25 @@ public class Board extends JComponent {
         String stringCastlingRights;
 
         try{
-            File saveFile;
             if(isAgainstEngine){
-                saveFile = new File("save2.dat");
+                File saveFile = new File("save2.dat");
+                saveReader = new Scanner(saveFile);
+                data = saveReader.nextLine();
             }else{
-                saveFile = new File("save.dat");
+                File saveFile = new File("save.dat");
+                saveReader = new Scanner(saveFile);
+                data = saveReader.nextLine();
             }
-            saveReader = new Scanner(saveFile);
-            data = saveReader.nextLine();
+
             saveReader.close();
 
             //File saveTimeFile = new File("time.dat");
-            Scanner saveTimeReader = new Scanner(new FileReader("time.dat"));
+            saveTimeReader = new Scanner(new FileReader("time.dat"));
             while(saveTimeReader.hasNext()){
                 dataT.add(saveTimeReader.nextInt());
             }
             saveTimeReader.close();
-            System.out.println("Saved time:" + dataT);
-
+            System.out.println("why?!" + dataT);
         } catch(FileNotFoundException e){
             System.out.println("An error has occurred");
             e.printStackTrace();
@@ -776,13 +779,13 @@ public class Board extends JComponent {
         lastNdx++;
 
         //set turn
-//        if(clock == null){
-//            clock = new GameClock(this);
-//            clock.setSize(new Dimension(200, 80));
-//            clock.setLocation(new Point(0, 560));
-//            //clock.run();
-//            this.add(clock);
-//        }else {
+        if(clock == null){
+            clock = new GameClock(this);
+            clock.setSize(new Dimension(200, 80));
+            clock.setLocation(new Point(0, 560));
+            //clock.run();
+            this.add(clock);
+        }else {
             if(data.charAt(lastNdx) == 'w'){
                 System.out.println("White turn");
                 turnCounter = 0;
@@ -790,7 +793,7 @@ public class Board extends JComponent {
                 clock.setSize(new Dimension(200, 80));
                 clock.setLocation(new Point(0, 560));
                 clock.setClockSide("w");
-                //clock.run();
+                clock.run();
                 this.add(clock);
             }else{
                 System.out.println("Black turn");
@@ -799,10 +802,10 @@ public class Board extends JComponent {
                 clock.setSize(new Dimension(200, 80));
                 clock.setLocation(new Point(0, 560));
                 clock.setClockSide("b");
-                //clock.run();
+                clock.run();
                 this.add(clock);
             }
-        //}
+        }
 
         lastNdx += 2;
 
@@ -1074,8 +1077,8 @@ public class Board extends JComponent {
         Spot finalSpot = convertUci(bestMove.substring(2, 4));
         Piece movedPiece = getPiece(initialSpot.getX(), initialSpot.getY());
         Piece capturedPiece = getPiece(finalSpot.getX(), finalSpot.getY());
-        Move madeMove = new Move(movedPiece, capturedPiece, initialSpot, finalSpot, this);
-        Moves.add(madeMove);
+
+        Moves.add(new Move(movedPiece, capturedPiece, initialSpot, finalSpot, this));
 
         //castling
         if (movedPiece.getClass().equals(King.class) && ( Math.abs(initialSpot.getX() - finalSpot.getX()) == 2 )) {
@@ -1163,14 +1166,9 @@ public class Board extends JComponent {
         } else {
             halfMoveCounter++;
         }
-        int test = fullMoveCounter;
-        if(movedPiece.isBlack()){
-            fullMoveCounter++;
-        }
+
+        fullMoveCounter++;
         turnCounter++;
-        movePanel.updateMove(madeMove.convertToAlgebraicNotation(),fullMoveCounter,turnCounter);
-        
-       
         clock.switchClocks();
         drawBoard();
     }
@@ -1387,7 +1385,7 @@ public class Board extends JComponent {
                         Move lastEngineMove = Moves.get(Moves.size()-1);
                         lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
                         System.out.println("NOTATION: " + lastEngineMove.getNotation());
-                       
+                        movePanel.updateMove(lastEngineMove.getNotation(),fullMoveCounter,turnCounter);
 
                     }
                 }

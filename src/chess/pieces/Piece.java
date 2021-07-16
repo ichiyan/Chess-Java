@@ -159,10 +159,13 @@ public abstract class Piece {
                 // King is not in check but if moving a piece results to ally King being in check, then move is not allowed
                 this.setX(x);
                 this.setY(y);
-                if(pieceAtAvailSpot != null ){
-                    canMove = pieceAtAvailSpot.isWhite() == !isWhitesTurn;
-                }else{
-                    canMove = isWhitesTurn ? !board.whiteKing.isCheck() : !board.blackKing.isCheck();
+                canMove = isWhitesTurn ? !board.whiteKing.isCheck() : !board.blackKing.isCheck();
+                if(!canMove){
+                    if(isWhitesTurn){
+                        canMove=(pieceAtAvailSpot !=null && pieceAtAvailSpot.canMove(board.whiteKing.getX(),board.whiteKing.getY()));
+                    }else{
+                        canMove=(pieceAtAvailSpot !=null && pieceAtAvailSpot.canMove(board.blackKing.getX(),board.whiteKing.getY()));
+                    }
                 }
             }
 

@@ -87,7 +87,11 @@ public class Stockfish {
         sendCommand("go depth " + depth);
         String bestMove = getOutput();
 
-        bestMove = StringUtils.substringBetween(bestMove, "bestmove ", " ponder");
+        if (bestMove.contains("ponder")) {
+            bestMove = StringUtils.substringBetween(bestMove, "bestmove ", " ponder");
+        }else{
+            bestMove = bestMove.substring(9);
+        }
         return bestMove;
     }
 

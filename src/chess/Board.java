@@ -1206,9 +1206,9 @@ public class Board extends JComponent {
                 //test print
                 if(!Moves.isEmpty()){
                     //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
-                    Moves.get(Moves.size()-1).setNotation(Moves.get(Moves.size()-1).convertToAlgebraicNotation());
-                    System.out.println("NOTATION: " + Moves.get(Moves.size()-1).getNotation());
-                    movePanel.updateMove(Moves.get(Moves.size()-1).getNotation(),fullMoveCounter,turnCounter);
+                    lastMove.setNotation(lastMove.convertToAlgebraicNotation());
+                    System.out.println("NOTATION: " + lastMove.getNotation());
+                    movePanel.updateMove(lastMove.getNotation(),fullMoveCounter,turnCounter);
 
                 }
 
@@ -1217,8 +1217,11 @@ public class Board extends JComponent {
                     //test print
                     if(!Moves.isEmpty()){
                         //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
-                        Moves.get(Moves.size()-1).setNotation(Moves.get(Moves.size()-1).convertToAlgebraicNotation());
-                        System.out.println("NOTATION: " + Moves.get(Moves.size()-1).getNotation());
+                        Move lastEngineMove = Moves.get(Moves.size()-1);
+                        lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
+                        System.out.println("NOTATION: " + lastEngineMove.getNotation());
+                        movePanel.updateMove(lastEngineMove.getNotation(),fullMoveCounter,turnCounter);
+
                     }
                 }
 

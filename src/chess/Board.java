@@ -211,6 +211,11 @@ public class Board extends JComponent {
 //        this.add("UpperClock", upperClock);
 //        this.add("LowerClock", lowerClock);
 
+        clock = new GameClock(this);
+        clock.setSize(new Dimension(200, 100));
+        clock.setLocation(new Point(0, 550));
+        this.add(clock);
+
         undoBtn = new JButton("Undo Move");
         undoBtn.setBounds(150, 580, 100, 40);
         undoBtn.setFocusable(false);
@@ -556,6 +561,7 @@ public class Board extends JComponent {
             saveWrite.write(getFen());
             saveWrite.close();
             System.out.println("successfully wrote to the file");
+            clock.stop();
         }catch(IOException e){
             System.out.println("An error occurred");
             e.printStackTrace();
@@ -686,10 +692,12 @@ public class Board extends JComponent {
             System.out.println("White turn");
             turnCounter = 0;
             clock.setClockSide("w");
+            clock.run();
         }else{
             System.out.println("Black turn");
             turnCounter = 1;
             clock.setClockSide("b");
+            clock.run();
         }
         lastNdx += 2;
 

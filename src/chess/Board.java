@@ -24,6 +24,7 @@ public class Board extends JComponent {
     private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
     private boolean displayedMessage = false;
     private ImagePanel panel;
+    private int skillLevel;
 
     private final int Square_Width = 65;
     public Board board = this;
@@ -239,7 +240,7 @@ public class Board extends JComponent {
         this.add(saveBtn);
     }
 
-    public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel) {
+    public Board(boolean isAgainstEngine, boolean isWhitePerspective, ImagePanel panel, MovePanel movePanel, int level) {
 
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
@@ -249,6 +250,8 @@ public class Board extends JComponent {
         this.isAgainstEngine = isAgainstEngine;
         this.isWhitePerspective = isWhitePerspective;
         this.panel = panel;
+        this.skillLevel = level;
+
         this.movePanel = movePanel;
         initGrid(isWhitePerspective);
 
@@ -309,6 +312,7 @@ public class Board extends JComponent {
             stockfish.startEngine();
             stockfish.sendCommand("uci");
             stockfish.sendCommand("ucinewgame");
+            stockfish.sendCommand("setoption name Skill Level value " + skillLevel);
             if(!isWhitePerspective) {
                 doEngineMove();
             }
@@ -781,6 +785,7 @@ public class Board extends JComponent {
             stockfish.startEngine();
             stockfish.sendCommand("uci");
             stockfish.sendCommand("ucinewgame");
+            stockfish.sendCommand("setoption name Skill Level value " + skillLevel);
             if(!isWhitePerspective) {
                 doEngineMove();
             }
@@ -911,6 +916,7 @@ public class Board extends JComponent {
         System.out.println(fen);
         return fen.toString();
     }
+
     public void doEngineMove(){
         String bestMove = stockfish.getBestMove(getFen(), 20);
         System.out.println("BEST MOVE: " + bestMove);
@@ -1028,7 +1034,7 @@ public class Board extends JComponent {
         }
         return new Spot(convertedX, convertedY, isWhitePerspective);
     }
-    
+
     private MouseAdapter mouseAdapter = new MouseAdapter() {
 
         @Override
@@ -1083,7 +1089,7 @@ public class Board extends JComponent {
                         Black_Pieces.remove(clicked_piece);
                     }
                 }
-                
+
                 //full move counter increments everytime black moves, set to 1 at the start of the game
                 if (movedPiece.isBlack()) {
                     fullMoveCounter++;
@@ -1214,10 +1220,10 @@ public class Board extends JComponent {
                 //test print
                 if(!Moves.isEmpty()){
                     //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
-                    Moves.get(Moves.size()-1).setNotation(Moves.get(Moves.size()-1).convertToAlgebraicNotation());
-                    System.out.println("NOTATION: " + Moves.get(Moves.size()-1).getNotation());
-                    movePanel.updateMove(Moves.get(Moves.size()-1).getNotation(),fullMoveCounter,turnCounter);
-                    
+                    lastMove.setNotation(lastMove.convertToAlgebraicNotation());
+                    System.out.println("NOTATION: " + lastMove.getNotation());
+                    movePanel.updateMove(lastMove.getNotation(),fullMoveCounter,turnCounter);
+
                 }
 
                 if (isAgainstEngine && is_whites_turn == isWhitePerspective) {
@@ -1225,8 +1231,11 @@ public class Board extends JComponent {
                     //test print
                     if(!Moves.isEmpty()){
                         //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
-                        Moves.get(Moves.size()-1).setNotation(Moves.get(Moves.size()-1).convertToAlgebraicNotation());
-                        System.out.println("NOTATION: " + Moves.get(Moves.size()-1).getNotation());
+                        Move lastEngineMove = Moves.get(Moves.size()-1);
+                        lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
+                        System.out.println("NOTATION: " + lastEngineMove.getNotation());
+                        movePanel.updateMove(lastEngineMove.getNotation(),fullMoveCounter,turnCounter);
+
                     }
                 }
 

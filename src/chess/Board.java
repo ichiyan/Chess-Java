@@ -430,6 +430,7 @@ public class Board extends JComponent {
                 lastMovedPiece.setX(lastMove.getInitialSpot().getX());
                 lastMovedPiece.setY(lastMove.getInitialSpot().getY());
 
+                movePanel.undoMove();
                 Moves.remove(lastMove);
                 turnCounter++;
                 clock.switchClocks();

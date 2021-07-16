@@ -14,11 +14,13 @@ public class MovePanel extends JPanel{
     private JLabel title;
     protected JTextArea textArea;
     private final static String newline = "\n";
-    
+    private Stack<String> moveList = new Stack();
     
     public MovePanel(){
         
         super(new GridBagLayout());
+
+        moveList.clear();
 
         title = new JLabel("      Moves");
         title.setFont(new Font(null, Font.BOLD, 16));
@@ -64,13 +66,22 @@ public class MovePanel extends JPanel{
         }
         
             
-        
+        moveList.add(fullMove.toString());
         textArea.append(fullMove.toString());
         
-        
+        for (String string : moveList) {
+            System.out.println(string);
+        }
     }
     
     public void undoMove(){
+        StringBuffer moves = new StringBuffer();
+        moveList.pop();
+        for (String string : moveList) {
+            moves.append(string);
+        }
+        textArea.setText(null);
+        textArea.append(moves.toString());
         
     }
  

@@ -315,8 +315,17 @@ public class Board extends JComponent {
             stockfish.sendCommand("setoption name Skill Level value " + skillLevel);
             if(!isWhitePerspective) {
                 doEngineMove();
+                if(!Moves.isEmpty()){
+                    //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
+                    Move lastEngineMove = Moves.get(Moves.size()-1);
+                    lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
+                    System.out.println("NOTATION: " + lastEngineMove.getNotation());
+                    movePanel.updateMove(lastEngineMove.getNotation(),fullMoveCounter,turnCounter);
+
+                }
             }
         }
+
     }
     class SaveBtnHandler implements ActionListener{
         @Override
@@ -904,7 +913,7 @@ public class Board extends JComponent {
     }
 
     public void doEngineMove(){
-        String bestMove = stockfish.getBestMove(getFen(), 20);
+        String bestMove = stockfish.getBestMove(getFen(), 10);
         System.out.println("BEST MOVE: " + bestMove);
 
         Spot initialSpot = convertUci(bestMove.substring(0, 2));
@@ -1203,7 +1212,6 @@ public class Board extends JComponent {
                 turnCounter++;
                 clock.switchClocks();
 
-                //test print
                 if(!Moves.isEmpty()){
                     //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
                     lastMove.setNotation(lastMove.convertToAlgebraicNotation());

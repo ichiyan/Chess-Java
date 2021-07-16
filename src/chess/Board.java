@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.*;
 import javax.imageio.*;
 import javax.swing.*;
+import java.time.Instant;
 
 public class Board extends JComponent {
 
@@ -49,6 +50,9 @@ public class Board extends JComponent {
     UndoBtnHandler undoBtnHandler;
     JButton saveBtn;
     SaveBtnHandler saveBtnHandler;
+
+    //ChessClock lowerClock, upperClock;
+    GameClock clock;
 
     public void loadGrid(boolean isAgainstEngine){
 
@@ -200,6 +204,13 @@ public class Board extends JComponent {
         this.requestFocus();
         drawBoard();
 
+//        lowerClock = new ChessClock();
+//        lowerClock.setLocation(20, 580);
+//        upperClock = new ChessClock();
+
+//        this.add("UpperClock", upperClock);
+//        this.add("LowerClock", lowerClock);
+
         undoBtn = new JButton("Undo Move");
         undoBtn.setBounds(150, 580, 100, 40);
         undoBtn.setFocusable(false);
@@ -250,8 +261,24 @@ public class Board extends JComponent {
         this.requestFocus();
         drawBoard();
 
+//        ChessClock2 chessClock2 = new ChessClock2(ChessClock2.Player.LEFT);
+//        Instant start = chessClock2.gameStart();
+//
+//        lowerClock = new ChessClock();
+//        lowerClock.setLocation(550, 580);
+//        lowerClock.minimumSize();
+//        upperClock = new ChessClock();
+//
+//        this.add("UpperClock", upperClock);
+//        this.add("LowerClock", lowerClock);
+
+        clock = new GameClock(this);
+        clock.setSize(new Dimension(200, 100));
+        clock.setLocation(new Point(0, 550));
+        this.add(clock);
+
         undoBtn = new JButton("Undo Move");
-        undoBtn.setBounds(150, 580, 100, 40);
+        undoBtn.setBounds(250, 580, 100, 40);
         undoBtn.setFocusable(false);
         undoBtn.setBackground(Color.BLACK);
         undoBtn.setForeground(Color.WHITE);
@@ -262,7 +289,7 @@ public class Board extends JComponent {
         this.add(undoBtn);
 
         saveBtn = new JButton("Back to Menu");
-        saveBtn.setBounds(320, 580, 120, 40);
+        saveBtn.setBounds(400, 580, 120, 40);
         saveBtn.setFocusable(false);
         saveBtn.setBackground(Color.BLACK);
         saveBtn.setForeground(Color.WHITE);
@@ -359,6 +386,7 @@ public class Board extends JComponent {
 
                 Moves.remove(lastMove);
                 turnCounter++;
+                clock.switchClocks();
                 drawBoard();
             }
         }
@@ -657,9 +685,11 @@ public class Board extends JComponent {
         if(data.charAt(lastNdx) == 'w'){
             System.out.println("White turn");
             turnCounter = 0;
+            clock.setClockSide("w");
         }else{
             System.out.println("Black turn");
             turnCounter = 1;
+            clock.setClockSide("b");
         }
         lastNdx += 2;
 
@@ -959,6 +989,7 @@ public class Board extends JComponent {
 
         fullMoveCounter++;
         turnCounter++;
+        clock.switchClocks();
         drawBoard();
     }
 
@@ -1156,6 +1187,7 @@ public class Board extends JComponent {
                 Active_Piece = null;
                 getFen();
                 turnCounter++;
+                clock.switchClocks();
 
                 //test print
                 if(!Moves.isEmpty()){

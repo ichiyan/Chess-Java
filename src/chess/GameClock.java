@@ -3,7 +3,7 @@ package chess;
 import java.awt.*;
 import java.awt.image.*;
 import java.io.Serial;
-import javax.swing.*;
+import javax.swing.JPanel;
 //import org.apache.log4j.Logger;
 
 public class GameClock extends JPanel implements Runnable
@@ -31,8 +31,7 @@ public class GameClock extends JPanel implements Runnable
         //this.settings = game.getSettings();
         this.background = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
 
-        //int time = 300;
-        int time = board.timeLimit;
+        int time = 300;
 
         this.setTimes(time, time);
         //this.setPlayers(this.settings.getPlayerBlack(), this.settings.getPlayerWhite());
@@ -42,21 +41,6 @@ public class GameClock extends JPanel implements Runnable
 //        {
             thread.start();
         //}
-        this.drawBackground();
-        this.setDoubleBuffered(true);
-    }
-
-    GameClock(Board board, int wTime, int bTime)
-    {
-        super();
-        this.clockWhitePlayer = new Clock();
-        this.clockBlackPlayer = new Clock();
-        this.setTimes(wTime, bTime);
-        this.activeClock = this.clockWhitePlayer;
-        this.board = board;
-        this.background = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
-        this.thread = new Thread(this);
-        thread.start();
         this.drawBackground();
         this.setDoubleBuffered(true);
     }
@@ -233,7 +217,7 @@ public class GameClock extends JPanel implements Runnable
         }
     }
 
-    public String outOfTime()
+    public String timeLeft()
     {
         String ret = "none";
         if (this.clockWhitePlayer.getLeftTime() == 0)
@@ -245,15 +229,6 @@ public class GameClock extends JPanel implements Runnable
             ret = "White wins";
         }
         return ret;
-    }
-
-    public int timeLeftW()
-    {
-        return this.clockWhitePlayer.getLeftTime();
-    }
-    public int timeLeftB()
-    {
-        return this.clockBlackPlayer.getLeftTime();
     }
 
     private void timeOver()

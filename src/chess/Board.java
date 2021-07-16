@@ -169,12 +169,12 @@ public class Board extends JComponent {
             blackKing = (King) getPiece(3, 7);
         }
 
-
         Moves = new ArrayList<>();
         fullMoveCounter = 1;
         halfMoveCounter = 0;
         prevHalfMoveCounter = 0;
     }
+
     public Board(boolean isAgainstEngine, boolean loadedGame, boolean isWhitePerspective){
         BoardGrid = new Integer[rows][cols];
         Static_Shapes = new ArrayList();
@@ -212,8 +212,8 @@ public class Board extends JComponent {
 //        this.add("LowerClock", lowerClock);
 
         clock = new GameClock(this);
-        clock.setSize(new Dimension(200, 100));
-        clock.setLocation(new Point(0, 550));
+        clock.setSize(new Dimension(200, 80));
+        clock.setLocation(new Point(0, 560));
         this.add(clock);
 
         undoBtn = new JButton("Undo Move");
@@ -278,8 +278,8 @@ public class Board extends JComponent {
 //        this.add("LowerClock", lowerClock);
 
         clock = new GameClock(this);
-        clock.setSize(new Dimension(200, 100));
-        clock.setLocation(new Point(0, 550));
+        clock.setSize(new Dimension(200, 80));
+        clock.setLocation(new Point(0, 560));
         this.add(clock);
 
         undoBtn = new JButton("Undo Move");
@@ -442,6 +442,10 @@ public class Board extends JComponent {
         White_Pieces.clear();
         Black_Pieces.clear();
         Moves.clear();
+        this.clock = new GameClock(this);
+        clock.setSize(new Dimension(200, 80));
+        clock.setLocation(new Point(0, 560));
+        this.add(clock);
 
         initGrid(isWhitePerspective);
 
@@ -453,6 +457,7 @@ public class Board extends JComponent {
         int n;
         boolean status = false;
 
+
         if(whiteKing.isCheckmate() || blackKing.isCheckmate()){
             message = (whiteKing.isCheckmate())?"Black Wins!":"White Wins!";
             header = "Checkmate";
@@ -462,6 +467,15 @@ public class Board extends JComponent {
             header = "Draw";
             status = true;
         }
+        if(clock != null){
+            String time = clock.timeLeft();
+            if(time != "none"){
+                message = time;
+                header = "Ran out of time";
+                status = true;
+            }
+        }
+
         if(status && !displayedMessage){
             n = JOptionPane.showOptionDialog(this, message, header, JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE,null, options, null);
             if(n==0){
@@ -469,8 +483,8 @@ public class Board extends JComponent {
                 drawBoard();
                 return false;
             }
-
         }
+
         return status;
 
     }

@@ -104,32 +104,32 @@ public class GameClock extends JPanel implements Runnable
         whiteClockString = this.clockWhitePlayer.getAsString();
         blackClockString = this.clockBlackPlayer.getAsString();
         Graphics2D g2d = (Graphics2D) g;
-        g2d.drawImage(this.background, 0, 0, this);
+        //g2d.drawImage(this.background, 0, 0, this);
         g2d.setRenderingHint(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON
         );
         Font font = new Font("Serif", Font.ITALIC, 20);
-        g2d.drawImage(this.background, 0, 0, this);
+        //g2d.drawImage(this.background, 0, 0, this);
         g2d.setColor(Color.WHITE);
-        g2d.fillRect(5, 30, 80, 30);
+        g2d.fillRect(5, 25, 80, 25);
         g2d.setFont(font);
 
         g2d.setColor(Color.BLACK);
-        g2d.fillRect(85, 30, 90, 30);
-        g2d.drawRect(5, 30, 170, 30);
-        g2d.drawRect(5, 60, 170, 30);
-        g2d.drawLine(85, 30, 85, 90);
+        g2d.fillRect(85, 25, 90, 25);
+        g2d.drawRect(5, 25, 170, 25);
+        g2d.drawRect(5, 50, 170, 25);
+        g2d.drawLine(85, 25, 85, 75);
         font = new Font("Serif", Font.ITALIC, 14);
-        g2d.drawImage(this.background, 0, 0, this);
+        //g2d.drawImage(this.background, 0, 0, this);
         g2d.setFont(font);
-        g.drawString("WHITE", 10, 50);
+        g.drawString("WHITE", 10, 43);
         g.setColor(Color.WHITE);
-        g.drawString("BLACK", 100, 50);
+        g.drawString("BLACK", 100, 43);
         g2d.setFont(font);
         g.setColor(Color.BLACK);
-        g2d.drawString(whiteClockString, 10, 80);
-        g2d.drawString(blackClockString, 90, 80);
+        g2d.drawString(whiteClockString, 10, 70);
+        g2d.drawString(blackClockString, 100, 70);
     }
 
     /**
@@ -142,12 +142,8 @@ public class GameClock extends JPanel implements Runnable
         paint(g);
     }
 
-    /** Method of swiching the players clocks
-     */
     public void switchClocks()
     {
-        /*in documentation this method is called 'switch', but it's restricted name
-        to switch block (in pascal called "case") - this've to be repaired in documentation by Wąsu:P*/
         if (this.activeClock == this.clockWhitePlayer)
         {
             this.activeClock = this.clockBlackPlayer;
@@ -172,20 +168,13 @@ public class GameClock extends JPanel implements Runnable
         }
     }
 
-    /** Method with is setting the players clocks time
-     * @param t1 Capt the player time
-     * @param t2 Capt the player time
-     */
     public void setTimes(int t1, int t2)
     {
         this.clockWhitePlayer.init(t1);
         this.clockBlackPlayer.init(t2);
     }
 
-    /** Method with is setting the players clocks
-     * @param p1 Capt player information
-     * @param p2 Capt player information
-     */
+
 //    private void setPlayers(Player p1, Player p2)
 //    {
 //        if (p1.getColor() == Colors.WHITE)
@@ -200,9 +189,6 @@ public class GameClock extends JPanel implements Runnable
 //        }
 //    }
 
-    /**
-     * Method with is running the time on clock
-     */
     @Override
     public void run()
     {
@@ -224,15 +210,27 @@ public class GameClock extends JPanel implements Runnable
                 }
                 if (this.activeClock != null && this.activeClock.getLeftTime() == 0)
                 {
-                    //this.timeOver();
+                    this.timeOver();
                     //System.out.print("out");
                 }
             }
         }
     }
 
-    /** Method of checking is the time of the game is not over
-     */
+    public String timeLeft()
+    {
+        String ret = "none";
+        if (this.clockWhitePlayer.getLeftTime() == 0)
+        {
+            ret = "Black wins";
+        }
+        else if (this.clockBlackPlayer.getLeftTime() == 0)
+        {
+            ret = "White wins";
+        }
+        return ret;
+    }
+
     private void timeOver()
     {
         String color = new String();
@@ -248,7 +246,7 @@ public class GameClock extends JPanel implements Runnable
 //        {
 //            LOG.debug("Time over called when player got time 2 play");
 //        }
-        //this.game.endGame("Time is over! " + color + " player win the game.");
+        //this.board.("Time is over! " + color + " player win the game.");
         this.stop();
     }
 }

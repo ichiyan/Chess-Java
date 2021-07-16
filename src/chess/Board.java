@@ -186,7 +186,7 @@ public class Board extends JComponent {
         this.isWhitePerspective = isWhitePerspective;
         this.panel = panel;
         this.skillLevel = level;
-
+        this.movePanel = movePanel;
         if(this.isAgainstEngine){
             loadGrid(true);
         }else{

@@ -580,13 +580,18 @@ public class Board extends JComponent {
     public void saveGame(boolean isAgainstEngine){
         try{
             FileWriter saveWrite;
+            BufferedWriter bw;
             if(isAgainstEngine){
                 saveWrite = new FileWriter("save2.dat");
             }else{
                 saveWrite = new FileWriter("save.dat");
             }
-            saveWrite.write(getFen());
-            saveWrite.close();
+            
+            bw = new BufferedWriter(saveWrite);
+            int isWhitePerspective = this.isWhitePerspective ? 1 : 0;    
+            bw.write(getFen() + " " + isWhitePerspective);
+            bw.close();
+
             System.out.println("successfully wrote to the file");
             clock.stop();
         }catch(IOException e){
@@ -778,17 +783,26 @@ public class Board extends JComponent {
 
         //full move
         moveCtr = new StringBuffer();
-        while(lastNdx < data.length()){
+        while(data.charAt(lastNdx) != ' '){
             moveCtr.append(data.charAt(lastNdx));
             lastNdx++;
         }
         this.fullMoveCounter = Integer.parseInt(moveCtr.toString());
         System.out.println("FULLMOVE: " + fullMoveCounter);
 
-        //change board perspective to what is saved
+
+        //board perspective to what is saved
+        lastNdx++;
+
+        if(data.charAt(lastNdx) == '1'){
+            this.isWhitePerspective = true;
+        }else{
+            this.isWhitePerspective = false;
+        }
         this.isWhitePerspective = true;
         this.drawBoard();
 
+        
         if(isAgainstEngine){
             stockfish = new Stockfish();
             stockfish.startEngine();

@@ -14,7 +14,6 @@ public class GameClock extends JPanel implements Runnable
     private Clock clockWhitePlayer;
     private Clock clockBlackPlayer;
     private Clock activeClock;
-    //private Settings settings;
     private Thread thread;
     private Board board;
     private String whiteClockString;
@@ -28,20 +27,15 @@ public class GameClock extends JPanel implements Runnable
         this.clockBlackPlayer = new Clock();
         this.activeClock = this.clockWhitePlayer;
         this.board = board;
-        //this.settings = game.getSettings();
         this.background = new BufferedImage(600, 600, BufferedImage.TYPE_INT_ARGB);
 
         //int time = 300;
         int time = board.timeLimit;
 
         this.setTimes(time, time);
-        //this.setPlayers(this.settings.getPlayerBlack(), this.settings.getPlayerWhite());
 
         this.thread = new Thread(this);
-//        if (this.settings.isTimeLimitSet())
-//        {
-            thread.start();
-        //}
+        thread.start();
         this.drawBackground();
         this.setDoubleBuffered(true);
     }
@@ -61,22 +55,17 @@ public class GameClock extends JPanel implements Runnable
         this.setDoubleBuffered(true);
     }
 
-    /** Method to init game clock
-     */
     public void start()
     {
         this.thread.start();
     }
 
-    /** Method to stop game clock
-     */
     public void stop()
     {
         this.activeClock = null;
 
         try
         {
-            //block this thread
             this.thread.wait();
         }
         catch (InterruptedException | IllegalMonitorStateException exc)
@@ -85,8 +74,6 @@ public class GameClock extends JPanel implements Runnable
         }
     }
 
-    /** Method of drawing graphical background of clock
-     */
     void drawBackground()
     {
         Graphics gr = this.background.getGraphics();
@@ -109,10 +96,6 @@ public class GameClock extends JPanel implements Runnable
         //g2d.drawString(settings.getPlayerBlack().getName(), 100, 50);
     }
 
-    /**
-     Annotation to superclass Graphics drawing the clock graphics
-     * @param g Graphics2D Capt object to paint
-     */
     @Override
     public void paint(Graphics g)
     {
@@ -148,10 +131,6 @@ public class GameClock extends JPanel implements Runnable
         g2d.drawString(blackClockString, 100, 70);
     }
 
-    /**
-     Annotation to superclass Graphics updating clock graphic
-     * @param g Graphics2D Capt object to paint
-     */
     @Override
     public void update(Graphics g)
     {
@@ -172,8 +151,6 @@ public class GameClock extends JPanel implements Runnable
 
     public void setClockSide(String side)
     {
-        /*in documentation this method is called 'switch', but it's restricted name
-        to switch block (in pascal called "case") - this've to be repaired in documentation by Wąsu:P*/
         if (side == "b")
         {
             this.activeClock = this.clockBlackPlayer;

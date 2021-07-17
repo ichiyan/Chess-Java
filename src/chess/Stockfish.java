@@ -14,8 +14,8 @@ public class Stockfish {
 
     //Gab's stockfish path. To execute your stockfish, comment out my path and add your own path.
     //private static final String PATH = "C:/Users/Gabriela Balisacan/Downloads/exe/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
-    // private static final String PATH = "D:/Dave/Downloads/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
-    private static final String PATH = "C:/Users/lenovo/OneDrive - usc.edu.ph/Documents/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
+     private static final String PATH = "D:/Dave/Downloads/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
+    //private static final String PATH = "C:/Users/lenovo/OneDrive - usc.edu.ph/Documents/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
 
     public boolean startEngine(){
         try {
@@ -65,13 +65,14 @@ public class Stockfish {
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
+        System.out.println("StringBuffer: "+stringBuffer.toString());
         return stringBuffer.toString();
     }
 
     public String getOutput(){
         StringBuffer stringBuffer = new StringBuffer();
         try{
-            String text = "";
+            String text = " ";
             while (!text.contains("bestmove")){
                 text = processReader.readLine();
                 stringBuffer.append(text + "\n");

@@ -80,6 +80,7 @@ public class MovePanel extends JPanel{
         
     }
     public void resetMoves(){
+        moveList.clear();
         textArea.setText(null);
     }
  

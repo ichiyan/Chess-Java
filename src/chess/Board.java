@@ -188,7 +188,7 @@ public class Board extends JComponent {
         this.isWhitePerspective = isWhitePerspective;
         this.panel = panel;
         this.skillLevel = level;
-
+        this.gui =gui;
         this.movePanel = movePanel;
         if(this.isAgainstEngine){
             loadGrid(true);
@@ -356,7 +356,8 @@ public class Board extends JComponent {
         @Override
         public void actionPerformed(ActionEvent e){
             saveGame(isAgainstEngine);
-            new GUI();
+            
+            new GUI(); 
             gui.dispose();
             panel.setVisible(true);
         }
@@ -416,14 +417,14 @@ public class Board extends JComponent {
                         Black_Pieces.add(capturedPiece);
                     }
 
-                    // if(!lastMove.isEnPassantCapture(board)){
+                if(!lastMove.isEnPassantCapture(board)){
                     capturedPiece.setX(lastMove.getFinalSpot().getX());
                     capturedPiece.setY(lastMove.getFinalSpot().getY());
-//                    }else{
-//                        Move prevMove = Moves.get(Moves.size()-2);
-//                        capturedPiece.setX(prevMove.getFinalSpot().getX());
-//                        capturedPiece.setY(prevMove.getFinalSpot().getY());
-//                    }
+                   }else{
+                       Move prevMove = Moves.get(Moves.size()-2);
+                       capturedPiece.setX(prevMove.getFinalSpot().getX());
+                       capturedPiece.setY(prevMove.getFinalSpot().getY());
+                   }
                 }
 
                 lastMovedPiece.setX(lastMove.getInitialSpot().getX());
@@ -487,7 +488,7 @@ public class Board extends JComponent {
         clock.setSize(new Dimension(200, 80));
         clock.setLocation(new Point(0, 560));
         this.add(clock);
-
+        movePanel.resetMoves();
         initGrid(isWhitePerspective);
 
     }
@@ -788,8 +789,9 @@ public class Board extends JComponent {
 //            //clock.run();
 //            this.add(clock);
 //        }else {
+            char turn = data.charAt(lastNdx);
             if(data.charAt(lastNdx) == 'w'){
-                System.out.println("White turn");
+                // System.out.println("White turn");
                 turnCounter = 0;
                 clock = new GameClock(this, dataT.get(0), dataT.get(1));
                 clock.setSize(new Dimension(200, 80));
@@ -798,7 +800,7 @@ public class Board extends JComponent {
                 //clock.run();
                 this.add(clock);
             }else{
-                System.out.println("Black turn");
+                // System.out.println("Black turn");
                 turnCounter = 1;
                 clock = new GameClock(this, dataT.get(0), dataT.get(1));
                 clock.setSize(new Dimension(200, 80));
@@ -855,7 +857,7 @@ public class Board extends JComponent {
             lastNdx++;
         }
         this.halfMoveCounter = Integer.parseInt(moveCtr.toString());
-        System.out.println("HALFMOVE: " + halfMoveCounter);
+        // System.out.println("HALFMOVE: " + halfMoveCounter);
 
         lastNdx++;
 
@@ -866,7 +868,7 @@ public class Board extends JComponent {
             lastNdx++;
         }
         this.fullMoveCounter = Integer.parseInt(moveCtr.toString());
-        System.out.println("FULLMOVE: " + fullMoveCounter);
+        // System.out.println("FULLMOVE: " + fullMoveCounter);
 
 
         //board perspective to what is saved
@@ -883,8 +885,8 @@ public class Board extends JComponent {
             lastNdx += 2;
 
             StringBuffer levelBfr = new StringBuffer();
-
-            while(data.charAt(lastNdx) < data.length()){
+            // System.out.println(data.charAt(lastNdx));
+            while(lastNdx<data.length()){
             levelBfr.append(data.charAt(lastNdx));
             lastNdx++;
             }
@@ -906,7 +908,7 @@ public class Board extends JComponent {
             stockfish.sendCommand("uci");
             stockfish.sendCommand("ucinewgame");
             stockfish.sendCommand("setoption name Skill Level value " + skillLevel);
-            if(!isWhitePerspective) {
+            if(!isWhitePerspective && turn == 'b') {
                 doEngineMove();
             }
         }
@@ -931,7 +933,7 @@ public class Board extends JComponent {
             try{
                 String line;
                 while((line = br.readLine()) != null){
-                    System.out.println("The line is: " + line);
+                    // System.out.println("The line is: " + line);
 
                     if(halfMoveCtr % 2 == 0){
                         this.movePanel.updateMove(line, fullMoveCtr, halfMoveCtr++);
@@ -1379,7 +1381,7 @@ public class Board extends JComponent {
                 if(!Moves.isEmpty()){
                     //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
                     lastMove.setNotation(lastMove.convertToAlgebraicNotation());
-                    System.out.println("NOTATION: " + lastMove.getNotation());
+                    
                     movePanel.updateMove(lastMove.getNotation(),fullMoveCounter,turnCounter);
 
                 }
@@ -1391,7 +1393,7 @@ public class Board extends JComponent {
                         //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
                         Move lastEngineMove = Moves.get(Moves.size()-1);
                         lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
-                        System.out.println("NOTATION: " + lastEngineMove.getNotation());
+                        
                        
 
                     }

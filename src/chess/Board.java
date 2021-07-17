@@ -10,20 +10,19 @@ import java.io.*;
 import java.util.*;
 import javax.imageio.*;
 import javax.swing.*;
-import java.time.Instant;
 
 public class Board extends JComponent {
 
-    private boolean isAgainstEngine;
+    private final boolean isAgainstEngine;
     private boolean isWhitePerspective;
     private Stockfish stockfish;
     public int turnCounter = 0;
     public int fullMoveCounter = 1;
     public int halfMoveCounter = 0;
     public int prevHalfMoveCounter = 0;  //stores halfMoveCounter before reset in case of undo
-    private static Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
+    private static final Image NULL_IMAGE = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
     private boolean displayedMessage = false;
-    private ImagePanel panel;
+    private final ImagePanel panel;
     private int skillLevel;
 
     private final int Square_Width = 65;
@@ -43,9 +42,9 @@ public class Board extends JComponent {
     private final int rows = 8;
     private final int cols = 8;
     public Integer[][] BoardGrid;
-    private String board_white_perspective_file_path = "images" + File.separator + "board3.png";
-    private String board_black_perspective_file_path = "images" + File.separator + "board3_black_perspective.png";
-    private String active_square_file_path = "images" + File.separator + "active_square.png";
+    private final String board_white_perspective_file_path = "images" + File.separator + "board3.png";
+    private final String board_black_perspective_file_path = "images" + File.separator + "board3_black_perspective.png";
+    private final String active_square_file_path = "images" + File.separator + "active_square.png";
     public MovePanel movePanel;
     public GUI gui;
     JButton undoBtn;
@@ -190,11 +189,7 @@ public class Board extends JComponent {
         this.skillLevel = level;
         this.gui =gui;
         this.movePanel = movePanel;
-        if(this.isAgainstEngine){
-            loadGrid(true);
-        }else{
-            loadGrid(false);
-        }
+        loadGrid(this.isAgainstEngine);
         this.movePanel = movePanel;
 
         this.setBackground(new Color(0x6495ed));
@@ -502,7 +497,7 @@ public class Board extends JComponent {
         }
         if(clock != null){
             String time = clock.outOfTime();
-            if(time != "none"){
+            if(!time.equals("none")){
                 message = time;
                 header = "Ran out of time";
                 status = true;
@@ -620,8 +615,8 @@ public class Board extends JComponent {
 
             bw.newLine();
 
-            for(int i=0; i < Moves.size(); i++){
-                bw.write(Moves.get(i).getNotation());
+            for (Move move : Moves) {
+                bw.write(move.getNotation());
                 bw.newLine();
             }
             
@@ -648,7 +643,7 @@ public class Board extends JComponent {
     public void loadGame(boolean isAgainstEngine){
         String data = null;
         ArrayList<Integer> dataT = new ArrayList<>();
-        Scanner saveReader = null;
+        Scanner saveReader;
         int lastNdx = 0;
         char charAtLastNdx;
         StringBuffer castlingRights = new StringBuffer();
@@ -688,26 +683,18 @@ public class Board extends JComponent {
         outerloop:
         for(int r = 0; r <= 7; r++){
             for(int f = 0; f <= 7; f++){
+                assert data != null;
                 charAtLastNdx = data.charAt(lastNdx);
                 if(Character.isUpperCase(charAtLastNdx)){
                     switch (charAtLastNdx) {
-                        case 'R' -> {
-                            White_Pieces.add(new Rook(f, r, true, "Rook.png", this));
-                            
-//                            System.out.println("Created R at " + f + " and " + r);
-                        }
-                        case 'N' -> {
-                            White_Pieces.add(new Knight(f, r, true, "Knight.png", this));
-//                            System.out.println("Created N at " + f + " and " + r);
-                        }
-                        case 'B' -> {
-                            White_Pieces.add(new Bishop(f, r, true, "Bishop.png", this));
-//                            System.out.println("Created B at " + f + " and " + r);
-                        }
-                        case 'Q' -> {
-                            White_Pieces.add(new Queen(f, r, true, "Queen.png", this));
-//                            System.out.println("Created Q at " + f + " and " + r);
-                        }
+                        case 'R' -> //                            System.out.println("Created R at " + f + " and " + r);
+                                White_Pieces.add(new Rook(f, r, true, "Rook.png", this));
+                        case 'N' -> //                            System.out.println("Created N at " + f + " and " + r);
+                                White_Pieces.add(new Knight(f, r, true, "Knight.png", this));
+                        case 'B' -> //                            System.out.println("Created B at " + f + " and " + r);
+                                White_Pieces.add(new Bishop(f, r, true, "Bishop.png", this));
+                        case 'Q' -> //                            System.out.println("Created Q at " + f + " and " + r);
+                                White_Pieces.add(new Queen(f, r, true, "Queen.png", this));
                         case 'K' -> {
                             White_Pieces.add(new King(f, r, true, "King.png", this));
 //                            System.out.println("Created K at " + f + " and " + r);
@@ -725,22 +712,14 @@ public class Board extends JComponent {
                     lastNdx++;
                 }else if(Character.isLowerCase(data.charAt(lastNdx))){
                     switch (data.charAt(lastNdx)) {
-                        case 'r' -> {
-                            Black_Pieces.add(new Rook(f, r, false, "Rook.png", this));
-//                            System.out.println("Created r at" + f + " and " + r);
-                        }
-                        case 'n' -> {
-                            Black_Pieces.add(new Knight(f, r, false, "Knight.png", this));
-//                            System.out.println("Created n at" + f + " and " + r);
-                        }
-                        case 'b' -> {
-                            Black_Pieces.add(new Bishop(f, r, false, "Bishop.png", this));
-//                            System.out.println("Created b at" + f + " and " + r);
-                        }
-                        case 'q' -> {
-                            Black_Pieces.add(new Queen(f, r, false, "Queen.png", this));
-//                            System.out.println("Created q at" + f + " and " + r);
-                        }
+                        case 'r' -> //                            System.out.println("Created r at" + f + " and " + r);
+                                Black_Pieces.add(new Rook(f, r, false, "Rook.png", this));
+                        case 'n' -> //                            System.out.println("Created n at" + f + " and " + r);
+                                Black_Pieces.add(new Knight(f, r, false, "Knight.png", this));
+                        case 'b' -> //                            System.out.println("Created b at" + f + " and " + r);
+                                Black_Pieces.add(new Bishop(f, r, false, "Bishop.png", this));
+                        case 'q' -> //                            System.out.println("Created q at" + f + " and " + r);
+                                Black_Pieces.add(new Queen(f, r, false, "Queen.png", this));
                         case 'k' -> {
                             Black_Pieces.add(new King(f, r, false, "King.png", this));
 //                            System.out.println("Created k at" + f + " and " + r);
@@ -867,11 +846,7 @@ public class Board extends JComponent {
         //board perspective to what is saved
         lastNdx++;
 
-        if(data.charAt(lastNdx) == '1'){
-            this.isWhitePerspective = true;
-        }else{
-            this.isWhitePerspective = false;
-        }
+        this.isWhitePerspective = data.charAt(lastNdx) == '1';
 
         //loads engine level
         if(isAgainstEngine){
@@ -1164,7 +1139,6 @@ public class Board extends JComponent {
         } else {
             halfMoveCounter++;
         }
-        int test = fullMoveCounter;
         if(movedPiece.isBlack()){
             fullMoveCounter++;
         }
@@ -1300,7 +1274,7 @@ public class Board extends JComponent {
                     castedKing.setHasKSideCastlingRights(false);
                 }
 
-                if (Active_Piece.getClass().equals(Rook.class) && ((Rook)Active_Piece).getHasMoved() == false) {
+                if (Active_Piece.getClass().equals(Rook.class) && !((Rook) Active_Piece).getHasMoved()) {
                     Rook castedRook = (Rook) (Active_Piece);
                     castedRook.setIsFirstMove(!castedRook.getHasMoved());
                     castedRook.setHasMoved(true);

@@ -1,6 +1,5 @@
 package chess;
 
-import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,7 +8,6 @@ import java.io.OutputStreamWriter;
 import org.apache.commons.lang3.StringUtils;
 
 public class Stockfish {
-    private Process engineProcess;
     private BufferedReader processReader;
     private OutputStreamWriter processWriter;
 
@@ -18,17 +16,15 @@ public class Stockfish {
      //private static final String PATH = "D:/Dave/Downloads/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
     //private static final String PATH = "C:/Users/lenovo/OneDrive - usc.edu.ph/Documents/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
 
-    public boolean startEngine(){
+    public void startEngine(){
         try {
-            engineProcess = Runtime.getRuntime().exec(PATH);
+            Process engineProcess = Runtime.getRuntime().exec(PATH);
             System.out.println("start engine");
             processReader = new BufferedReader(new InputStreamReader(engineProcess.getInputStream()));
             processWriter = new OutputStreamWriter(engineProcess.getOutputStream());
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
         }
-        return  true;
     }
 
     public void stopEngine(){
@@ -60,13 +56,13 @@ public class Stockfish {
                 if(text.equals("readyok")){
                     break;
                 }else{
-                    stringBuffer.append(text + "\n");
+                    stringBuffer.append(text).append("\n");
                 }
             }
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         }
-        System.out.println("StringBuffer: "+stringBuffer.toString());
+        System.out.println("StringBuffer: "+ stringBuffer);
         return stringBuffer.toString();
     }
 
@@ -76,7 +72,7 @@ public class Stockfish {
             String text = " ";
             while (!text.contains("bestmove")){
                 text = processReader.readLine();
-                stringBuffer.append(text + "\n");
+                stringBuffer.append(text).append("\n");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -104,8 +100,5 @@ public class Stockfish {
     public static void main(String[] args) throws IOException{
         Stockfish stockfish = new Stockfish();
         stockfish.startEngine();
-        String bestMove = "bestmove h3h7";
-        System.out.println(bestMove.substring(9));
-
     }
 }

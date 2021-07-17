@@ -1,8 +1,5 @@
 import chess.GUI;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class App {
     GUI startScreen;

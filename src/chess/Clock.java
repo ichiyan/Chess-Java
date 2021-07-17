@@ -49,18 +49,18 @@ public class Clock {
 
     public String getAsString() {
         String minutesAsString;
-        Integer minutes = timeLeftInSeconds / 60;
-        Integer seconds = timeLeftInSeconds % 60;
+        int minutes = timeLeftInSeconds / 60;
+        int seconds = timeLeftInSeconds % 60;
         if (minutes < 10) {
-            minutesAsString = ZERO + minutes.toString();
+            minutesAsString = ZERO + minutes;
         } else {
-            minutesAsString = minutes.toString();
+            minutesAsString = Integer.toString(minutes);
         }
         String result = minutesAsString + COLON;
         if (seconds < 10) {
-            result = result + ZERO + seconds.toString();
+            result = result + ZERO + seconds;
         } else {
-            result = result + seconds.toString();
+            result = result + seconds;
         }
 
         return result;

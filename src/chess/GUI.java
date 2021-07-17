@@ -116,8 +116,7 @@ public class GUI extends JFrame {
         panel.setVisible(false);
         MovePanel mp = new MovePanel();
         mp.setMinimumSize(new Dimension(200, 560));
-        Board board = new Board(isAgainstEngine, true, true, panel, mp, -1, this);
-        component = board;
+        component = new Board(isAgainstEngine, true, true, panel, mp, -1, this);
         component.setMinimumSize(new Dimension(560, 560));
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
         this.add(splitPane, BorderLayout.CENTER);
@@ -188,7 +187,7 @@ public class GUI extends JFrame {
 }
 
 class ImagePanel extends JPanel {
-    private Image img;
+    private final Image img;
 
     public ImagePanel(Image img){
         this.img = img;

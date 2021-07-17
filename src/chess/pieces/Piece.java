@@ -27,8 +27,7 @@ public abstract class Piece {
         this.abbrev = abbrev;
         this.unicodeWhite = unicodeWhite;
         this.unicodeBlack = unicodeBlack;
-        moves = new ArrayList<Spot>();
-        moves.clear();
+        moves = new ArrayList<>();
     }
     
     public String getFilePath()

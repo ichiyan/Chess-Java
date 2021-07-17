@@ -1,20 +1,12 @@
 package chess;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.*;
-import java.awt.image.*;
-import java.io.*;
 import java.util.*;
-import javax.imageio.*;
 import javax.swing.*;
-import java.awt.font.*;
 
 public class MovePanel extends JPanel{
-    private JLabel title;
     protected JTextArea textArea;
-    private final static String newline = "\n";
-    private Stack<String> moveList = new Stack();
+    private final Stack<String> moveList = new Stack();
     
     public MovePanel(){
         
@@ -22,7 +14,7 @@ public class MovePanel extends JPanel{
 
         moveList.clear();
 
-        title = new JLabel("      Moves");
+        JLabel title = new JLabel("      Moves");
         title.setFont(new Font(null, Font.BOLD, 16));
         title.setOpaque(false);
         title.setPreferredSize(new Dimension(100, 50));
@@ -49,20 +41,19 @@ public class MovePanel extends JPanel{
     public void updateMove(String move,int fullMoveCounter,int turnCounter){
         StringBuffer fullMove = new StringBuffer();
         boolean isWhitesTurn = !(turnCounter % 2 != 1);
-        String template="",toAppend="";
+        String template,toAppend;
         
 
         if(isWhitesTurn){
             template = "%d.) %-15s";
             toAppend=String.format(template, fullMoveCounter, move);
-            fullMove.append(toAppend);    
-        }else{      
+        }else{
             template = "%s%n";
             toAppend=String.format(template, move);
-            fullMove.append(toAppend);       
         }
-        
-            
+        fullMove.append(toAppend);
+
+
         moveList.add(fullMove.toString());
         textArea.append(fullMove.toString());
         

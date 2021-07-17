@@ -16,8 +16,6 @@ public class GameClock extends JPanel implements Runnable
     private Clock activeClock;
     private Thread thread;
     private Board board;
-    private String whiteClockString;
-    private String blackClockString;
     private BufferedImage background;
 
     GameClock(Board board)
@@ -90,7 +88,7 @@ public class GameClock extends JPanel implements Runnable
         g2d.drawRect(5, 30, 170, 30);
         g2d.drawRect(5, 60, 170, 30);
         g2d.drawLine(85, 30, 85, 90);
-        font = new Font("Serif", Font.ITALIC, 16);
+        new Font("Serif", Font.ITALIC, 16);
         //g2d.drawString(settings.getPlayerWhite().getName(), 10, 50);
         g2d.setColor(Color.WHITE);
         //g2d.drawString(settings.getPlayerBlack().getName(), 100, 50);
@@ -100,8 +98,8 @@ public class GameClock extends JPanel implements Runnable
     public void paint(Graphics g)
     {
         super.paint(g);
-        whiteClockString = this.clockWhitePlayer.getAsString();
-        blackClockString = this.clockBlackPlayer.getAsString();
+        String whiteClockString = this.clockWhitePlayer.getAsString();
+        String blackClockString = this.clockBlackPlayer.getAsString();
         Graphics2D g2d = (Graphics2D) g;
         //g2d.drawImage(this.background, 0, 0, this);
         g2d.setRenderingHint(

@@ -5,7 +5,7 @@ import chess.pieces.Pawn;
 import chess.pieces.Piece;
 
 public class Move {
-    private Board board;
+    private final Board board;
     private Piece movedPiece;
     private Piece capturedPiece;
     private Spot initialSpot;
@@ -83,11 +83,9 @@ public class Move {
             Piece movedPiece = lastMove.getMovedPiece();
             Move prevMoved = board.Moves.get(board.Moves.size() - 2);
             Piece prevMovedPiece = prevMoved.getMovedPiece();
-            if (prevMoved.isEnPassant(board, prevMoved) && prevMovedPiece.isWhite() != movedPiece.isWhite()
+            return prevMoved.isEnPassant(board, prevMoved) && prevMovedPiece.isWhite() != movedPiece.isWhite()
                     && movedPiece.getX() == prevMovedPiece.getX() && movedPiece.getY() != 3 && movedPiece.getY() != 4
-                    && lastMove.getInitialSpot().getX() != lastMove.getFinalSpot().getX()){
-                return true;
-            }
+                    && lastMove.getInitialSpot().getX() != lastMove.getFinalSpot().getX();
         }
         return false;
     }

@@ -294,17 +294,6 @@ public class Board extends JComponent {
         this.requestFocus();
         drawBoard();
 
-//        ChessClock2 chessClock2 = new ChessClock2(ChessClock2.Player.LEFT);
-//        Instant start = chessClock2.gameStart();
-//
-//        lowerClock = new ChessClock();
-//        lowerClock.setLocation(550, 580);
-//        lowerClock.minimumSize();
-//        upperClock = new ChessClock();
-//
-//        this.add("UpperClock", upperClock);
-//        this.add("LowerClock", lowerClock);
-
         clock = new GameClock(this);
         clock.setSize(new Dimension(200, 80));
         clock.setLocation(new Point(0, 560));
@@ -483,10 +472,11 @@ public class Board extends JComponent {
         White_Pieces.clear();
         Black_Pieces.clear();
         Moves.clear();
-        this.clock = new GameClock(this);
-        clock.setSize(new Dimension(200, 80));
-        clock.setLocation(new Point(0, 560));
-        this.add(clock);
+        clock.setTimes(timeLimit, timeLimit);
+//        this.clock = new GameClock(this);
+//        clock.setSize(new Dimension(200, 80));
+//        clock.setLocation(new Point(0, 560));
+//        this.add(clock);
 
         initGrid(isWhitePerspective);
 

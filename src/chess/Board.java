@@ -645,6 +645,7 @@ public class Board extends JComponent {
         ArrayList<Integer> dataT = new ArrayList<>();
         Scanner saveReader;
         int lastNdx = 0;
+        int endOfPiecesNdx = 0;
         char charAtLastNdx;
         StringBuffer castlingRights = new StringBuffer();
         StringBuffer moveCtr = new StringBuffer();
@@ -679,11 +680,27 @@ public class Board extends JComponent {
         }
 
         //set pieces
-        
+
+
+        this.isWhitePerspective = dataT.get(2) == 1 ? true : false;
+
+        charAtLastNdx = data.charAt(lastNdx);
+        if (!isWhitePerspective) {
+            while(charAtLastNdx != ' '){
+                lastNdx++;
+                charAtLastNdx = data.charAt(lastNdx);
+            }
+            endOfPiecesNdx = lastNdx;
+            lastNdx--;
+        }
+
         outerloop:
         for(int r = 0; r <= 7; r++){
             for(int f = 0; f <= 7; f++){
                 assert data != null;
+                if (!isWhitePerspective && lastNdx == -1){
+                    break outerloop;
+                }
                 charAtLastNdx = data.charAt(lastNdx);
                 if(Character.isUpperCase(charAtLastNdx)){
                     switch (charAtLastNdx) {
@@ -707,9 +724,14 @@ public class Board extends JComponent {
                             Pawn piece = (Pawn) White_Pieces.get(White_Pieces.size()-1);
                             if( (isWhitePerspective && piece.getY() != 6) || (piece.getY() != 1 && !isWhitePerspective) ){
                                 piece.setHasMoved(true);
-                            }                     }
+                            }
+                        }
                     }
-                    lastNdx++;
+                    if (isWhitePerspective) {
+                        lastNdx++;
+                    }else{
+                        lastNdx--;
+                    }
                 }else if(Character.isLowerCase(data.charAt(lastNdx))){
                     switch (data.charAt(lastNdx)) {
                         case 'r' -> //                            System.out.println("Created r at" + f + " and " + r);
@@ -735,8 +757,12 @@ public class Board extends JComponent {
                             }
                         }
                     }
-                    lastNdx++;
-                }else if(data.charAt(lastNdx)== ' '){
+                    if(isWhitePerspective) {
+                        lastNdx++;
+                    }else{
+                        lastNdx--;
+                    }
+                }else if(charAtLastNdx == ' '){
                     break outerloop;
                 }
                 else{
@@ -746,13 +772,19 @@ public class Board extends JComponent {
                         int emptySpaces = Character.getNumericValue(charAtLastNdx);
                         f += (emptySpaces - 1);
                     }
-                    lastNdx++;
-                }
+                    if (isWhitePerspective){
+                        lastNdx++;
+                    }else{
+                        lastNdx--;
+                    }                }
             }
         }
 
-        lastNdx++;
-
+        if(isWhitePerspective) {
+            lastNdx++;
+        }else{
+            lastNdx = endOfPiecesNdx + 2;
+        }
         //set turn
 //        if(clock == null){
 //            clock = new GameClock(this);
@@ -761,26 +793,25 @@ public class Board extends JComponent {
 //            //clock.run();
 //            this.add(clock);
 //        }else {
-            char turn = data.charAt(lastNdx);
-            if(data.charAt(lastNdx) == 'w'){
-                // System.out.println("White turn");
-                turnCounter = 0;
-                clock = new GameClock(this, dataT.get(0), dataT.get(1));
-                clock.setSize(new Dimension(200, 80));
-                clock.setLocation(new Point(0, 560));
-                clock.setClockSide("w");
-                //clock.run();
-                this.add(clock);
-            }else{
-                // System.out.println("Black turn");
-                turnCounter = 1;
-                clock = new GameClock(this, dataT.get(0), dataT.get(1));
-                clock.setSize(new Dimension(200, 80));
-                clock.setLocation(new Point(0, 560));
-                clock.setClockSide("b");
-                //clock.run();
-                this.add(clock);
-            }
+        char turn = data.charAt(lastNdx);
+        if(data.charAt(lastNdx) == 'w'){
+            // System.out.println("White turn");
+            turnCounter = 0;
+            clock = new GameClock(this, dataT.get(0), dataT.get(1));
+            clock.setSize(new Dimension(200, 80));
+            clock.setLocation(new Point(0, 560));
+            clock.setClockSide("w");
+            //clock.run();
+        }else{
+            // System.out.println("Black turn");
+            turnCounter = 1;
+            clock = new GameClock(this, dataT.get(0), dataT.get(1));
+            clock.setSize(new Dimension(200, 80));
+            clock.setLocation(new Point(0, 560));
+            clock.setClockSide("b");
+            //clock.run();
+        }
+        this.add(clock);
         //}
 
         lastNdx += 2;
@@ -855,8 +886,8 @@ public class Board extends JComponent {
             StringBuffer levelBfr = new StringBuffer();
             // System.out.println(data.charAt(lastNdx));
             while(lastNdx<data.length()){
-            levelBfr.append(data.charAt(lastNdx));
-            lastNdx++;
+                levelBfr.append(data.charAt(lastNdx));
+                lastNdx++;
             }
 
             this.skillLevel = Integer.parseInt(levelBfr.toString());

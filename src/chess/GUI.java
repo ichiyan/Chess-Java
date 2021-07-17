@@ -43,7 +43,7 @@ public class GUI extends JFrame {
         startBtnHandler = new StartBtnHandler();
         startBtn.addActionListener(startBtnHandler);
 
-        loadBtn = new JButton("Load Previous Game");
+        loadBtn = new JButton("Resume Game");
         loadBtn.setBounds(170, 550, 200, 50);
         loadBtn.setFocusable(false);
         loadBtn.setBackground(Color.black);
@@ -61,7 +61,7 @@ public class GUI extends JFrame {
         playAgainstEngineHandler = new PlayAgainstEngineHandler();
         playAgainstEngineBtn.addActionListener(playAgainstEngineHandler);
 
-        loadEngineBtn = new JButton("Load Previous Engine Game");
+        loadEngineBtn = new JButton("Resume Engine Game");
         loadEngineBtn.setBounds(420, 550, 200, 50);
         loadEngineBtn.setFocusable(false);
         loadEngineBtn.setBackground(Color.black);
@@ -86,29 +86,6 @@ public class GUI extends JFrame {
         this.setVisible(true);
     }
 
-//    public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective) {
-//        panel.setVisible(false);
-//        MovePanel mp = new MovePanel();
-//        mp.setMinimumSize(new Dimension(350, 560));
-//
-//        component = new Board(isAgainstEngine,false, isWhitePerspective,mp, panel);
-//        component.setMinimumSize(new Dimension(560, 560));
-//
-//
-//        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
-//        this.add(splitPane, BorderLayout.CENTER);
-//
-//        component = new Board(isAgainstEngine, isWhitePerspective, panel);
-//        this.add(component, BorderLayout.CENTER);
-//    }
-//
-//    public void loadGameScreen(boolean isAgainstEngine){
-//        panel.setVisible(false);
-//        Board board = new Board(isAgainstEngine, true, true, null, panel);
-//        component = board;
-//        this.add(component, BorderLayout.CENTER);
-//    }
-
     public void createGameScreen(boolean isAgainstEngine, boolean isWhitePerspective, int level) {
         JOptionPane optionPane = new JOptionPane();
         JSlider slider = new JSlider(0,20);
@@ -130,6 +107,7 @@ public class GUI extends JFrame {
         mp.setMinimumSize(new Dimension(350, 560));
         component = new Board(isAgainstEngine, isWhitePerspective, panel,mp, level, timeLimit, this);
         component.setMinimumSize(new Dimension(560, 560));
+        //component.setBounds(10, 10, component.getWidth(), component.getHeight());
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
         this.add(splitPane, BorderLayout.CENTER);
     }
@@ -161,7 +139,6 @@ public class GUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             createGameScreen(false, true, -1);
-
         }
     }
 
@@ -194,7 +171,7 @@ public class GUI extends JFrame {
 //                    }
 //                }
 //            };
-            optionPane.setMessage(new Object[] { "Select level: ", slider });
+            optionPane.setMessage(new Object[] { "Select level of difficulty: ", slider });
             optionPane.setMessageType(JOptionPane.QUESTION_MESSAGE);
             JDialog dialog = optionPane.createDialog(panel, "Select Skill Level");
             dialog.setVisible(true);

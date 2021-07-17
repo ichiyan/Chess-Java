@@ -198,6 +198,7 @@ public class Board extends JComponent {
         this.movePanel = movePanel;
 
         this.setBackground(new Color(0x6495ed));
+        //this.setBounds();
         this.setPreferredSize(new Dimension(560, 560));
         this.setMinimumSize(new Dimension(100, 100));
         this.setMaximumSize(new Dimension(1000, 1000));
@@ -345,8 +346,7 @@ public class Board extends JComponent {
         @Override
         public void actionPerformed(ActionEvent e){
             saveGame(isAgainstEngine);
-            
-            new GUI(); 
+            new GUI();
             gui.dispose();
             panel.setVisible(true);
         }
@@ -1375,7 +1375,7 @@ public class Board extends JComponent {
                 if(!Moves.isEmpty()){
                     //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
                     lastMove.setNotation(lastMove.convertToAlgebraicNotation());
-                    
+
                     movePanel.updateMove(lastMove.getNotation(),fullMoveCounter,turnCounter);
 
                 }
@@ -1387,7 +1387,7 @@ public class Board extends JComponent {
                         //set notation first so each move has its own corresponding notation (should've been in constructor but canMoveChecked needs to be changed to avoid stackoverflow)
                         Move lastEngineMove = Moves.get(Moves.size()-1);
                         lastEngineMove.setNotation(lastEngineMove.convertToAlgebraicNotation());
-                        
+
                        
 
                     }

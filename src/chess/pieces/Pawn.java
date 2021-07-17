@@ -1,7 +1,6 @@
 package chess.pieces;
 import chess.Board;
 import chess.Move;
-import chess.PromotionPanel;
 
 public class Pawn extends Piece {
 
@@ -36,10 +35,6 @@ public class Pawn extends Piece {
     }
 
 
-    /* WIP */
-    public void isPromotion(Pawn promotedPawn){
-        PromotionPanel promotionGUI = new PromotionPanel(promotedPawn, board);
-    }
 
     @Override
     public boolean canMove(int destination_x, int destination_y)

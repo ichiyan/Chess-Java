@@ -1,5 +1,6 @@
 package chess;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,8 +14,8 @@ public class Stockfish {
     private OutputStreamWriter processWriter;
 
     //Gab's stockfish path. To execute your stockfish, comment out my path and add your own path.
-    //private static final String PATH = "C:/Users/Gabriela Balisacan/Downloads/exe/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
-     private static final String PATH = "D:/Dave/Downloads/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
+    private static final String PATH = "C:/Users/Gabriela Balisacan/Downloads/exe/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
+     //private static final String PATH = "D:/Dave/Downloads/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
     //private static final String PATH = "C:/Users/lenovo/OneDrive - usc.edu.ph/Documents/stockfish_14_win_x64_avx2/stockfish_14_x64_avx2.exe";
 
     public boolean startEngine(){
@@ -80,6 +81,8 @@ public class Stockfish {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        System.out.println("OUTPUT: " + stringBuffer);
         return  stringBuffer.toString();
     }
 
@@ -93,6 +96,7 @@ public class Stockfish {
         }else{
             bestMove = bestMove.substring(9);
         }
+
         return bestMove;
     }
 
@@ -100,5 +104,8 @@ public class Stockfish {
     public static void main(String[] args) throws IOException{
         Stockfish stockfish = new Stockfish();
         stockfish.startEngine();
+        String bestMove = "bestmove h3h7";
+        System.out.println(bestMove.substring(9));
+
     }
 }

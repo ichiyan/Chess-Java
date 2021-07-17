@@ -66,7 +66,7 @@ public class MovePanel extends JPanel{
         moveList.add(fullMove.toString());
         textArea.append(fullMove.toString());
         
-        
+
     }
     
     public void undoMove(){

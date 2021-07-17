@@ -140,6 +140,7 @@ public class GUI extends JFrame {
         mp.setMinimumSize(new Dimension(200, 560));
         Board board = new Board(isAgainstEngine, true, true, panel, mp, -1, this);
         component = board;
+        component.setMinimumSize(new Dimension(560, 560));
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, component, mp);
         this.add(splitPane, BorderLayout.CENTER);
     }

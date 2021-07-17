@@ -474,6 +474,7 @@ public class Board extends JComponent {
         Black_Pieces.clear();
         Moves.clear();
         clock.setTimes(timeLimit, timeLimit);
+        movePanel.resetMoves();
 //        this.clock = new GameClock(this);
 //        clock.setSize(new Dimension(200, 80));
 //        clock.setLocation(new Point(0, 560));
@@ -631,6 +632,7 @@ public class Board extends JComponent {
             int timeB = clock.timeLeftB();
             bw2 = new BufferedWriter(saveTime);
             bw2.write(timeW + "\r\n" + timeB);
+            bw2.write("\r\n" + isWhitePerspective);
             bw2.close();
 
             System.out.println(timeW);
@@ -682,7 +684,7 @@ public class Board extends JComponent {
         }
 
         //set pieces
-
+        
         outerloop:
         for(int r = 0; r <= 7; r++){
             for(int f = 0; f <= 7; f++){
@@ -691,6 +693,7 @@ public class Board extends JComponent {
                     switch (charAtLastNdx) {
                         case 'R' -> {
                             White_Pieces.add(new Rook(f, r, true, "Rook.png", this));
+                            
 //                            System.out.println("Created R at " + f + " and " + r);
                         }
                         case 'N' -> {
@@ -898,7 +901,8 @@ public class Board extends JComponent {
             stockfish.sendCommand("uci");
             stockfish.sendCommand("ucinewgame");
             stockfish.sendCommand("setoption name Skill Level value " + skillLevel);
-            if(!isWhitePerspective && turn == 'b') {
+            if(!isWhitePerspective && turn == 'w') {
+                this.isWhitePerspective = false;
                 doEngineMove();
             }
         }
@@ -1376,7 +1380,7 @@ public class Board extends JComponent {
 
                 }
 
-                if (isAgainstEngine && is_whites_turn == isWhitePerspective) {
+                if (isAgainstEngine && is_whites_turn == isWhitePerspective && !saveBtn.getModel().isPressed()) {
                     doEngineMove();
                     //test print
                     if(!Moves.isEmpty()){

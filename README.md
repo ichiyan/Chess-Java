@@ -17,6 +17,7 @@ The `JAVA PROJECTS` view allows you to manage your dependencies. More details ca
 
 ## Play Against Stockfish
 
-- download Stockfish https://stockfishchess.org/download/
+- download Stockfish from https://stockfishchess.org/download/
 - unzip 
-- update PATH in Stockfish.java (comment out my path, don't remove pls)
+- update PATH in Stockfish.java
+- download common-lang3 jar file and add to project
